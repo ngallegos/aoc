@@ -38,5 +38,24 @@ namespace AOC2021.Modules
 
             return (increased, decreased);
         }
+
+        public (int increased, int decreased) Part2()
+        {
+            
+            var increased = 0;
+            var decreased = 0;
+            var readings = get_input().Select(int.Parse).ToArray();
+            for(int i = 3; i < readings.Length; i++)
+            {
+                var sumCurrent = readings[i] + readings[i - 1] + readings[i - 2];
+                var sumPrev = readings[i - 1] + readings[i - 2] + readings[i - 3];
+                if (sumCurrent > sumPrev)
+                    increased++;
+                else if (sumCurrent < sumPrev)
+                    decreased++;
+            }
+
+            return (increased, decreased);
+        }
     }
 }
