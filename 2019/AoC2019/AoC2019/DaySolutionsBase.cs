@@ -15,9 +15,13 @@ namespace AoC2019
             {
                 return SolvePuzzle01(Inputs.Input01);
             }
-            catch
+            catch (NotImplementedException)
             {
                 return $"Day {Inputs.Day:D2} Solution 01 Not Implemented";
+            }
+            catch (Exception ex)
+            {
+                return $"Day {Inputs.Day:D2} Solution 01 Erred: {ex.Message}";
             }
         }
 
@@ -27,9 +31,13 @@ namespace AoC2019
             {
                 return SolvePuzzle02(Inputs.Input02);
             }
-            catch
+            catch (NotImplementedException)
             {
-                return $"Day {Inputs.Day:D2} Solution 01 Not Implemented";
+                return $"Day {Inputs.Day:D2} Solution 02 Not Implemented";
+            }
+            catch (Exception ex)
+            {
+                return $"Day {Inputs.Day:D2} Solution 02 Erred: {ex.Message}";
             }
         }
 

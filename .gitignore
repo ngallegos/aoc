@@ -39,3 +39,5 @@ applicationhost.config
 *.dotCover
 .vs/
 obj/
+
+**/.idea/
