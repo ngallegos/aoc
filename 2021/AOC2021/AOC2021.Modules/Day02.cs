@@ -10,8 +10,9 @@ namespace AOC2021.Modules
     public class Day02
     {
         
-        private IEnumerable<string> get_input(){
-            
+        private IEnumerable<string> get_input()
+        {
+
             var assembly = this.GetType().GetTypeInfo().Assembly;
             using (var s = assembly.GetManifestResourceStream("AOC2021.Modules.Inputs.day-02-01.txt"))
             {

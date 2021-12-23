@@ -3,27 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Microsoft.VisualBasic.CompilerServices;
 
 namespace AOC2021.Modules
 {
-    public class Day01
+    public class Day01 : DayBase
     {
-        
-        private IEnumerable<string> get_input(){
-            
-            var assembly = this.GetType().GetTypeInfo().Assembly;
-            using (var s = assembly.GetManifestResourceStream("AOC2021.Modules.Inputs.day-01-01.txt"))
-            {
-                using (var sr = new StreamReader(s))
-                {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                        yield return line;
-                }
-            }
-        }
-        public (int increased, int decreased) Part1()
+        public override dynamic Part1()
         {
             var increased = 0;
             var decreased = 0;
@@ -36,10 +23,10 @@ namespace AOC2021.Modules
                     decreased++;
             }
 
-            return (increased, decreased);
+            return new { increased,  decreased };
         }
 
-        public (int increased, int decreased) Part2()
+        public override dynamic Part2()
         {
             
             var increased = 0;
@@ -55,7 +42,7 @@ namespace AOC2021.Modules
                     decreased++;
             }
 
-            return (increased, decreased);
+            return new {increased,  decreased};
         }
     }
 }

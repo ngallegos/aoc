@@ -15,4 +15,8 @@
       <EmbeddedResource Include="Inputs\day-02-01.txt" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    </ItemGroup>
+
 </Project>

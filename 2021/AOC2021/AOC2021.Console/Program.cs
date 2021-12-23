@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Text.Json.Serialization;
 using AOC2021.Modules;
+using Newtonsoft.Json;
 
 namespace AOC2021.Console
 {
@@ -12,8 +14,9 @@ namespace AOC2021.Console
             var day01 = new Day01();
             var day0101 = day01.Part1();
             var day0102 = day01.Part2();
-            System.Console.WriteLine($"\tIncreases: {day0101.increased}\tDecreases: {day0101.decreased}");
-            System.Console.WriteLine($"\tIncreases: {day0102.increased}\tDecreases: {day0102.decreased}");
+            
+            System.Console.WriteLine($"\t{JsonConvert.SerializeObject(day0101)}");
+            System.Console.WriteLine($"\t{JsonConvert.SerializeObject(day0102)}");
 
             System.Console.WriteLine("DAY 02");
             var day02 = new Day02();
