@@ -7,52 +7,37 @@ using Microsoft.VisualBasic.CompilerServices;
 
 namespace AOC2021.Modules
 {
-    public class Day02
+    public class Day02 : DayBase
     {
-        
-        private IEnumerable<string> get_input()
-        {
-
-            var assembly = this.GetType().GetTypeInfo().Assembly;
-            using (var s = assembly.GetManifestResourceStream("AOC2021.Modules.Inputs.day-02-01.txt"))
-            {
-                using (var sr = new StreamReader(s))
-                {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                        yield return line;
-                }
-            }
-        }
-        public (int xPosition, int yPosition) Part1()
+        public override dynamic Part1()
         {
             var commands = get_input().Select(x => new SubmarineCommand(x)).ToArray();
 
-            var currentX = 0;
-            var currentY = 0;
+            var hPos = 0;
+            var depth = 0;
 
             foreach (var command in commands)
             {
-                (currentX, currentY) = command.NextPosition01(currentX, currentY);
+                (hPos, depth) = command.NextPosition01(hPos, depth);
             }
             
-            return (currentX, currentY);
+            return new {hPos, depth};
         }
 
-        public (int horizontalPosition, int depth, int aim) Part2()
+        public override dynamic Part2()
         {
             var commands = get_input().Select(x => new SubmarineCommand(x)).ToArray();
 
-            var currentX = 0;
-            var currentY = 0;
-            var currentAim = 0;
+            var hPos = 0;
+            var depth = 0;
+            var aim = 0;
 
             foreach (var command in commands)
             {
-                (currentX, currentY, currentAim) = command.NextPositionWithAim(currentX, currentY, currentAim);
+                (hPos, depth, aim) = command.NextPositionWithAim(hPos, depth, aim);
             }
             
-            return (currentX, currentY, currentAim);
+            return new {hPos, depth, aim};
         }
 
         public class SubmarineCommand

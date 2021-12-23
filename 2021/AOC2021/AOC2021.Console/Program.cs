@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json.Serialization;
 using AOC2021.Modules;
 using Newtonsoft.Json;
@@ -10,20 +11,22 @@ namespace AOC2021.Console
     {
         static void Main(string[] args)
         {
-            System.Console.WriteLine("DAY 01");
-            var day01 = new Day01();
-            var day0101 = day01.Part1();
-            var day0102 = day01.Part2();
-            
-            System.Console.WriteLine($"\t{JsonConvert.SerializeObject(day0101)}");
-            System.Console.WriteLine($"\t{JsonConvert.SerializeObject(day0102)}");
+            var baseDayType = typeof(DayBase);
+            var days = typeof(DayBase).Assembly.GetTypes()
+                .Where(x => x.IsSubclassOf(baseDayType) && !x.IsAbstract)
+                .OrderBy(x => x.Name);
 
-            System.Console.WriteLine("DAY 02");
-            var day02 = new Day02();
-            var day0201 = day02.Part1();
-            var day0202 = day02.Part2();
-            System.Console.WriteLine($"\tX: {day0201.xPosition}\tY: {day0201.yPosition}\tRESULT: {day0201.xPosition * day0201.yPosition}");
-            System.Console.WriteLine($"\tX: {day0202.horizontalPosition}\tY: {day0202.depth}\tAIM:{day0202.aim}\tRESULT: {day0202.horizontalPosition * day0202.depth}");
+            foreach (var dayType in days)
+            {
+                var dayNumber = int.Parse(dayType.Name.Replace("Day", ""));
+                System.Console.WriteLine($"-----DAY {dayNumber:00}---------------------------------------------\n");
+                var day = Activator.CreateInstance(dayType) as DayBase;
+                var part1Results = day.Part1();
+                System.Console.WriteLine($"\tPART 01: {JsonConvert.SerializeObject(part1Results)}");
+                var part2Results = day.Part2();
+                System.Console.WriteLine($"\tPART 02: {JsonConvert.SerializeObject(part2Results)}");
+                System.Console.WriteLine();
+            }
             
         }
     }
