@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MathNet.Numerics.LinearAlgebra;
 
-namespace AOC2021.Modules
+namespace AOC2022.Modules
 {
     public class Day03 : DayBase
     {
