@@ -12,12 +12,36 @@ namespace AOC2022.Modules
     {
         public override dynamic Part1()
         {
-            return "Not implemented";
+            var calorieList = get_input().ToList();
+            var orderedElfCalories = GetElvesByCaloriesCarried(calorieList);
+            
+            return new { mostCaloriesCarried = orderedElfCalories.First() };
         }
 
         public override dynamic Part2()
         {
-            return "Not implemented";
+            var calorieList = get_input().ToList();
+            var orderedElfCalories = GetElvesByCaloriesCarried(calorieList);
+            
+            return new { topThreeCalorieCarriersTotal = orderedElfCalories.Take(3).Sum() };
+        }
+
+        private List<int> GetElvesByCaloriesCarried(List<string> calorieList)
+        {
+            var elfCalories = new List<int>();
+            var currentElfCalories = 0;
+            foreach (var calorieEntry in calorieList)
+            {
+                if (int.TryParse(calorieEntry.Trim(), out int calories))
+                    currentElfCalories += calories;
+                else
+                {
+                    elfCalories.Add(currentElfCalories);
+                    currentElfCalories = 0;
+                }
+            }
+
+            return elfCalories.OrderByDescending(x => x).ToList();
         }
     }
 }
