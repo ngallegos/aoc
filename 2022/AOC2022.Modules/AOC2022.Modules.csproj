@@ -5,10 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Inputs" />
-    </ItemGroup>
-
-    <ItemGroup>
+      <EmbeddedResource Include="Inputs\day-02-01.txt" />
       <None Remove="Inputs\day-01-01txt.txt" />
       <EmbeddedResource Include="Inputs\day-01-01.txt" />
       <None Remove="Inputs\day-02-01.txt" />
