@@ -1,37 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AOC2022.Modules;
 
 public class Day04 : DayBase
 {
+    private List<CleaningPair> _assignmentPairs;
+    
+    public Day04() => _assignmentPairs = get_input("Part1")
+        .Select(x => new CleaningPair(x))
+        .ToList();
+    
     public override dynamic Part1()
     {
-        var assignmentPairs = get_input()
-            .Select(x => new CleaningPair(x))
-            .ToList();
-        var pairsDuplicatingWork = 0;
-        foreach (var pair in assignmentPairs)
-        {
-            if (pair.HasDuplicateAssignment)
-                pairsDuplicatingWork++;
-        }
+        var pairsDuplicatingWork = _assignmentPairs
+            .Count(x => x.HasDuplicateAssignment);
 
         return new { pairsDuplicatingWork };
     }
 
     public override dynamic Part2()
     {
-        
-        var assignmentPairs = get_input()
-            .Select(x => new CleaningPair(x))
-            .ToList();
-        var pairsWithOverlappingWork = 0;
-        foreach (var pair in assignmentPairs)
-        {
-            if (pair.HasOverlappingAssignment)
-                pairsWithOverlappingWork++;
-        }
+        var pairsWithOverlappingWork = _assignmentPairs
+            .Count(x => x.HasOverlappingAssignment);
 
         return new { pairsWithOverlappingWork };
     }
