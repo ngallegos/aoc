@@ -9,6 +9,7 @@
       <EmbeddedResource Include="Inputs\day-03-01.txt" />
       <EmbeddedResource Include="Inputs\day-04-01.txt" />
       <EmbeddedResource Include="Inputs\day-05-01.txt" />
+      <EmbeddedResource Include="Inputs\day-06-01.txt" />
       <None Remove="Inputs\day-01-01txt.txt" />
       <EmbeddedResource Include="Inputs\day-01-01.txt" />
       <None Remove="Inputs\day-02-01.txt" />
