@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +27,15 @@ namespace AOC2022.Modules
                     while ((line = sr.ReadLine()) != null)
                         yield return line;
                 }
+            }
+        }
+        
+        protected IEnumerable<T> get_input<T>(Func<string, T> transform, [CallerMemberName] string callerName = "")
+        {
+            var inputs = get_input(callerName);
+            foreach (var input in inputs)
+            {
+                yield return transform(input);
             }
         }
 
