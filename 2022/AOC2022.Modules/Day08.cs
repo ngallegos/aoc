@@ -86,18 +86,18 @@ public class Day08 : DayBase
             VisibilityWest = CountTreesInView(WesternView);
         }
         
-        public (int x, int y) Location { get; private set; }
-        public int Height { get; private set; }
+        private (int x, int y) Location { get; set; }
+        private int Height { get; set; }
         
         private List<int> NorthernView { get; set; }
         private List<int> SouthernView { get; set; }
         private List<int> EasternView { get; set; }
         private List<int> WesternView { get; set; }
         
-        public int VisibilityNorth { get; private set; }
-        public int VisibilitySouth { get; private set; }
-        public int VisibilityEast { get; private set; }
-        public int VisibilityWest { get; private set; }
+        private int VisibilityNorth { get; set; }
+        private int VisibilitySouth { get; set; }
+        private int VisibilityEast { get; set; }
+        private int VisibilityWest { get; set; }
 
         public int ScenicScore => VisibilityNorth * VisibilitySouth * VisibilityEast * VisibilityWest;
         public bool VisibleFromPerimeter { get; private set; }
@@ -119,7 +119,7 @@ public class Day08 : DayBase
         {
             if (Location.x == 0
                 || Location.y == 0
-                || Location.x == grid[Location.x].Length - 1
+                || Location.x == grid[Location.y].Length - 1
                 || Location.y == grid.Length - 1)
             {
                 VisibleFromPerimeter = true;
