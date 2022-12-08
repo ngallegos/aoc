@@ -22,9 +22,9 @@ namespace AOC2022.Console
                 System.Console.WriteLine($"-----DAY {dayNumber:00}---------------------------------------------\n");
                 var day = Activator.CreateInstance(dayType) as DayBase;
                 var part1Results = day.Part1();
-                System.Console.WriteLine($"\tPART 01: {JsonConvert.SerializeObject(part1Results)}");
+                System.Console.WriteLine($"PART 01:\n{JsonConvert.SerializeObject(part1Results, Formatting.Indented)}");
                 var part2Results = day.Part2();
-                System.Console.WriteLine($"\tPART 02: {JsonConvert.SerializeObject(part2Results)}");
+                System.Console.WriteLine($"PART 02:\n{JsonConvert.SerializeObject(part2Results, Formatting.Indented)}");
                 System.Console.WriteLine();
             }
             
