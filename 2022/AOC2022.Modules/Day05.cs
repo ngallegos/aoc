@@ -7,6 +7,7 @@ namespace AOC2022.Modules;
 public class Day05 : DayBase
 {
     
+    public override bool Completed => true;
     public override dynamic Part1()
     {
         var (crates, steps) = ParseInput(get_input().ToList());

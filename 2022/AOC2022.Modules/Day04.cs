@@ -6,6 +6,7 @@ namespace AOC2022.Modules;
 
 public class Day04 : DayBase
 {
+    public override bool Completed => true;
     private List<CleaningPair> _assignmentPairs;
     
     public Day04() => _assignmentPairs = get_input("Part1")

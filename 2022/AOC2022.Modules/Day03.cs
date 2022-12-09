@@ -6,6 +6,7 @@ namespace AOC2022.Modules;
 
 public class Day03 : DayBase
 {
+    public override bool Completed => true;
     private List<(char letter, int priority)> PriorityMap = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         .ToCharArray()
         .Select((c, i) => (c, i+1)).ToList();

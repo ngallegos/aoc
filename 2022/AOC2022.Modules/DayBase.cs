@@ -9,6 +9,7 @@ namespace AOC2022.Modules
 {
     public abstract class DayBase
     {
+        public virtual bool Completed => false;
         
         protected IEnumerable<string> get_input([CallerMemberName] string callerName = "")
         {

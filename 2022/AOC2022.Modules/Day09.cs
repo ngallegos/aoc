@@ -7,6 +7,7 @@ namespace AOC2022.Modules;
 
 public class Day09 : DayBase
 {
+    public override bool Completed => false;
     private readonly List<(string direction, int distance)> _sample = new List<string>
     {
         "R 4",

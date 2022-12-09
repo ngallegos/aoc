@@ -19,8 +19,10 @@ namespace AOC2022.Console
             foreach (var dayType in days)
             {
                 var dayNumber = int.Parse(dayType.Name.Replace("Day", ""));
-                System.Console.WriteLine($"-----DAY {dayNumber:00}---------------------------------------------\n");
                 var day = Activator.CreateInstance(dayType) as DayBase;
+                if (day.Completed)
+                    continue;
+                System.Console.WriteLine($"-----DAY {dayNumber:00}---------------------------------------------\n");
                 try
                 {
                     var part1Results = day.Part1();

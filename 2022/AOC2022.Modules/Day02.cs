@@ -6,6 +6,7 @@ namespace AOC2022.Modules;
 
 public class Day02 : DayBase
 {
+    public override bool Completed => true;
     private enum Play
     {
         Rock = 1,

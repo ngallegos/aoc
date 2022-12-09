@@ -5,6 +5,7 @@ namespace AOC2022.Modules;
 
 public class Day08 : DayBase
 {
+    public override bool Completed => true;
     private readonly TreeHeightGrid _treeHeightGrid;
 
     private int[][] _sample = new[]

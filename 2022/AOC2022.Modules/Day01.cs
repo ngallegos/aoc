@@ -10,6 +10,8 @@ namespace AOC2022.Modules
 {
     public class Day01 : DayBase
     {
+        public override bool Completed => true;
+
         public override dynamic Part1()
         {
             var calorieList = get_input().ToList();
