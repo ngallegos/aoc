@@ -21,13 +21,30 @@ namespace AOC2022.Console
                 var dayNumber = int.Parse(dayType.Name.Replace("Day", ""));
                 System.Console.WriteLine($"-----DAY {dayNumber:00}---------------------------------------------\n");
                 var day = Activator.CreateInstance(dayType) as DayBase;
-                var part1Results = day.Part1();
-                System.Console.WriteLine($"PART 01:\n{JsonConvert.SerializeObject(part1Results, Formatting.Indented)}");
-                var part2Results = day.Part2();
-                System.Console.WriteLine($"PART 02:\n{JsonConvert.SerializeObject(part2Results, Formatting.Indented)}");
+                try
+                {
+                    var part1Results = day.Part1();
+                    System.Console.WriteLine(
+                        $"PART 01:\n{JsonConvert.SerializeObject(part1Results, Formatting.Indented)}");
+                }
+                catch (NotImplementedException)
+                {
+                    System.Console.WriteLine("PART 01:\nNot Implemented");
+                }
+
+                try
+                {
+                    var part2Results = day.Part2();
+                    System.Console.WriteLine(
+                        $"PART 02:\n{JsonConvert.SerializeObject(part2Results, Formatting.Indented)}");
+                }
+                catch (NotImplementedException)
+                {
+                    System.Console.WriteLine("PART 02:\nNot Implemented");
+                }
+
                 System.Console.WriteLine();
             }
-            
         }
     }
 }
