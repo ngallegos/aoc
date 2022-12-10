@@ -23,6 +23,23 @@ public class Day09 : DayBase
         var (direction, distance) = (parts[0], int.Parse(parts[1]));
         return (direction, distance);
     }).ToList();
+    
+    
+    private readonly List<(string direction, int distance)> _sample2 = new List<string>
+    {
+        "R 5",
+        "U 8",
+        "L 8",
+        "D 3",
+        "R 17",
+        "D 10",
+        "L 25",
+        "U 20"
+    }.Select(s => { 
+        var parts = s.Split(' ');
+        var (direction, distance) = (parts[0], int.Parse(parts[1]));
+        return (direction, distance);
+    }).ToList();
 
     private readonly List<(string direction, int distance)> _instructions;
 
@@ -83,79 +100,33 @@ public class Day09 : DayBase
             for (int i = 0; i < distance; i++)
             {
                 Head.Move(direction);
-                var leaderDirection = direction;
                 for (int k = 0; k < _knots.Count - 1; k++)
                 {
-                    leaderDirection = FollowLeader(_knots[k], _knots[k + 1], leaderDirection);
+                    FollowLeader(_knots[k], _knots[k + 1]);
+                    _tailLocations.Add(Tail.ToString());
                 }
-                _tailLocations.Add(Tail.ToString());
             }
         }
         
         
-        private string FollowLeader(KnotPoint leader, KnotPoint follower, string leaderDirection)
+        private void FollowLeader(KnotPoint leader, KnotPoint follower)
         {
             if (!leader.IsTouching(follower))
             {
-                follower.Move(leaderDirection);
-                if (leader.XCoordinate != follower.XCoordinate
-                    && leader.YCoordinate != follower.YCoordinate)
-                {
-                    var additionalDirection = "";
-                    switch (leaderDirection)
-                    {
-                        case "U":
-                        case "D":
-                            additionalDirection = leader.XCoordinate > follower.XCoordinate ? "R" : "L";
-                            break;
-                        case "L":
-                        case "R":
-                            additionalDirection = leader.YCoordinate > follower.YCoordinate ? "U" : "D";
-                            break;
-                    }
-                    follower.Move(additionalDirection);
-                    return additionalDirection;
-                }
-            }
+                var direction = "";
+                if (leader.XCoordinate > follower.XCoordinate)
+                    direction += "R";
+                else if (leader.XCoordinate < follower.XCoordinate)
+                    direction += "L";
 
-            return leaderDirection;
-        }
-        
-        public void ExecuteInstruction(string direction, int distance, int knotIndex)
-        {
-            if (knotIndex == _knots.Count - 1)
-                return;
-            var leader = _knots[knotIndex];
-            var follower = _knots[knotIndex + 1];
-            for (int i = 0; i < distance; i++)
-            {
-                leader.Move(direction);
-                if (!leader.IsTouching(follower))
-                {
-                    follower.Move(direction);
-                    if (leader.XCoordinate != follower.XCoordinate
-                        && leader.YCoordinate != follower.YCoordinate)
-                    {
-                        var additionalDirection = "";
-                        switch (direction)
-                        {
-                            case "U":
-                            case "D":
-                                additionalDirection = leader.XCoordinate > follower.XCoordinate ? "R" : "L";
-                                break;
-                            case "L":
-                            case "R":
-                                additionalDirection = leader.YCoordinate > follower.YCoordinate ? "U" : "D";
-                                break;
-                        }
-                        follower.Move(additionalDirection);
-                    }
-                    _tailLocations.Add(follower.ToString());
-                }
+                if (leader.YCoordinate > follower.YCoordinate)
+                    direction += "U";
+                else if (leader.YCoordinate < follower.YCoordinate)
+                    direction += "D";
+                
+                follower.Move(direction);
             }
         }
-        
-        
         
 
         private class KnotPoint
@@ -183,57 +154,32 @@ public class Day09 : DayBase
                 return xRange.Contains(XCoordinate) && yRange.Contains(YCoordinate);
             }
 
-            public string Move(string direction)
+            public void Move(string direction)
             {
-                switch (direction)
+                foreach (var step in direction)
                 {
-                    case "R":
-                        XCoordinate++;
-                        break;
-                    case "L":
-                        XCoordinate--;
-                        break;
-                    case "U":
-                        YCoordinate++;
-                        break;
-                    case "D":
-                        YCoordinate--;
-                        break;
+                    switch (step)
+                    {
+                        case 'R':
+                            XCoordinate++;
+                            break;
+                        case 'L':
+                            XCoordinate--;
+                            break;
+                        case 'U':
+                            YCoordinate++;
+                            break;
+                        case 'D':
+                            YCoordinate--;
+                            break;
+                    }
                 }
-
-                return direction;
             }
 
             public override string ToString()
             {
                 return $"({XCoordinate},{YCoordinate})";
             }
-
-            public override bool Equals(object obj)
-            {
-                if (obj is string)
-                {
-                    var other = new KnotPoint((string)obj);
-                    return this.Equals(other);
-                }
-                return this.Equals(obj as KnotPoint);
-            }
-
-            protected bool Equals(KnotPoint other)
-            {
-                if (other == null)
-                    return false;
-                return XCoordinate == other.XCoordinate && YCoordinate == other.YCoordinate;
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(XCoordinate, YCoordinate);
-            }
-
-            public static bool operator ==(KnotPoint a, KnotPoint b) => a?.Equals(b) ?? false;
-
-            public static bool operator !=(KnotPoint a, KnotPoint b) => !(a == b);
         }
     }
 }
