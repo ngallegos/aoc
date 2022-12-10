@@ -1,64 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AOC2022.Modules;
 
 public class Day10 : DayBase
 {
-    public override bool Completed => false;
+    public override bool Completed => true;
+    private DeviceState _sampleState;
+    private DeviceState _actualState;
+
+    public Day10()
+    {
+        _sampleState = new DeviceState();
+        _sampleState.ProcessInput(get_sample("Part1").ToList());
+        _actualState = new DeviceState();
+        _actualState.ProcessInput(get_input("Part1").ToList());
+    }
 
     public override dynamic Part1()
     {
-        var sample = get_sample();
-        var inputs = get_input();
-        var state = new ExecutionState();
-        foreach (var input in inputs)
-        {
-            var instruction = new CPUInstruction(input);
-            state.ExecuteInstruction(instruction);
-        }
 
         var interestingCycles = new[] { 20, 60, 100, 140, 180, 220 };
-        var sumOfInterestingSignalStrengths = state.SumInterestingSignalStrengths(interestingCycles);
+        var sampleSum = _sampleState.SumInterestingSignalStrengths(interestingCycles);
+        var actualSum = _actualState.SumInterestingSignalStrengths(interestingCycles);
 
-        return new { sumOfInterestingSignalStrengths };
+        return new
+        {
+            Sample = new { sumOfInterestingSignalStrengths = sampleSum },
+            ActuaL = new { sumOfInterestingSignalStrengths = actualSum }
+        };
     }
 
     public override dynamic Part2()
     {
-        throw new System.NotImplementedException();
+        return new
+        {
+            Sample = _sampleState.RenderImage(),
+            Actual = _actualState.RenderImage()
+        };
     }
 
-    private class ExecutionState
+    private class DeviceState
     {
         private int _x { get; set; } = 1;
         private int _cycle { get; set; }
         private int _signalStrength => _cycle * _x;
         private List<int> _signalStrengths = new List<int>();
-        private List<CPUInstruction> _executingInstructions = new List<CPUInstruction>();
+        private List<int> _xValues = new List<int>();
 
-        public void ExecuteInstruction(CPUInstruction cpuInstruction)
+        public void ProcessInput(List<string> instructions)
+        {
+            foreach (var input in instructions)
+            {
+                var instruction = new CPUInstruction(input);
+                ExecuteInstruction(instruction);
+            }
+        }
+        
+        private void ExecuteInstruction(CPUInstruction cpuInstruction)
         {
             for (int i = 0; i < cpuInstruction.CyclesToComplete; i++)
             {
                 _cycle++;
                 _signalStrengths.Add(_signalStrength);
+                _xValues.Add(_x);
+                if (i == cpuInstruction.CyclesToComplete -1)
+                    _x = cpuInstruction.PerformOperation(_x);
             }
-            _x = cpuInstruction.PerformOperation(_x);
         }
         
-        public void ExecuteInstructionAsync(CPUInstruction cpuInstruction)
-        {
-            _cycle++;
-            _signalStrengths.Add(_signalStrength);
-            _executingInstructions.Add(cpuInstruction);
-            foreach (var instruction in _executingInstructions)
-            {
-                _x = instruction.PerformOperationAsync(_x);
-            }
-            _executingInstructions.RemoveAll(x => x.Complete);
-        }
-
         public int SumInterestingSignalStrengths(IEnumerable<int> cycleNumbers)
         {
             var sum = 0;
@@ -69,6 +80,34 @@ public class Day10 : DayBase
 
             return sum;
         }
+
+        public List<string> RenderImage()
+        {
+            var pixelLines = new List<string>();
+            var currentLine = string.Empty;
+            for (int i = 0; i < _xValues.Count; i++)
+            {
+                var spriteCenter = _xValues[i];
+                var sprite = new List<int> { spriteCenter };
+                if (spriteCenter > 0)
+                    sprite.Insert(0, spriteCenter-1);
+                if (spriteCenter < (_xValues.Count-1))
+                    sprite.Add(spriteCenter+1);
+                var linePosition = i % 40;
+                var pixel = '.';
+                if (sprite.Any(s => s == linePosition))
+                    pixel = '#';
+                if (linePosition == 0 && i != 0)
+                {
+                    pixelLines.Add(currentLine);
+                    currentLine = string.Empty;
+                }
+                currentLine += pixel;
+            }
+            pixelLines.Add(currentLine);
+
+            return pixelLines;
+        }
     }
     
     private class CPUInstruction
@@ -76,7 +115,6 @@ public class Day10 : DayBase
         private readonly int _arg;
         private readonly string _type;
         public int CyclesToComplete = 1;
-        public bool Complete => CyclesToComplete <= 0;
         
         public CPUInstruction(string input)
         {
@@ -93,14 +131,6 @@ public class Day10 : DayBase
         {
             CyclesToComplete = 0;
             return currentValue + _arg;
-        }
-
-        public int PerformOperationAsync(int currentValue)
-        {
-            CyclesToComplete--;
-            if (CyclesToComplete == 0)
-                return currentValue + _arg;
-            return currentValue;
         }
     }
 }
