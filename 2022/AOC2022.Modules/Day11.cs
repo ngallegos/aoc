@@ -6,7 +6,7 @@ namespace AOC2022.Modules;
 
 public class Day11 : DayBase
 {
-    public override bool Completed => false;
+    public override bool Completed => true;
 
     private List<string> _sampleNotes;
     private List<string> _actualNotes;
