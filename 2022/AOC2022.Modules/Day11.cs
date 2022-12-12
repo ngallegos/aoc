@@ -8,13 +8,13 @@ public class Day11 : DayBase
 {
     public override bool Completed => false;
 
-    private Barrel _sampleBarrel;
-    private Barrel _actualBarrel;
+    private List<string> _sampleNotes;
+    private List<string> _actualNotes;
 
     public Day11()
     {
-        _sampleBarrel = new Barrel(get_sample("Part1").ToList());
-        _actualBarrel = new Barrel(get_input("Part1").ToList());
+        _sampleNotes = get_sample("Part1").ToList();
+        _actualNotes = get_input("Part1").ToList();
 
     }
 
@@ -22,6 +22,8 @@ public class Day11 : DayBase
     {
         var rounds = 20;
         var reliefManagement = (long x) => (long)Math.Floor((double)x / 3);
+        var _sampleBarrel = new Barrel(_sampleNotes);
+        var _actualBarrel = new Barrel(_actualNotes);
         _sampleBarrel.ConductMonkeyBusiness(rounds, reliefManagement);
         _actualBarrel.ConductMonkeyBusiness(rounds, reliefManagement);
        
@@ -36,12 +38,10 @@ public class Day11 : DayBase
     public override dynamic Part2()
     {
         var rounds = 10000;
-        var reliefManagement = (long x) =>
-        {
-            return (long)Math.Floor((double)x / 3);
-        };
-        _sampleBarrel.ConductMonkeyBusiness(rounds, reliefManagement);
-        _actualBarrel.ConductMonkeyBusiness(rounds, reliefManagement);
+        var _sampleBarrel = new Barrel(_sampleNotes);
+        var _actualBarrel = new Barrel(_actualNotes);
+        _sampleBarrel.ConductMonkeyBusiness(rounds, (long x) => x % _sampleBarrel.StressReducer);
+        _actualBarrel.ConductMonkeyBusiness(rounds, (long x) => x % _actualBarrel.StressReducer);
        
 
         return new
@@ -53,19 +53,25 @@ public class Day11 : DayBase
 
     private class Barrel
     {
-        private readonly List<Monkey> _monkeys;
+        private List<Monkey> _monkeys;
+        private readonly List<string> _notes;
 
-        public int BusinessLevel => _monkeys.OrderByDescending(x => x.InspectionsPerformed)
+        public long BusinessLevel => _monkeys.OrderByDescending(x => x.InspectionsPerformed)
             .Select(x => x.InspectionsPerformed)
             .Take(2)
             .Aggregate((a, b) => a * b);
 
+        public long StressReducer => _monkeys
+            .Select(x => x.TestDivisibleBy)
+            .Aggregate((a, b) => a * b);
+        
+        
         public Barrel(List<string> notes)
         {
-            
+            _notes = notes;
             _monkeys = new List<Monkey>();
             var currentMonkeyNotes = new List<string>();
-            foreach (var note in notes)
+            foreach (var note in _notes)
             {
                 if (string.IsNullOrEmpty(note.Trim()))
                 {
@@ -86,7 +92,8 @@ public class Day11 : DayBase
                 {
                     while (monkey.Items.Any())
                     {
-                        monkey.PerformInspection(manageRelief);
+                        monkey.PerformInspection();
+                        monkey.ApplyRelief(manageRelief);
                         var destinationMonkey = monkey.DetermineNextMonkey();
                         monkey.Throw(_monkeys[destinationMonkey]);
                     }
@@ -100,10 +107,10 @@ public class Day11 : DayBase
         public int ID { get; set; }
         public List<long> Items { get; private set; } = new List<long>();
         private Operation _operation;
-        private int _testDivisibleBy;
+        public long TestDivisibleBy { get; private set; }
         private int _testEvaluationTrueDestinationMonkey;
         private int _testEvaluationFalseDestinationMonkey;
-        public int InspectionsPerformed { get; private set; }
+        public long InspectionsPerformed { get; private set; }
         
         public Monkey(List<string> notes)
         {
@@ -111,20 +118,21 @@ public class Day11 : DayBase
             Items = notes[1].Trim().Replace("Starting items: ", "").Split(',', StringSplitOptions.TrimEntries)
                 .Select(long.Parse).ToList();
             _operation = new Operation(notes[2].Trim().Replace("Operation: ", ""));
-            _testDivisibleBy = int.Parse(notes[3].Trim().Replace("Test: divisible by ", ""));
+            TestDivisibleBy = int.Parse(notes[3].Trim().Replace("Test: divisible by ", ""));
             _testEvaluationTrueDestinationMonkey = int.Parse(notes[4].Trim().Replace("If true: throw to monkey ", ""));
             _testEvaluationFalseDestinationMonkey = int.Parse(notes[5].Trim().Replace("If false: throw to monkey ", ""));
         }
 
-        public void PerformInspection(Func<long, long> manageRelief)
+        public void PerformInspection()
         {
             Items[0] = _operation.Execute(Items[0]);
-            // relief after no breakage;
-            Items[0] = manageRelief(Items[0]);
             InspectionsPerformed++;
         }
-        
-        
+
+        public void ApplyRelief(Func<long, long> manageRelief)
+        {
+            Items[0] = manageRelief(Items[0]);
+        }
 
         public void CatchItem(long itemWorryLevel)
         {
@@ -140,7 +148,7 @@ public class Day11 : DayBase
 
         public int DetermineNextMonkey()
         {
-            if (Items[0] % _testDivisibleBy == 0)
+            if (Items[0] % TestDivisibleBy == 0)
                 return _testEvaluationTrueDestinationMonkey;
             return _testEvaluationFalseDestinationMonkey;
         }
