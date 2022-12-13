@@ -35,9 +35,9 @@ public class Day12 : DayBase
     {
         var _sampleMap = new ElevationMap(_sampleInput);
         var _actualMap = new ElevationMap(_actualInput);
-        var _sampleRoute = await _sampleMap.GetBestPath();
+        var _sampleRoute = await _sampleMap.GetBestPathFromStartLocation();
         var _sampleVisualization = _sampleMap.GetVisualization();
-        var _actualRoute = await _actualMap.GetBestPath();
+        var _actualRoute = await _actualMap.GetBestPathFromStartLocation();
         var _actualVisualization = _actualMap.GetVisualization();
         return new
         {
@@ -50,11 +50,11 @@ public class Day12 : DayBase
 
     public override async Task<dynamic> Part2Async()
     {
-        var _sampleMap = new ElevationMap(_sampleInput, 'a');
-        var _actualMap = new ElevationMap(_actualInput, 'a');
-        var _sampleRoute = await _sampleMap.GetBestPath();
+        var _sampleMap = new ElevationMap(_sampleInput);
+        var _actualMap = new ElevationMap(_actualInput);
+        var _sampleRoute = await _sampleMap.GetBestOverallPath();
         var _sampleVisualization = _sampleMap.GetVisualization();
-        var _actualRoute = await _actualMap.GetBestPath();
+        var _actualRoute = await _actualMap.GetBestOverallPath();
         var _actualVisualization = _actualMap.GetVisualization();
         return new
         {
@@ -68,7 +68,7 @@ public class Day12 : DayBase
     private class ElevationMap
     {
         private readonly int[][] _map;
-        private List<RouteLocation> _startingLocations = new List<RouteLocation>();
+        private RouteLocation _start;
         private RouteLocation _destination;
         private List<RouteLocation> _bestPath;
         
@@ -78,15 +78,15 @@ public class Day12 : DayBase
         private int EastBorder { get; set; }
         private int WestBorder { get; set; }
         
-        public ElevationMap(List<string> inputs, char additionalStartIdentifier = 'S')
+        public ElevationMap(List<string> inputs)
         {
             var maxY = inputs.Count - 1;
             _map = inputs.Select((s, y) => {
                 return s.ToCharArray().Select((c, x) =>
                 {
-                    if (c == 'S' || c == additionalStartIdentifier)
+                    if (c == 'S')
                     {
-                        _startingLocations.Add(new RouteLocation(x, y, 1));
+                        _start = new RouteLocation(x, y, 1);
                         return 1;
                     }
 
@@ -122,48 +122,46 @@ public class Day12 : DayBase
                 n.Previous = current;
             });
             neighbors.RemoveAll(x => _visited.Any(d => d.ToString() == x.ToString()));
-            neighbors.RemoveAll(ps => ps.Elevation > current.Elevation + 1);
+            neighbors.RemoveAll(n => current.Elevation - 1 > n.Elevation);
             return neighbors.ToList();
         }
 
-        public async Task<List<RouteLocation>> GetBestPath()
+        public async Task<List<RouteLocation>> GetBestPathFromStartLocation()
         {
-            var possibleRoutes = new List<List<RouteLocation>>();
-            var startChunks = _startingLocations.Chunk(10).ToList();
-            foreach (var chunk in startChunks.Select((x, i) => new { startLocations = x, i }))
+            _bestPath = await GetBestPath(_destination,
+                (RouteLocation current) => current.ToString() == _start.ToString());
+            return _bestPath;
+        }
+        
+        public async Task<List<RouteLocation>> GetBestOverallPath()
+        {
+            _bestPath = await GetBestPath(_destination, (RouteLocation current) => current.Elevation == 1);
+            return _bestPath;
+        }
+
+        private async Task<List<RouteLocation>> GetBestPath(RouteLocation start, Func<RouteLocation, bool> destinationReached)
+        {
+            var q = new Queue<RouteLocation>();
+            RouteLocation current = null;
+            var _visited = new List<RouteLocation>();
+            _visited.Clear();
+            _visited.Add(start);
+            q.Enqueue(start);
+            while (q.Count > 0)
             {
-                Console.WriteLine($"Processing chunk {chunk.i + 1} of {startChunks.Count}");
-                var tasks = chunk.startLocations.Select(_start => Task.Run(() =>
+                current = q.Dequeue();
+                if (destinationReached(current))
+                    break;
+
+                var potentialSteps = GetUnvisitedNeighbors(current, _visited);
+                foreach (var potentialStep in potentialSteps)
                 {
-                    var q = new Queue<RouteLocation>();
-                    RouteLocation current = null;
-                    var _visited = new List<RouteLocation>();
-                    _visited.Clear();
-                    _visited.Add(_start);
-                    q.Enqueue(_start);
-                    while (q.Count > 0)
-                    {
-                        current = q.Dequeue();
-                        if (current.ToString() == _destination.ToString())
-                            break;
-
-                        var potentialSteps = GetUnvisitedNeighbors(current, _visited);
-                        foreach (var potentialStep in potentialSteps)
-                        {
-                            _visited.Add(potentialStep);
-                            q.Enqueue(potentialStep);
-                        }
-                    }
-
-                    return current.GetFullRoute();
-                })).ToList();
-                possibleRoutes.AddRange(await Task.WhenAll(tasks));
-                possibleRoutes.RemoveAll(x => x.Last().ToString() != _destination.ToString());
-                Console.WriteLine($"Found {possibleRoutes.Count} possible routes so far...");
+                    _visited.Add(potentialStep);
+                    q.Enqueue(potentialStep);
+                }
             }
 
-            _bestPath = possibleRoutes.MinBy(x => x.Count);
-            return _bestPath;
+            return current.GetFullRoute();
         }
 
         public List<string> GetVisualization()
