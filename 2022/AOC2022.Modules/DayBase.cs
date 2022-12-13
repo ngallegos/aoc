@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace AOC2022.Modules
 {
@@ -53,5 +54,13 @@ namespace AOC2022.Modules
         public abstract dynamic Part1();
         public abstract dynamic Part2();
 
+        public virtual async Task<dynamic> Part1Async()
+        {
+            return await new ValueTask<dynamic>(Part1());
+        }
+        public virtual async Task<dynamic> Part2Async()
+        {
+            return await new ValueTask<dynamic>(Part2());
+        }
     }
 }

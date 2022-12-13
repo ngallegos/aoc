@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using AOC2022.Modules;
 using Newtonsoft.Json;
 
@@ -9,7 +10,7 @@ namespace AOC2022.Console
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var baseDayType = typeof(DayBase);
             var days = typeof(DayBase).Assembly.GetTypes()
@@ -25,7 +26,7 @@ namespace AOC2022.Console
                 System.Console.WriteLine($"-----DAY {dayNumber:00}---------------------------------------------\n");
                 try
                 {
-                    var part1Results = day.Part1();
+                    var part1Results = await day.Part1Async();
                     System.Console.WriteLine(
                         $"PART 01:\n{JsonConvert.SerializeObject(part1Results, Formatting.Indented)}");
                 }
@@ -36,7 +37,7 @@ namespace AOC2022.Console
 
                 try
                 {
-                    var part2Results = day.Part2();
+                    var part2Results = await day.Part2Async();
                     System.Console.WriteLine(
                         $"PART 02:\n{JsonConvert.SerializeObject(part2Results, Formatting.Indented)}");
                 }
