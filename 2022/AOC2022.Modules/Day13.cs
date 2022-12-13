@@ -11,32 +11,41 @@ public class Day13 : DayBase
     public override bool Completed { get; }
     public override dynamic Part1()
     {
-        var sample = get_sample().ToList();
-        var samplePacketPairs = new List<PacketPair>();
-        for (int i = 0; i < sample.Count; i += 3)
-        {
-            samplePacketPairs.Add(new PacketPair(i / 3 + 1, sample[i], sample[i+1]));
-        }
-        var correctlyOrderedPairSumSample = samplePacketPairs.Where(x => x.OrderedCorrectly).Sum(x => x.PairNumber);
-        
-        var actual = get_input().ToList();
-        var actualPacketPairs = new List<PacketPair>();
-        for (int i = 0; i < actual.Count; i += 3)
-        {
-            actualPacketPairs.Add(new PacketPair(i / 3 + 1, actual[i], actual[i+1]));
-        }
-        var correctlyOrderedPairSumActual = actualPacketPairs.Where(x => x.OrderedCorrectly).Sum(x => x.PairNumber);
-
+        var sampleProcessor = new PacketProcessor(get_sample().ToList());
+        var actualProcessor = new PacketProcessor(get_input().ToList());
         return new
         {
-            correctlyOrderedPairSumSample,
-            correctlyOrderedPairSumActual
+            sampleProcessor,
+            actualProcessor
         };
     }
 
     public override dynamic Part2()
     {
-        throw new System.NotImplementedException();
+        var sampleProcessor = new PacketProcessor(get_sample().ToList());
+        var actualProcessor = new PacketProcessor(get_input().ToList());
+        return new
+        {
+            sampleProcessor,
+            actualProcessor
+        };
+    }
+
+    private class PacketProcessor
+    {
+        private List<PacketPair> _packetPairs = new List<PacketPair>();
+
+        public int CorrectlyOrderedPairSum => _packetPairs.Where(x => x.OrderedCorrectly)
+            .Sum(x => x.PairNumber);
+
+        public PacketProcessor(List<string> input)
+        {
+            for (int i = 0; i < input.Count; i += 3)
+            {
+                _packetPairs.Add(new PacketPair(i / 3 + 1, input[i], input[i+1]));
+            }
+            
+        }
     }
 
     private class PacketPair
@@ -45,6 +54,8 @@ public class Day13 : DayBase
         private JsonArray _leftPacket;
         private JsonArray _rightPacket;
         private bool _orderedCorrectly;
+        public bool OrderedCorrectly => _orderedCorrectly;
+        public List<string> Packets => new List<string> { _leftPacket.ToJsonString(), _rightPacket.ToJsonString() };
 
         public PacketPair(int pairNumber, string leftPacket, string rightPacket)
         {
@@ -118,7 +129,5 @@ public class Day13 : DayBase
 
             return valid;
         }
-
-        public bool OrderedCorrectly => _orderedCorrectly;
     }
 }
