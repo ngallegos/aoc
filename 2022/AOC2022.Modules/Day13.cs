@@ -8,20 +8,13 @@ namespace AOC2022.Modules;
 
 public class Day13 : DayBase
 {
-    public override bool Completed { get; }
-    private static bool LogSteps = true;
-    private readonly PacketProcessor _sampleProcessor;
-    private readonly PacketProcessor _actualProcessor;
-
-    public Day13()
-    {
-        _sampleProcessor = new PacketProcessor(get_sample("Part1").ToList());
-        LogSteps = false;
-        _actualProcessor = new PacketProcessor(get_input("Part1").ToList());
-    }
+    public override bool Completed => true;
+    private static bool LogSteps = false;
     
     public override dynamic Part1()
     {
+        var _sampleProcessor = new PacketProcessor(get_sample("Part1").ToList());
+        var _actualProcessor = new PacketProcessor(get_input("Part1").ToList());
         return new
         {
             sample = _sampleProcessor.CorrectlyOrderedPairSum,
@@ -31,6 +24,8 @@ public class Day13 : DayBase
 
     public override dynamic Part2()
     {
+        var _sampleProcessor = new PacketProcessor(get_sample("Part1").ToList());
+        var _actualProcessor = new PacketProcessor(get_input("Part1").ToList());
         return new
         {
             sample = _sampleProcessor.DecoderKey,
