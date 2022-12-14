@@ -5,29 +5,25 @@ namespace AOC2015.Modules;
 
 public class Day02 : DayBase
 {
-    public override bool Completed { get; }
-    private readonly List<Present> _presents;
-
-    public Day02()
-    {
-        _presents = get_input("Part1").Select(x => new Present(x)).ToList();
-    }
+    public override bool Completed => true;
     
     public override dynamic Part1()
     {
+        var presents = get_input("Part1").Select(x => new Present(x)).ToList();
         return new
         {
-            squareFeetOfWrappingPaperNeeded = _presents.Sum(p => p.SquareFeetOfWrappingPaperNeeded),
-            feetOfRibbonNeeded = _presents.Sum(p => p.FeetOfRibbonNeeded )
+            squareFeetOfWrappingPaperNeeded = presents.Sum(p => p.SquareFeetOfWrappingPaperNeeded),
+            feetOfRibbonNeeded = presents.Sum(p => p.FeetOfRibbonNeeded )
         };
     }
 
     public override dynamic Part2()
     {
+        var presents = get_input("Part1").Select(x => new Present(x)).ToList();
         return new
         {
-            squareFeetOfWrappingPaperNeeded = _presents.Sum(p => p.SquareFeetOfWrappingPaperNeeded),
-            feetOfRibbonNeeded = _presents.Sum(p => p.FeetOfRibbonNeeded )
+            squareFeetOfWrappingPaperNeeded = presents.Sum(p => p.SquareFeetOfWrappingPaperNeeded),
+            feetOfRibbonNeeded = presents.Sum(p => p.FeetOfRibbonNeeded )
         };
     }
 
