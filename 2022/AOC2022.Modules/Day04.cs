@@ -7,15 +7,13 @@ namespace AOC2022.Modules;
 public class Day04 : DayBase
 {
     public override bool Completed => true;
-    private List<CleaningPair> _assignmentPairs;
-    
-    public Day04() => _assignmentPairs = get_input("Part1")
-        .Select(x => new CleaningPair(x))
-        .ToList();
     
     public override dynamic Part1()
     {
-        var pairsDuplicatingWork = _assignmentPairs
+        var assignmentPairs = get_input()
+            .Select(x => new CleaningPair(x))
+            .ToList();
+        var pairsDuplicatingWork = assignmentPairs
             .Count(x => x.HasDuplicateAssignment);
 
         return new { pairsDuplicatingWork };
@@ -23,7 +21,10 @@ public class Day04 : DayBase
 
     public override dynamic Part2()
     {
-        var pairsWithOverlappingWork = _assignmentPairs
+        var assignmentPairs = get_input()
+            .Select(x => new CleaningPair(x))
+            .ToList();
+        var pairsWithOverlappingWork = assignmentPairs
             .Count(x => x.HasOverlappingAssignment);
 
         return new { pairsWithOverlappingWork };

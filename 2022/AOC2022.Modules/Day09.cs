@@ -41,21 +41,15 @@ public class Day09 : DayBase
         return (direction, distance);
     }).ToList();
 
-    private readonly List<(string direction, int distance)> _instructions;
-
-    public Day09()
-    {
-        _instructions = get_input<(string direction, int distance)>(s =>
-        {
-            var parts = s.Split(' ');
-            return (parts[0], int.Parse(parts[1]));
-        }, "Part1").ToList();
-    }
-
     public override dynamic Part1()
     {
+        var instructions = get_input<(string direction, int distance)>(s =>
+            {
+                var parts = s.Split(' ');
+                return (parts[0], int.Parse(parts[1]));
+            }).ToList();
         var ropeState = new RopeSimulation();
-        foreach (var instruction in _instructions)
+        foreach (var instruction in instructions)
         {
             ropeState.ExecuteInstruction(instruction.direction, instruction.distance);
         }
@@ -65,8 +59,13 @@ public class Day09 : DayBase
 
     public override dynamic Part2()
     {
+        var instructions = get_input<(string direction, int distance)>(s =>
+        {
+            var parts = s.Split(' ');
+            return (parts[0], int.Parse(parts[1]));
+        }).ToList();
         var ropeState = new RopeSimulation(10);
-        foreach (var instruction in _instructions)
+        foreach (var instruction in instructions)
         {
             ropeState.ExecuteInstruction(instruction.direction, instruction.distance);
         }

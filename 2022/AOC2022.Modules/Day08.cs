@@ -6,7 +6,6 @@ namespace AOC2022.Modules;
 public class Day08 : DayBase
 {
     public override bool Completed => true;
-    private readonly TreeHeightGrid _treeHeightGrid;
 
     private int[][] _sample = new[]
     {
@@ -16,23 +15,23 @@ public class Day08 : DayBase
         new[] { 3, 3, 5, 4, 9 },
         new[] { 3, 5, 3, 9, 0 }
     };
-    public Day08()
-    {
-        _treeHeightGrid = new TreeHeightGrid(get_input(s =>
-        {
-            return s.ToCharArray().Select(c => int.Parse(c.ToString())).ToArray();
-        }, "Part1").ToArray());
-        //_treeHeightGrid = new TreeHeightGrid(_sample);
-    }
     
     public override dynamic Part1()
     {
-        return new { visibleTrees = _treeHeightGrid.NumberOfTreesVisibleFromPerimeter() };
+        var treeHeightGrid = new TreeHeightGrid(get_input(s =>
+        {
+            return s.ToCharArray().Select(c => int.Parse(c.ToString())).ToArray();
+        }, "Part1").ToArray());
+        return new { visibleTrees = treeHeightGrid.NumberOfTreesVisibleFromPerimeter() };
     }
 
     public override dynamic Part2()
     {
-        var bestTree = _treeHeightGrid.HighestScenicScoringTree();
+        var treeHeightGrid = new TreeHeightGrid(get_input(s =>
+        {
+            return s.ToCharArray().Select(c => int.Parse(c.ToString())).ToArray();
+        }, "Part1").ToArray());
+        var bestTree = treeHeightGrid.HighestScenicScoringTree();
         return new { bestTree };
     }
 

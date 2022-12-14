@@ -12,15 +12,6 @@ public class Day12 : DayBase
         .ToCharArray()
         .Select((c, i) => (c, i+1)).ToList();
 
-    private List<string> _sampleInput;
-    private List<string> _actualInput;
-
-    public Day12()
-    {
-        _sampleInput = get_sample("Part1").ToList();
-        _actualInput = get_input("Part1").ToList();
-    }
-
     public override dynamic Part1()
     {
         throw new NotImplementedException();
@@ -33,8 +24,8 @@ public class Day12 : DayBase
 
     public override async Task<dynamic> Part1Async()
     {
-        var _sampleMap = new ElevationMap(_sampleInput);
-        var _actualMap = new ElevationMap(_actualInput);
+        var _sampleMap = new ElevationMap(get_sample().ToList());
+        var _actualMap = new ElevationMap(get_input().ToList());
         var _sampleRoute = await _sampleMap.GetBestPathFromStartLocation();
         var _sampleVisualization = _sampleMap.GetVisualization();
         var _actualRoute = await _actualMap.GetBestPathFromStartLocation();
@@ -50,8 +41,8 @@ public class Day12 : DayBase
 
     public override async Task<dynamic> Part2Async()
     {
-        var _sampleMap = new ElevationMap(_sampleInput);
-        var _actualMap = new ElevationMap(_actualInput);
+        var _sampleMap = new ElevationMap(get_sample().ToList());
+        var _actualMap = new ElevationMap(get_input().ToList());
         var _sampleRoute = await _sampleMap.GetBestOverallPath();
         var _sampleVisualization = _sampleMap.GetVisualization();
         var _actualRoute = await _actualMap.GetBestOverallPath();

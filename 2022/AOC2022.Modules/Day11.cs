@@ -8,22 +8,12 @@ public class Day11 : DayBase
 {
     public override bool Completed => true;
 
-    private List<string> _sampleNotes;
-    private List<string> _actualNotes;
-
-    public Day11()
-    {
-        _sampleNotes = get_sample("Part1").ToList();
-        _actualNotes = get_input("Part1").ToList();
-
-    }
-
     public override dynamic Part1()
     {
         var rounds = 20;
         var reliefManagement = (long x) => (long)Math.Floor((double)x / 3);
-        var _sampleBarrel = new Barrel(_sampleNotes);
-        var _actualBarrel = new Barrel(_actualNotes);
+        var _sampleBarrel = new Barrel(get_sample().ToList());
+        var _actualBarrel = new Barrel(get_input().ToList());
         _sampleBarrel.ConductMonkeyBusiness(rounds, reliefManagement);
         _actualBarrel.ConductMonkeyBusiness(rounds, reliefManagement);
        
@@ -38,8 +28,8 @@ public class Day11 : DayBase
     public override dynamic Part2()
     {
         var rounds = 10000;
-        var _sampleBarrel = new Barrel(_sampleNotes);
-        var _actualBarrel = new Barrel(_actualNotes);
+        var _sampleBarrel = new Barrel(get_sample().ToList());
+        var _actualBarrel = new Barrel(get_input().ToList());
         _sampleBarrel.ConductMonkeyBusiness(rounds, (long x) => x % _sampleBarrel.StressReducer);
         _actualBarrel.ConductMonkeyBusiness(rounds, (long x) => x % _actualBarrel.StressReducer);
        

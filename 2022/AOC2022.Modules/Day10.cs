@@ -7,23 +7,16 @@ namespace AOC2022.Modules;
 public class Day10 : DayBase
 {
     public override bool Completed => true;
-    private DeviceState _sampleState;
-    private DeviceState _actualState;
-
-    public Day10()
-    {
-        _sampleState = new DeviceState();
-        _sampleState.ProcessInput(get_sample("Part1").ToList());
-        _actualState = new DeviceState();
-        _actualState.ProcessInput(get_input("Part1").ToList());
-    }
 
     public override dynamic Part1()
     {
-
+        var sampleState = new DeviceState();
+        sampleState.ProcessInput(get_sample().ToList());
+        var actualState = new DeviceState();
+        actualState.ProcessInput(get_input().ToList());
         var interestingCycles = new[] { 20, 60, 100, 140, 180, 220 };
-        var sampleSum = _sampleState.SumInterestingSignalStrengths(interestingCycles);
-        var actualSum = _actualState.SumInterestingSignalStrengths(interestingCycles);
+        var sampleSum = sampleState.SumInterestingSignalStrengths(interestingCycles);
+        var actualSum = actualState.SumInterestingSignalStrengths(interestingCycles);
 
         return new
         {
@@ -34,10 +27,14 @@ public class Day10 : DayBase
 
     public override dynamic Part2()
     {
+        var sampleState = new DeviceState();
+        sampleState.ProcessInput(get_sample().ToList());
+        var actualState = new DeviceState();
+        actualState.ProcessInput(get_input().ToList());
         return new
         {
-            Sample = _sampleState.RenderImage(),
-            Actual = _actualState.RenderImage()
+            Sample = sampleState.RenderImage(),
+            Actual = actualState.RenderImage()
         };
     }
 

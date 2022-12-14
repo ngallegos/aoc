@@ -5,17 +5,16 @@ namespace AOC2022.Modules;
 public class Day06 : DayBase
 {
     public override bool Completed => true;
-    private readonly string _input;
-    public Day06() => _input = get_input("Part1").First();
     public override dynamic Part1()
     {
-        return new { charactersProcessed = DetermineEndOfFirstMarker(_input, 4) };
+        var input = get_input().First();
+        return new { charactersProcessed = DetermineEndOfFirstMarker(input, 4) };
     }
 
     public override dynamic Part2()
     {
         var input = get_input().First();
-        return new { charactersProcessed = DetermineEndOfFirstMarker(_input, 14) };
+        return new { charactersProcessed = DetermineEndOfFirstMarker(input, 14) };
     }
 
     private int DetermineEndOfFirstMarker(string input, int markerSize)

@@ -13,12 +13,11 @@ public class Day07 : DayBase
     private const string lsPrefix = "$ ls";
     private const string dirPrefix = "dir ";
     private static Regex fileRegex = new Regex(@"^(\d+) (.*)$");
-    private readonly List<TerminalDirectory> _directories;
 
-    public Day07()
+    private List<TerminalDirectory> GetDirectories(List<string> terminalLines)
     {
-        var terminalLines = get_input("Part1").ToList();
-        _directories = new List<TerminalDirectory>();
+        
+        var _directories = new List<TerminalDirectory>();
         var currentPath = string.Empty;
         var currentDirectory = new TerminalDirectory();
         foreach (var terminalLine in terminalLines)
@@ -70,12 +69,15 @@ public class Day07 : DayBase
                 }
             }
         }
+
+        return _directories;
     }
     
     public override dynamic Part1()
     {
+        var directories = GetDirectories(get_input().ToList());
         var maxSize = 100000L;
-        var directoriesOfIdealSize = _directories.Where(x => x.Size <= maxSize).ToList();
+        var directoriesOfIdealSize = directories.Where(x => x.Size <= maxSize).ToList();
         var totalIdealSizes = directoriesOfIdealSize.Sum(x => x.Size);
         
         return new { sizeToBeDeleted = totalIdealSizes };
@@ -83,12 +85,13 @@ public class Day07 : DayBase
 
     public override dynamic Part2()
     {
+        var directories = GetDirectories(get_input().ToList());
         var totalAvailableSpace = 70000000L;
         var unusedSpaceNeeded = 30000000L;
-        var spaceUsed = _directories.FirstOrDefault().Size;
+        var spaceUsed = directories.FirstOrDefault().Size;
         var unusedSpace = totalAvailableSpace - spaceUsed;
         var minSizeToBeDeleted = unusedSpaceNeeded - unusedSpace;
-        var directoryToDelete = _directories.Where(x => x.Size >= minSizeToBeDeleted)
+        var directoryToDelete = directories.Where(x => x.Size >= minSizeToBeDeleted)
             .MinBy(x => x.Size);
         
         
