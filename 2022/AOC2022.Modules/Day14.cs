@@ -6,7 +6,7 @@ namespace AOC2022.Modules;
 
 public class Day14 : DayBase
 {
-    public override bool Completed { get; }
+    public override bool Completed => true;
     public override dynamic Part1()
     {
         var sampleDiagram = new CaveDiagram(get_sample().ToList());
@@ -22,7 +22,15 @@ public class Day14 : DayBase
 
     public override dynamic Part2()
     {
-        throw new System.NotImplementedException();
+        var sampleDiagram = new CaveDiagram(get_sample().ToList());
+        var actualDiagram = new CaveDiagram(get_input().ToList());
+        sampleDiagram.ReleaseTheSandUntilItStops();
+        actualDiagram.ReleaseTheSandUntilItStops();
+        return new
+        {
+            sampleDiagram,
+            actualDiagram
+        };
     }
 
     private class CaveDiagram
@@ -30,12 +38,14 @@ public class Day14 : DayBase
         private List<string> _diagram;
         public string this[int index] => _diagram[index];
         public int Length => _diagram.Count;
+        public int _rockPathXMin;
+        public int _rockPathXMax;
         public int _xMin;
         private int _xMax;
         private int _yMin;
         private int _yMax;
         private int _unitsOfSandDropped = 0;
-        public int UnitsOfSandDroped => _unitsOfSandDropped;
+        public int UnitsOfSandDropped => _unitsOfSandDropped;
         public List<string> Diagram => _diagram;
         private List<List<ScanLocation>> _rockPaths = new List<List<ScanLocation>>();
 
@@ -47,19 +57,32 @@ public class Day14 : DayBase
                     var lParts = l.Split(',');
                     return new ScanLocation(int.Parse(lParts[0]), int.Parse(lParts[1]));
                 }).ToList()).ToList();
-            PopulateDiagram();
         }
 
+        private string GetNewRow(char seedCharacter = '.')
+        {
+            return new string(Enumerable.Range(0, _xMax - _xMin + 1).Select(_ => seedCharacter).ToArray());
+        }
+
+        private void UpdateBoundaries()
+        {
+            var rockPathWidth = _rockPathXMax - _rockPathXMin + 1;
+            var extraWidth = _diagram[0].Length - rockPathWidth;
+            _xMin = _rockPathXMin - extraWidth/2;
+            _xMax = _rockPathXMax + extraWidth/2;
+            _yMin = 0;
+            _yMax = _diagram.Count - 1;
+        }
+        
         private void PopulateDiagram()
         {
             var allPaths = _rockPaths.SelectMany(x => x).ToList();
-            _xMin = allPaths.Min(x => x.XCoordinate);
-            _xMax = allPaths.Max(x => x.XCoordinate);
+            _xMin = _rockPathXMin = allPaths.Min(x => x.XCoordinate);
+            _xMax = _rockPathXMax = allPaths.Max(x => x.XCoordinate);
             _yMin = 0;
             _yMax = allPaths.Max(x => x.YCoordinate);
-            
             _diagram = Enumerable.Range(0, _yMax+1)
-                .Select(x => new string(Enumerable.Range(0, _xMax - _xMin + 1).Select(_ => '.').ToArray())).ToList();
+                .Select(x => GetNewRow()).ToList();
 
             SetCharacter(500, 0, '+');
             
@@ -109,9 +132,18 @@ public class Day14 : DayBase
 
         public bool InBounds(ScanLocation location)
         {
+            return XCoordinateInBounds(location) && YCoordinateInBounds(location);
+        }
+
+        private bool XCoordinateInBounds(ScanLocation location)
+        {
             return location.XCoordinate >= _xMin
-                   && location.XCoordinate <= _xMax
-                   && location.YCoordinate >= _yMin
+                   && location.XCoordinate <= _xMax;
+        }
+        
+        private bool YCoordinateInBounds(ScanLocation location)
+        {
+            return location.YCoordinate >= _yMin
                    && location.YCoordinate <= _yMax;
         }
         
@@ -124,6 +156,7 @@ public class Day14 : DayBase
 
         public void ReleaseTheSandIntoTheAbyss()
         {
+            PopulateDiagram();
             var unitsOfSandDropped = 0;
             var sand = DropUnitOfSand();
             while (InBounds(sand))
@@ -137,12 +170,29 @@ public class Day14 : DayBase
 
         public void ReleaseTheSandUntilItStops()
         {
-            var unitsOfSandDropped = 0;
+            PopulateDiagram();
+            _diagram.Add(GetNewRow());
+            _diagram.Add(GetNewRow('#'));
+            UpdateBoundaries();
+            var unitsOfSandDropped = 1;
+            var sandOrigin = new SandUnit();
             var sand = DropUnitOfSand();
-            while (InBounds(sand))
+            while (InBounds(sand) && sandOrigin.ToString() != sand.ToString())
             {
                 sand = DropUnitOfSand();
-                unitsOfSandDropped++;
+                if (!InBounds(sand) && !XCoordinateInBounds(sand))
+                {
+                    // get wider
+                    for (int y = 0; y <= _yMax; y++)
+                    {
+                        var seedChar = '.';
+                        if (y == _yMax)
+                            seedChar = '#'; // floor
+                        _diagram[y] = $"{seedChar}{_diagram[y]}{seedChar}";
+                    }
+                    UpdateBoundaries();
+                } else 
+                    unitsOfSandDropped++;
             }
 
             _unitsOfSandDropped = unitsOfSandDropped;
