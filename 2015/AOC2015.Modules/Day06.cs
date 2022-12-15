@@ -6,9 +6,9 @@ using AOC2015.Modules.Shared;
 
 namespace AOC2015.Modules;
 
-public class Day6 : DayBase
+public class Day06 : DayBase
 {
-    public override bool Completed { get; }
+    public override bool Completed => true;
 
     private static Regex _instructionRegex =
         new Regex(@"^(?<type>turn|toggle) ?(?<state>on|off)? (?<start>\d*,\d*) through (?<end>\d*,\d*)$");
