@@ -7,7 +7,7 @@ namespace AOC2022.Modules;
 
 public class Day12 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
     private static List<(char letter, int height)> HeightMap = "abcdefghijklmnopqrstuvwxyz"
         .ToCharArray()
         .Select((c, i) => (c, i+1)).ToList();

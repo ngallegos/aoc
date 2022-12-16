@@ -7,7 +7,7 @@ namespace AOC2022.Modules;
 
 public class Day07 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
     private const string cdPrefix = "$ cd ";
     private const string cdBack = "..";
     private const string lsPrefix = "$ ls";

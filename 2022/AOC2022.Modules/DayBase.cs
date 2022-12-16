@@ -10,7 +10,7 @@ namespace AOC2022.Modules
 {
     public abstract class DayBase
     {
-        public abstract bool Completed { get; }
+        public abstract bool Ignore { get; }
 
         protected IEnumerable<string> get_sample([CallerMemberName] string callerName = "Part1")
         {

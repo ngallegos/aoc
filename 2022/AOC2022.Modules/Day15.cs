@@ -8,7 +8,7 @@ namespace AOC2022.Modules;
 
 public class Day15 : DayBase
 {
-    public override bool Completed { get; }
+    public override bool Ignore => false;
     public override dynamic Part1()
     {
         var sampleSensors = get_sample()
@@ -24,6 +24,10 @@ public class Day15 : DayBase
         };
     }
 
+    /// <summary>
+    /// https://www.reddit.com/r/adventofcode/comments/zmcn64/2022_day_15_solutions/
+    /// </summary>
+    /// <returns></returns>
     public override dynamic Part2()
     {
         var sampleSensors = get_sample()
@@ -31,11 +35,10 @@ public class Day15 : DayBase
         var actualSensors = get_input().Select(Sensor.Parse).ToList();
         var sampleGrid = new SensorGrid(sampleSensors);
         var actualGrid = new SensorGrid(actualSensors);
-
         return new
         {
             SampleFrequency = sampleGrid.IsolateDistressBeacon(20, 20),
-            //ActualEliminatedPositiongs = actualGrid.GetEliminatedPositions(2000000).eliminatedPositions.Count
+            ActualFrequency = actualGrid.IsolateDistressBeacon(4000000,4000000)
         };
     }
 
@@ -49,8 +52,8 @@ public class Day15 : DayBase
 
         public (List<(int x, int y)> eliminatedPositions, int lastPotentialX) GetEliminatedPositions(int row, int? minX = null, int? maxX = null)
         {
-            minX ??= _sensors.Min(x => x.X - x.ManhattanDistance);
-            maxX ??= _sensors.Max(x => x.X + x.ManhattanDistance);
+            minX ??= _sensors.Min(x => x.X - x.DistanceToBeacon);
+            maxX ??= _sensors.Max(x => x.X + x.DistanceToBeacon);
             var eliminatedPositions = new List<(int x, int y)>();
             var beaconLocations = _sensors.Select(x => x.ClosestBeacon.ToString()).ToList();
             var lastPotentialX = minX.Value;
@@ -73,26 +76,76 @@ public class Day15 : DayBase
             return (eliminatedPositions.DistinctBy(item => $"({item.x},{item.y})").ToList(), lastPotentialX);
         }
 
+        private int CalculateTuningFrequency(int x, int y)
+        {
+            return (x * 4000000) + y;
+        }
+        
+        // Below had help from:
+        // https://github.com/micka190/advent-of-code/blob/main/2022/day%2015/Solution/Solver.cs
         public int IsolateDistressBeacon(int maxX, int maxY)
         {
             var minX = 0;
             var minY = 0;
-            for (int y = minY; y <= maxY; y++)
+            var edgeLocations = _sensors
+                .Select(GetEdgeLocations)
+                .SelectMany(location => location).ToList();
+
+            foreach (var location in edgeLocations)
             {
-                var results = GetEliminatedPositions(y, minX, maxX);
-                Console.WriteLine(results.eliminatedPositions.Count);
-                if (results.eliminatedPositions.Count <= maxX)
+                if (location.X >= minX && location.X <= maxX
+                                      && location.Y >= minY && location.Y <= maxY)
                 {
-                    return CalculateTuningFrequency(results.lastPotentialX, y);
+                    var inSensorRange = _sensors.Any(s =>
+                        s.DistanceToBeacon >= s.CalculateManhattanDistance(location.X, location.Y));
+                    if (!inSensorRange)
+                        return CalculateTuningFrequency(location.X, location.Y);
                 }
             }
 
             return -1;
         }
 
-        private int CalculateTuningFrequency(int x, int y)
+        private List<GridLocation> GetEdgeLocations(Sensor sensor)
         {
-            return (x * 4000000) + y;
+            var left = new GridLocation(sensor.X - sensor.DistanceToBeacon, sensor.Y);
+            var right = new GridLocation(sensor.X + sensor.DistanceToBeacon, sensor.Y);
+            var top = new GridLocation(sensor.X, sensor.Y + sensor.DistanceToBeacon);
+            var bottom = new GridLocation(sensor.X, sensor.Y - sensor.DistanceToBeacon);
+
+            var edges = new List<GridLocation>();
+
+            edges = edges
+                .Concat(GetLocationsBetween(left, top))
+                .Concat(GetLocationsBetween(bottom, right))
+                .Concat(GetLocationsBetween(top, right))
+                .Concat(GetLocationsBetween(left, bottom))
+                .ToList();
+
+            return edges;
+        }
+        
+        private List<GridLocation> GetLocationsBetween(GridLocation start, GridLocation end)
+        {
+            var (left, right) = start.X <= end.X ? (start, end) : (end, start);
+            var locations = new List<GridLocation>();
+
+            if (left.Y <= end.Y)
+            {
+                for (var offset = 0; offset <= right.X - left.X; ++offset)
+                {
+                    locations.Add(new GridLocation(left.X + offset, left.Y + offset));
+                }
+            }
+            else
+            {
+                for (var offset = 0; offset <= right.X - left.X; ++offset)
+                {
+                    locations.Add(new GridLocation(left.X + offset, left.Y - offset));
+                }
+            }
+
+            return locations;
         }
     }
 
@@ -114,10 +167,10 @@ public class Day15 : DayBase
         public Sensor(int x, int y, char value, Beacon closestBeacon) : base(x, y, value)
         {
             ClosestBeacon = closestBeacon;
-            ManhattanDistance = CalculateManhattanDistance(closestBeacon.X, closestBeacon.Y);
+            DistanceToBeacon = CalculateManhattanDistance(closestBeacon.X, closestBeacon.Y);
         }
 
-        private int CalculateManhattanDistance(int x2, int y2)
+        public int CalculateManhattanDistance(int x2, int y2)
         {
             return Math.Abs(X - x2) + Math.Abs(Y - y2) + 1;
         }
@@ -125,11 +178,11 @@ public class Day15 : DayBase
         public bool LocationWithinManhattanDistance(int x, int y)
         {
             var d = CalculateManhattanDistance(x, y);
-            return d <= ManhattanDistance;
+            return d <= DistanceToBeacon;
         }
         
         public Beacon ClosestBeacon { get; private set; }
-        public int ManhattanDistance { get; private set; }
+        public int DistanceToBeacon { get; private set; }
     }
     
     private class Beacon : GridLocation<char>

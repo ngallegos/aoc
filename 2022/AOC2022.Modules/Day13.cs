@@ -8,7 +8,7 @@ namespace AOC2022.Modules;
 
 public class Day13 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
     private static bool LogSteps = false;
     
     public override dynamic Part1()

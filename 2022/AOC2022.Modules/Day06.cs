@@ -4,7 +4,7 @@ namespace AOC2022.Modules;
 
 public class Day06 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
     public override dynamic Part1()
     {
         var input = get_input().First();

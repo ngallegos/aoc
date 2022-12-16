@@ -6,7 +6,7 @@ namespace AOC2022.Modules;
 
 public class Day14 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
     public override dynamic Part1()
     {
         var sampleDiagram = new CaveDiagram(get_sample().ToList());

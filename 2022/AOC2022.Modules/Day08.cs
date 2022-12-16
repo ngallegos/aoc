@@ -5,7 +5,7 @@ namespace AOC2022.Modules;
 
 public class Day08 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
 
     private int[][] _sample = new[]
     {

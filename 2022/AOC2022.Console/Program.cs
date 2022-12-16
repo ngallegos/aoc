@@ -21,7 +21,7 @@ namespace AOC2022.Console
             {
                 var dayNumber = int.Parse(dayType.Name.Replace("Day", ""));
                 var day = Activator.CreateInstance(dayType) as DayBase;
-                if (day.Completed)
+                if (day.Ignore)
                     continue;
                 System.Console.WriteLine($"-----DAY {dayNumber:00}---------------------------------------------\n");
                 try
