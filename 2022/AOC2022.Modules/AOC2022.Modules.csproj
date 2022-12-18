@@ -20,6 +20,7 @@
       <EmbeddedResource Include="Inputs\day-14-01.txt" />
       <EmbeddedResource Include="Inputs\day-15-01.txt" />
       <EmbeddedResource Include="Inputs\day-16-01.txt" />
+      <EmbeddedResource Include="Inputs\day-18-01.txt" />
       <EmbeddedResource Include="Samples\day-10-01.txt" />
       <EmbeddedResource Include="Samples\day-11-01.txt" />
       <EmbeddedResource Include="Samples\day-12-01.txt" />
@@ -27,6 +28,7 @@
       <EmbeddedResource Include="Samples\day-14-01.txt" />
       <EmbeddedResource Include="Samples\day-15-01.txt" />
       <EmbeddedResource Include="Samples\day-16-01.txt" />
+      <EmbeddedResource Include="Samples\day-18-01.txt" />
       <None Remove="Inputs\day-01-01txt.txt" />
       <EmbeddedResource Include="Inputs\day-01-01.txt" />
       <None Remove="Inputs\day-02-01.txt" />
