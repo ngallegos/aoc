@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AOC2022.Modules.Shared;
 
 namespace AOC2022.Modules;
 
 public class Day12 : DayBase
 {
-    public override bool Ignore => true;
+    public override bool Ignore => false;
     private static List<(char letter, int height)> HeightMap = "abcdefghijklmnopqrstuvwxyz"
         .ToCharArray()
         .Select((c, i) => (c, i+1)).ToList();
@@ -24,8 +25,8 @@ public class Day12 : DayBase
 
     public override async Task<dynamic> Part1Async()
     {
-        var _sampleMap = new ElevationMap(get_sample().ToList());
-        var _actualMap = new ElevationMap(get_input().ToList());
+        var _sampleMap = new ElevationMap(get_sample("Part1").ToList());
+        var _actualMap = new ElevationMap(get_input("Part1").ToList());
         var _sampleRoute = await _sampleMap.GetBestPathFromStartLocation();
         var _sampleVisualization = _sampleMap.GetVisualization();
         var _actualRoute = await _actualMap.GetBestPathFromStartLocation();
@@ -41,8 +42,8 @@ public class Day12 : DayBase
 
     public override async Task<dynamic> Part2Async()
     {
-        var _sampleMap = new ElevationMap(get_sample().ToList());
-        var _actualMap = new ElevationMap(get_input().ToList());
+        var _sampleMap = new ElevationMap(get_sample("Part1").ToList());
+        var _actualMap = new ElevationMap(get_input("Part1").ToList());
         var _sampleRoute = await _sampleMap.GetBestOverallPath();
         var _sampleVisualization = _sampleMap.GetVisualization();
         var _actualRoute = await _actualMap.GetBestOverallPath();
@@ -94,7 +95,7 @@ public class Day12 : DayBase
             EastBorder = _map[0].Length - 1;
         }
         
-        private List<RouteLocation> GetUnvisitedNeighbors(RouteLocation current, List<RouteLocation> _visited)
+        private List<RouteLocation> GetNeighbors(RouteLocation current)
         {
             var cX = current.XCoordinate;
             var cY = current.YCoordinate;
@@ -106,53 +107,27 @@ public class Day12 : DayBase
                 new RouteLocation(cX, cY - 1, 0),
             };
             neighbors.RemoveAll(n => n.XCoordinate < WestBorder || n.XCoordinate > EastBorder
-                                                                       || n.YCoordinate < SouthBorder || n.YCoordinate > NorthBorder);
+                                                                || n.YCoordinate < SouthBorder || n.YCoordinate > NorthBorder);
             neighbors.ForEach(n =>
             {
                 n.Elevation = this[n.YCoordinate][n.XCoordinate];
                 n.Previous = current;
             });
-            neighbors.RemoveAll(x => _visited.Any(d => d.ToString() == x.ToString()));
             neighbors.RemoveAll(n => current.Elevation - 1 > n.Elevation);
             return neighbors.ToList();
         }
 
         public async Task<List<RouteLocation>> GetBestPathFromStartLocation()
         {
-            _bestPath = await GetBestPath(_destination,
+            _bestPath = BFS<RouteLocation>.Search(_destination, GetNeighbors,
                 (RouteLocation current) => current.ToString() == _start.ToString());
             return _bestPath;
         }
         
         public async Task<List<RouteLocation>> GetBestOverallPath()
         {
-            _bestPath = await GetBestPath(_destination, (RouteLocation current) => current.Elevation == 1);
+            _bestPath = BFS<RouteLocation>.Search(_destination, GetNeighbors, current => current.Elevation == 1);
             return _bestPath;
-        }
-
-        private async Task<List<RouteLocation>> GetBestPath(RouteLocation start, Func<RouteLocation, bool> destinationReached)
-        {
-            var q = new Queue<RouteLocation>();
-            RouteLocation current = null;
-            var _visited = new List<RouteLocation>();
-            _visited.Clear();
-            _visited.Add(start);
-            q.Enqueue(start);
-            while (q.Count > 0)
-            {
-                current = q.Dequeue();
-                if (destinationReached(current))
-                    break;
-
-                var potentialSteps = GetUnvisitedNeighbors(current, _visited);
-                foreach (var potentialStep in potentialSteps)
-                {
-                    _visited.Add(potentialStep);
-                    q.Enqueue(potentialStep);
-                }
-            }
-
-            return current.GetFullRoute();
         }
 
         public List<string> GetVisualization()
@@ -184,7 +159,7 @@ public class Day12 : DayBase
         }
     }
 
-    private class RouteLocation
+    private class RouteLocation : IEquatable<RouteLocation>
     {
         public RouteLocation(int x, int y, int elevation)
         {
@@ -215,6 +190,26 @@ public class Day12 : DayBase
 
             route.Reverse();
             return route;
+        }
+
+        public bool Equals(RouteLocation other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return this.ToString() == other.ToString();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((RouteLocation)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
         }
     }
 }
