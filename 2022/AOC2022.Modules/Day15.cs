@@ -8,7 +8,7 @@ namespace AOC2022.Modules;
 
 public class Day15 : DayBase
 {
-    public override bool Ignore => false;
+    public override bool Ignore => true;
     public override dynamic Part1()
     {
         var sampleSensors = get_sample()
@@ -19,8 +19,8 @@ public class Day15 : DayBase
 
         return new
         {
-            SampleEliminatedPositions = sampleGrid.GetEliminatedPositions(10).eliminatedPositions.Count,
-            //ActualEliminatedPositiongs = actualGrid.GetEliminatedPositions(2000000).eliminatedPositions.Count
+            SampleEliminatedPositions = sampleGrid.GetEliminatedPositions(10),
+            //ActualEliminatedPositions = actualGrid.GetEliminatedPositions(2000000)
         };
     }
 
@@ -37,8 +37,8 @@ public class Day15 : DayBase
         var actualGrid = new SensorGrid(actualSensors);
         return new
         {
-            SampleFrequency = sampleGrid.IsolateDistressBeacon(20, 20),
-            ActualFrequency = actualGrid.IsolateDistressBeacon(4000000,4000000)
+            SampleFrequency = sampleGrid.IsolateDistressBeacon(20),
+            //ActualFrequency = actualGrid.IsolateDistressBeacon(4000000)
         };
     }
 
@@ -50,30 +50,28 @@ public class Day15 : DayBase
             _sensors = sensors;
         }
 
-        public (List<(int x, int y)> eliminatedPositions, int lastPotentialX) GetEliminatedPositions(int row, int? minX = null, int? maxX = null)
+        public long GetEliminatedPositions(int row, int? minX = null, int? maxX = null)
         {
+            var beacons = _sensors.Select(x => x.ClosestBeacon)
+                .ToList();
+            beacons.Sort((left, right) => left.X.CompareTo(right.X));
+            _sensors.Sort((left, right) => left.X.CompareTo(right.X));
+            
             minX ??= _sensors.Min(x => x.X - x.DistanceToBeacon);
             maxX ??= _sensors.Max(x => x.X + x.DistanceToBeacon);
-            var eliminatedPositions = new List<(int x, int y)>();
-            var beaconLocations = _sensors.Select(x => x.ClosestBeacon.ToString()).ToList();
-            var lastPotentialX = minX.Value;
-            for (int x = minX.Value; x <= maxX.Value; x++)
+
+            var rangeStart = Math.Min(minX.Value, beacons[0].X);
+            var rangeEnd = Math.Max(maxX.Value, beacons[^1].X);
+            var eliminatedPositions = 0;
+
+            for (var x = rangeStart; x < rangeEnd; ++x)
             {
-                var eliminationFound = false;
-                foreach (var sensor in _sensors)
-                {
-                    var positionString = $"({x},{row})";
-                    if (sensor.LocationWithinManhattanDistance(x, row) && !beaconLocations.Contains(positionString))
-                    {
-                        eliminationFound = true;
-                        eliminatedPositions.Add((x, row));
-                        break;
-                    }
-                }
-                if (!eliminationFound)
-                    lastPotentialX = x;
+                var positionString = $"({x},{row})";
+                if (_sensors.Any(sensor => sensor.LocationWithinManhattanDistance(x, row) &&  positionString != sensor.ClosestBeacon.ToString()))
+                    ++eliminatedPositions;
             }
-            return (eliminatedPositions.DistinctBy(item => $"({item.x},{item.y})").ToList(), lastPotentialX);
+
+            return eliminatedPositions;
         }
 
         private int CalculateTuningFrequency(int x, int y)
@@ -83,7 +81,7 @@ public class Day15 : DayBase
         
         // Below had help from:
         // https://github.com/micka190/advent-of-code/blob/main/2022/day%2015/Solution/Solver.cs
-        public int IsolateDistressBeacon(int maxX, int maxY)
+        public int IsolateDistressBeacon(int max)
         {
             var minX = 0;
             var minY = 0;
@@ -93,8 +91,8 @@ public class Day15 : DayBase
 
             foreach (var location in edgeLocations)
             {
-                if (location.X >= minX && location.X <= maxX
-                                      && location.Y >= minY && location.Y <= maxY)
+                if (location.X > minX && location.X < max
+                                      && location.Y > minY && location.Y < max)
                 {
                     var inSensorRange = _sensors.Any(s =>
                         s.DistanceToBeacon >= s.CalculateManhattanDistance(location.X, location.Y));
@@ -108,10 +106,10 @@ public class Day15 : DayBase
 
         private List<GridLocation> GetEdgeLocations(Sensor sensor)
         {
-            var left = new GridLocation(sensor.X - sensor.DistanceToBeacon, sensor.Y);
-            var right = new GridLocation(sensor.X + sensor.DistanceToBeacon, sensor.Y);
-            var top = new GridLocation(sensor.X, sensor.Y + sensor.DistanceToBeacon);
-            var bottom = new GridLocation(sensor.X, sensor.Y - sensor.DistanceToBeacon);
+            var left = new GridLocation(sensor.X - sensor.DistanceToBeacon - 1, sensor.Y);
+            var right = new GridLocation(sensor.X + sensor.DistanceToBeacon + 1, sensor.Y);
+            var top = new GridLocation(sensor.X, sensor.Y + sensor.DistanceToBeacon + 1);
+            var bottom = new GridLocation(sensor.X, sensor.Y - sensor.DistanceToBeacon - 1);
 
             var edges = new List<GridLocation>();
 
