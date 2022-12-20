@@ -8,28 +8,18 @@ namespace AOC2022.Modules;
 
 public class Day12 : DayBase
 {
-    public override bool Ignore => false;
+    public override bool Ignore => true;
     private static List<(char letter, int height)> HeightMap = "abcdefghijklmnopqrstuvwxyz"
         .ToCharArray()
         .Select((c, i) => (c, i+1)).ToList();
 
     public override dynamic Part1()
     {
-        throw new NotImplementedException();
-    }
-
-    public override dynamic Part2()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override async Task<dynamic> Part1Async()
-    {
-        var _sampleMap = new ElevationMap(get_sample("Part1").ToList());
-        var _actualMap = new ElevationMap(get_input("Part1").ToList());
-        var _sampleRoute = await _sampleMap.GetBestPathFromStartLocation();
+        var _sampleMap = new ElevationMap(get_sample().ToList());
+        var _actualMap = new ElevationMap(get_input().ToList());
+        var _sampleRoute = _sampleMap.GetBestPathFromStartLocation();
         var _sampleVisualization = _sampleMap.GetVisualization();
-        var _actualRoute = await _actualMap.GetBestPathFromStartLocation();
+        var _actualRoute = _actualMap.GetBestPathFromStartLocation();
         var _actualVisualization = _actualMap.GetVisualization();
         return new
         {
@@ -40,13 +30,13 @@ public class Day12 : DayBase
         };
     }
 
-    public override async Task<dynamic> Part2Async()
+    public override dynamic Part2()
     {
-        var _sampleMap = new ElevationMap(get_sample("Part1").ToList());
-        var _actualMap = new ElevationMap(get_input("Part1").ToList());
-        var _sampleRoute = await _sampleMap.GetBestOverallPath();
+        var _sampleMap = new ElevationMap(get_sample().ToList());
+        var _actualMap = new ElevationMap(get_input().ToList());
+        var _sampleRoute = _sampleMap.GetBestOverallPath();
         var _sampleVisualization = _sampleMap.GetVisualization();
-        var _actualRoute = await _actualMap.GetBestOverallPath();
+        var _actualRoute = _actualMap.GetBestOverallPath();
         var _actualVisualization = _actualMap.GetVisualization();
         return new
         {
@@ -117,14 +107,14 @@ public class Day12 : DayBase
             return neighbors.ToList();
         }
 
-        public async Task<List<RouteLocation>> GetBestPathFromStartLocation()
+        public List<RouteLocation> GetBestPathFromStartLocation()
         {
             _bestPath = BFS<RouteLocation>.Search(_destination, GetNeighbors,
                 (RouteLocation current) => current.ToString() == _start.ToString());
             return _bestPath;
         }
         
-        public async Task<List<RouteLocation>> GetBestOverallPath()
+        public List<RouteLocation> GetBestOverallPath()
         {
             _bestPath = BFS<RouteLocation>.Search(_destination, GetNeighbors, current => current.Elevation == 1);
             return _bestPath;
