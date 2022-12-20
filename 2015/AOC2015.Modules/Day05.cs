@@ -5,7 +5,7 @@ namespace AOC2015.Modules;
 
 public class Day05 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
     private Regex vowelsRegex = new Regex(@"[aeiou]");
     private Regex doublesRegex = new Regex(@"(.{1})\1");
     private Regex naughtyStringsRegex = new Regex(@"ab|cd|pq|xy");

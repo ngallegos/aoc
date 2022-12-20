@@ -8,7 +8,7 @@ namespace AOC2015.Modules;
 
 public class Day06 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
 
     private static Regex _instructionRegex =
         new Regex(@"^(?<type>turn|toggle) ?(?<state>on|off)? (?<start>\d*,\d*) through (?<end>\d*,\d*)$");

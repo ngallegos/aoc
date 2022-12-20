@@ -5,7 +5,7 @@ namespace AOC2015.Modules;
 
 public class Day03 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
     public override dynamic Part1()
     {
         var instructions = get_input().First();

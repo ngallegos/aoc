@@ -5,7 +5,7 @@ namespace AOC2015.Modules;
 
 public class Day02 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
     
     public override dynamic Part1()
     {

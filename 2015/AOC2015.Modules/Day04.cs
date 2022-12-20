@@ -6,7 +6,7 @@ namespace AOC2015.Modules;
 
 public class Day04 : DayBase
 {
-    public override bool Completed => true;
+    public override bool Ignore => true;
     public override dynamic Part1()
     {
         var (hash, lowestNumber) = FindAdventCoinHash("yzbqklnj", "00000");
