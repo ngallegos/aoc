@@ -6,7 +6,7 @@ namespace AOC2015.Modules;
 
 public class Day07 : DayBase
 {
-    public override bool Ignore { get; }
+    public override bool Ignore => true;
     public override dynamic Part1()
     {
         var sampleCircuit = new Circuit(get_sample());
