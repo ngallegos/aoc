@@ -6,7 +6,7 @@ namespace AOC2022.Modules;
 
 public class Day20 : DayBase
 {
-    public override bool Ignore { get; }
+    public override bool Ignore => true;
     public override dynamic Part1()
     {
         var sampleSequence = new Sequence(get_sample());
