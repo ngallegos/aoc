@@ -34,6 +34,7 @@ public class Grid<T>
     }
 }
 
+
 public class GridLocation
 {
     public GridLocation(int x, int y)
@@ -44,11 +45,14 @@ public class GridLocation
 
     public int X { get; protected set; }
     public int Y { get; protected set; }
-
+    
     public override string ToString()
     {
         return $"({X},{Y})";
     }
+
+    public static GridLocation operator +(GridLocation a, GridLocation b) => new(a.X + b.X, a.Y + b.Y);
+    public static GridLocation operator +(GridLocation a, (int x, int y) b) => new(a.X + b.x, a.Y + b.y);
 }
 
 public class GridLocation<T> : GridLocation
