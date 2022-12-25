@@ -7,7 +7,7 @@ namespace AOC2022.Modules;
 
 public class Day23 : DayBase
 {
-    public override bool Ignore { get; }
+    public override bool Ignore => true;
     public override dynamic Part1()
     {
         throw new System.NotImplementedException();
