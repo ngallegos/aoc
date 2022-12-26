@@ -13,8 +13,8 @@ public class Day13 : DayBase
     
     public override dynamic Part1()
     {
-        var _sampleProcessor = new PacketProcessor(get_sample("Part1").ToList());
-        var _actualProcessor = new PacketProcessor(get_input("Part1").ToList());
+        var _sampleProcessor = new PacketProcessor(get_sample().ToList());
+        var _actualProcessor = new PacketProcessor(get_input().ToList());
         return new
         {
             sample = _sampleProcessor.CorrectlyOrderedPairSum,
@@ -24,8 +24,8 @@ public class Day13 : DayBase
 
     public override dynamic Part2()
     {
-        var _sampleProcessor = new PacketProcessor(get_sample("Part1").ToList());
-        var _actualProcessor = new PacketProcessor(get_input("Part1").ToList());
+        var _sampleProcessor = new PacketProcessor(get_sample().ToList());
+        var _actualProcessor = new PacketProcessor(get_input().ToList());
         return new
         {
             sample = _sampleProcessor.DecoderKey,

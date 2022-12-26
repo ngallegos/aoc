@@ -8,7 +8,7 @@ namespace AOC2022.Modules;
 
 public class Day15 : DayBase
 {
-    public override bool Ignore => false;
+    public override bool Ignore => true;
     public override dynamic Part1()
     {
         var sampleSensors = get_sample()

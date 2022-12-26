@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -6,7 +7,8 @@ namespace AOC2022.Modules;
 
 public class Day16 : DayBase
 {
-    public override bool Ignore => true;
+    // https://www.reddit.com/r/adventofcode/comments/zn6k1l/2022_day_16_solutions/
+    public override bool Ignore => false;
     public override dynamic Part1()
     {
         var sampleValves = get_sample().Select(x => new Valve(x)).ToList();
@@ -14,6 +16,8 @@ public class Day16 : DayBase
         {
             valve.LinkValveTunnels(sampleValves);
         }
+        
+        // TODO bfs on all valves with nonzero flow rate and start with max flow rates first
         
         return sampleValves;
     }
@@ -31,7 +35,7 @@ public class Day16 : DayBase
 
     record TunnelMap(int[,] distances, Valve[] valves);
     
-    private class Valve
+    private class Valve : IEquatable<Valve>
     {
         
         private static Regex _valveRegex = new Regex(@"^Valve (?<name>\w\w) has flow rate=(?<flowRate>\d*); tunnels? leads? to valves? (?<tunnels>.*)$");
@@ -66,6 +70,26 @@ public class Day16 : DayBase
         {
             if (State == ValveState.Open)
                 MinutesOpened++;
+        }
+
+        public bool Equals(Valve other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Name == other.Name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Valve)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Name != null ? Name.GetHashCode() : 0);
         }
     }
 }

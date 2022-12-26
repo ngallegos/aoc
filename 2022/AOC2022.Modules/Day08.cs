@@ -21,7 +21,7 @@ public class Day08 : DayBase
         var treeHeightGrid = new TreeHeightGrid(get_input(s =>
         {
             return s.ToCharArray().Select(c => int.Parse(c.ToString())).ToArray();
-        }, "Part1").ToArray());
+        }).ToArray());
         return new { visibleTrees = treeHeightGrid.NumberOfTreesVisibleFromPerimeter() };
     }
 
@@ -30,7 +30,7 @@ public class Day08 : DayBase
         var treeHeightGrid = new TreeHeightGrid(get_input(s =>
         {
             return s.ToCharArray().Select(c => int.Parse(c.ToString())).ToArray();
-        }, "Part1").ToArray());
+        }).ToArray());
         var bestTree = treeHeightGrid.HighestScenicScoringTree();
         return new { bestTree };
     }

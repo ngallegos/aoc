@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -24,6 +25,8 @@ namespace AOC2022.Console
                 if (day.Ignore)
                     continue;
                 System.Console.WriteLine($"-----DAY {dayNumber:00}---------------------------------------------\n");
+                var s = new Stopwatch();
+                s.Start();
                 try
                 {
                     var part1Results = await day.Part1Async();
@@ -34,6 +37,11 @@ namespace AOC2022.Console
                 {
                     System.Console.WriteLine("PART 01:\nNot Implemented");
                 }
+                s.Stop();
+                var p1Elapsed = s.ElapsedMilliseconds;
+                System.Console.WriteLine($"Part 01:\t{p1Elapsed}ms");
+                
+                s.Restart();
 
                 try
                 {
@@ -45,6 +53,10 @@ namespace AOC2022.Console
                 {
                     System.Console.WriteLine("PART 02:\nNot Implemented");
                 }
+                s.Stop();
+                var p2Elapsed = s.ElapsedMilliseconds;
+                System.Console.WriteLine($"Part 02:\t{p2Elapsed}ms");
+                System.Console.WriteLine($"Total:\t\t{p1Elapsed + p2Elapsed}ms");
 
                 System.Console.WriteLine();
             }
