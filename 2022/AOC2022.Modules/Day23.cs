@@ -71,10 +71,10 @@ public class Day23 : DayBase
     
     private class Elf
     {
-        public GridLocation Location { get; private set; }
-        public GridLocation Proposed { get; private set; }
+        public Coordinate Location { get; private set; }
+        public Coordinate Proposed { get; private set; }
 
-        public Elf(GridLocation initialLocation)
+        public Elf(Coordinate initialLocation)
         {
             Location = initialLocation;
         }
