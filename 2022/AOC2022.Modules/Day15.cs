@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -77,29 +79,42 @@ public class Day15 : DayBase
         
         // Below had help from:
         // https://github.com/micka190/advent-of-code/blob/main/2022/day%2015/Solution/Solver.cs
+        // https://github.com/schovanec/AdventOfCode/blob/4fe04dc4628cc6bcc1eab502bf3469dbe0317dd8/2022/Day15/Program.cs#L76
         // last wrong answer: 796961409
         public long IsolateDistressBeacon(int upperLimit)
         {
-            const int tuningFrequencyMultiplier = 4000000;
-            var edgeCoordinates = _sensors
-                .Select(GetEdgeCoordinates)
-                .SelectMany(coordinate => coordinate);
+            var limit = new Range(0, upperLimit);
 
-            foreach (var coordinate in edgeCoordinates)
+            for (var y = 0; y <= upperLimit; ++y)
             {
-                if (coordinate.X > 0 && coordinate.X < upperLimit && 
-                    coordinate.Y > 0 && coordinate.Y < upperLimit)
-                {
-                    var inSensorRange = _sensors.Any(sensor => sensor.DistanceToBeacon >= sensor.DistanceTo(coordinate.X, coordinate.Y));
-
-                    if (!inSensorRange)
-                    {
-                        return coordinate.X * tuningFrequencyMultiplier + coordinate.Y;
-                    }
-                }
+                var covered = _sensors.Select(s => s.GetSlice(y));
+                var gap = FindGap(covered, limit);
+                if (gap is int x)
+                    return (x * 4000000L) + y;
             }
+
+            return 0;
+        }
         
-            return -1;
+        static int? FindGap(IEnumerable<Range> ranges, Range limit)
+        {
+            var ordered = ranges.Select(r => r.Intersect(limit))
+                .Where(r => !r.IsEmpty)
+                .OrderBy(r => r.Min)
+                .ThenBy(r => r.Max);
+
+            int max = limit.Min - 1;
+            foreach (var r in ordered)
+            {
+                if (max + 1 < r.Min)
+                    return max + 1;
+
+                max = Math.Max(max, r.Max);
+            }
+
+            return max < limit.Max
+                ? max + 1
+                : null;
         }
 
         private List<Coordinate> GetEdgeCoordinates(Sensor sensor)
@@ -145,10 +160,29 @@ public class Day15 : DayBase
         }
     }
 
+    record struct Range(int Min, int Max)
+    {
+        public static Range Empty = new(0, -1);
+
+        public bool IsEmpty => Min > Max;
+
+        public IEnumerable<int> Values
+            => IsEmpty ? Enumerable.Empty<int>() : Enumerable.Range(Min, Max - Min + 1);
+
+        public bool Overlaps(Range other)
+            => !IsEmpty
+               && !other.IsEmpty
+               && Min <= other.Max
+               && Max >= other.Min;
+
+        public Range Intersect(Range other)
+            => Overlaps(other) ? new(Math.Max(Min, other.Min), Math.Min(Max, other.Max)) : Empty;
+    }
     private class Sensor : Coordinate<char>
     {
         private static Regex _locationRegex = new Regex(@"x=(?<x>-?\d*), y=(?<y>-?\d*)");
 
+        public int BeaconDistance => DistanceTo(ClosestBeacon.X, ClosestBeacon.Y);
         public static Sensor Parse(string positionReport)
         {
             var parts = positionReport.Split(':');
@@ -159,7 +193,15 @@ public class Day15 : DayBase
                 'S', beacon);
             return sensor;
         }
-        
+        public Range GetSlice(int y)
+        {
+            var dy = Math.Abs(y - Y);
+            if (dy > BeaconDistance)
+                return Range.Empty;
+
+            var dx = BeaconDistance - dy;
+            return new(X - dx, X + dx);
+        }
         public Sensor(int x, int y, char value, Beacon closestBeacon) : base(x, y, value)
         {
             ClosestBeacon = closestBeacon;
