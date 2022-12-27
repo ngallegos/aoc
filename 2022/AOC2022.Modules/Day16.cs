@@ -10,184 +10,159 @@ public class Day16 : DayBase
 {
     // https://www.reddit.com/r/adventofcode/comments/zn6k1l/2022_day_16_solutions/
     public override bool Ignore => false;
-    public override dynamic Part1()
-    {
-        return "ignored";
-        var valves = get_input().Select(x => new Valve(x)).ToList();
-        foreach (var valve in valves)
-        {
-            valve.LinkValveTunnels(valves);
-        }
+    
+    public List<int[]> graph = new List<int[]>(), cgraph = new List<int[]>();
+    public List<int> flows = new List<int>();
+    public int start, valves = 0;
 
-        // help from : https://www.reddit.com/r/adventofcode/comments/zn6k1l/comment/j0yvgu8/?utm_source=share&utm_medium=web2x&context=3
-        var distances = new List<(string startValve, string endValve, int distance)>();
-        
-        // Compute shortest distance between points
-        foreach (var startValve in valves)
-        {
-            foreach (var endValve in valves)
-            {
-                var bfsResult =
-                BFS<Valve>.Search(startValve, 
-                    v => v.TunnelDestinations, 
-                    v => v.Name == endValve.Name);
-                distances.Add((startValve.Name, endValve.Name, bfsResult.Count - 1));
+    // https://github.com/p88h/aoc2022/blob/main/lib/day16.cs
+    public Day16()
+    {
+        if (Ignore)
+            return;
+        var input = get_input().ToList();
+        Regex rx = new Regex(@"^Valve (\w+) has flow rate=(\d+); tunnels? leads? to valves? (.*)$", RegexOptions.Compiled);
+        List<(string l, int f, string[] d)> parsed = new List<(string, int, string[])>();
+        for (int i = 0; i < input.Count; i++) {
+            Match m = rx.Match(input[i]);
+            parsed.Add((m.Groups[1].Value, int.Parse(m.Groups[2].Value), m.Groups[3].Value.Split(", ")));
+        }
+        parsed = parsed.OrderByDescending(t => t.f).ToList();
+        Dictionary<string, int> labelIndex = new Dictionary<string, int>();
+        foreach (var (l, f, _) in parsed) {
+            labelIndex[l] = labelIndex.Count;
+            flows.Add(f);
+        }
+        foreach (var (l, _, d) in parsed) graph.Add(d.Select(s => labelIndex[s]).ToArray());
+        start = labelIndex["AA"];
+        compress_distances();
+    }
+    
+    private void compress_distances() {
+        for (int origin = 0; origin < graph.Count; origin++) {
+            int[] dist = new int[graph.Count];
+            cgraph.Add(dist);
+            List<int> stack = new List<int> { origin };
+            if (flows[origin] == 0 && origin != start) continue;
+            if (flows[origin] > 0) valves++;
+            while (stack.Count > 0) {
+                List<int> nstack = new List<int> { };
+                foreach (var src in stack) {
+                    foreach (var dst in graph[src]) {
+                        if (dst != origin && dist[dst] == 0) {
+                            dist[dst] = dist[src] + 1;
+                            nstack.Add(dst);
+                        }
+                    }
+                }
+                stack = nstack;
             }
         }
-        
+    }
+    public override dynamic Part1()
+    {
+        List<(int, int, int, int)> states = new List<(int, int, int, int)> { (start, 0, 0, 0) };
+        int[] best = new int[4194304];
+        int skipcnt = 0;
         int max = 0;
-        var curPath = new List<Valve>();
-        var paths = new Dictionary<HashSet<Valve>, int>();
-        int available = valves.Count(v => v.FlowRate > 0 && !v.IsOpen);
-        
-        backtrack(valves, distances, 30, valves.First(x => x.Name == "AA"), 
-            0, 0, available, ref max, curPath, paths);
-        
-        return new
-        {
-            max
-        };
+        for (int round = 1; round <= 29; round++) {
+            List<(int, int, int, int)> nstates = new List<(int, int, int, int)>();
+            foreach (var (n, bits, flow, acc) in states) {
+                int code = (n << 16) + bits;
+                int projected = acc + flow * (30 - round + 1);
+                if (best[code] > projected + 1) {
+                    skipcnt++;
+                    continue;
+                }
+                // open valve
+                if (flows[n] > 0 && (bits & (1 << n)) == 0) {
+                    int nbits = bits | (1 << n);
+                    int nflow = flow + flows[n];
+                    code = (n << 16) + nbits;
+                    projected = acc + flow + nflow * (30 - round);
+                    if (projected + 1 > best[code]) {
+                        nstates.Add((n, nbits, nflow, acc + flow));
+                        best[code] = projected + 1;
+                        if (projected > max) max = projected;
+                    }
+                }
+                // go somewhere
+                foreach (int dst in graph[n]) {
+                    code = (dst << 16) + bits;
+                    projected = acc + flow * (30 - round + 1);
+                    if (projected + 1 > best[code]) {
+                        nstates.Add((dst, bits, flow, acc + flow));
+                        best[code] = projected + 1;
+                        if (projected > max) max = projected;
+                    }
+                }
+            }
+            states = nstates;
+        }
+        return max.ToString();
     }
     
     public override dynamic Part2()
     {
-        var valves = get_input().Select(x => new Valve(x)).ToList();
-        foreach (var valve in valves)
-        {
-            valve.LinkValveTunnels(valves);
-        }
-
-        // help from : https://www.reddit.com/r/adventofcode/comments/zn6k1l/comment/j0yvgu8/?utm_source=share&utm_medium=web2x&context=3
-        var distances = new List<(string startValve, string endValve, int distance)>();
-        
-        // Compute shortest distance between points
-        foreach (var startValve in valves)
-        {
-            foreach (var endValve in valves)
-            {
-                var bfsResult =
-                    BFS<Valve>.Search(startValve, 
-                        v => v.TunnelDestinations, 
-                        v => v.Name == endValve.Name);
-                distances.Add((startValve.Name, endValve.Name, bfsResult.Count - 1));
-            }
-        }
-        
         int max = 0;
-        var curPath = new List<Valve>();
-        var paths = new Dictionary<HashSet<Valve>, int>();
-        int available = valves.Count(v => v.FlowRate > 0 && !v.IsOpen);
-        
-        backtrack(valves, distances, 26, valves.First(x => x.Name == "AA"), 
-            0, 0, available, ref max, curPath, paths);
-        // Part 2
-        foreach(var a in paths.Keys.OrderByDescending(o => paths[o]))
-        {
-            foreach (var b in paths.Keys.OrderByDescending(o => paths[o]))
-            {
-                if (paths[a] + paths[b] < max)
-                    goto exit;
-
-                if(!a.Overlaps(b))
-                {
-                    max = paths[a] + paths[b];
-                }
+        bool expensive = true;
+        int[] best = new int[expensive ? 1 << 27 : 1 << 15];
+        List<List<State>> stacks = new List<List<State>>();
+        stacks.Add(new List<State> { new State { pa = start, pb = start } });
+        for (int i = 1; i < 26; i++) stacks.Add(new List<State>());
+        for (int time = 0; time < 26; time++) {
+            foreach (State s in stacks[time]) {
+                // drop out of time 
+                int projection = s.acc + s.fa * (26 - s.ta);
+                if (s.tb <= 26) projection += s.fb * (26 - s.tb);
+                if (projection > max) max = projection;
+                // this may be a bit wonky, since it doesn't really consider where we are or anything, 
+                // Just what's the best projection for a combination of valves up to this point in time. 
+                // But hey, it produces good results on some inputs fast.
+                // If we use longer codes and larger best cache then this runs in about 700 ms as opposed to 40 ms. 
+                // (this can be enabled by setting expensive flag to true above)
+                // That is fully correct then, since the time factor is accounted into projection - 
+                // same code with higher time will always produce a lower projection.
+                int code = s.bits;
+                if (expensive) code += (s.pa < s.pb) ? (s.pa << 21) + (s.pb << 15) : (s.pb << 21) + (s.pa << 15);
+                if (best[code] > projection + 1) continue;
+                best[code] = projection + 1;
+                foreach (State t in generate(s)) if (t.tb < 26) stacks[t.ta].Add(t);
             }
         }
-        exit:
-
-        Console.WriteLine(max);
-        return new
-        {
-            max
-        };
+        return max.ToString();
+    }
+    
+    public struct State {
+        public int ta, tb, pa, pb, fa, fb, acc, bits;
     }
 
-    
-    // help from : https://www.reddit.com/r/adventofcode/comments/zn6k1l/comment/j0yvgu8/?utm_source=share&utm_medium=web2x&context=3
-    void backtrack(List<Valve> valves, List<(string startValve, string endValve, int distance)> dist, int time, Valve cur, 
-        int pressure, int cumulpressure,
-        int available, ref int max, List<Valve> curPath, Dictionary<HashSet<Valve>, int> paths)
-    {
-        if (time == 0 || available == 0)
-        {
-            max = Math.Max(max, cumulpressure + (pressure * time));
-            return;
-        }
-
-        paths.Add(new HashSet<Valve>(curPath), cumulpressure + (pressure * time));
-
-        foreach (var n in valves)
-        {
-            if (n == cur  || n.IsOpen || n.FlowRate == 0)
-                continue;
-
-            var ttg = dist.First(x => x.startValve == n.Name && x.endValve == cur.Name).distance + 1;
-            if(ttg > time)
-            {
-                ttg = time;
+    public List<State> generate(State s) {
+        List<State> results = new List<State>();
+        for (int i = 0; i < valves; i++) {
+            if ((s.bits & (1 << i)) == 0) {
+                // move and swap: copy b to a, rest assigned below
+                State d = new State { ta = s.tb, pa = s.pb, fa = s.fb };
+                int cost = cgraph[s.pa][i] + 1;  // time to go from pa to i 
+                d.bits = s.bits | (1 << i);  // .. and open the valve i
+                d.acc = s.acc + s.fa * cost; // time flows for a, so add it to the accumulator
+                d.pb = i;                    // a becomes b and is now at i
+                d.fb = s.fa + flows[i];      // flow of a (now b) is increased
+                d.tb = s.ta + cost;          // the new timepoint for a (now b)
+                // swap if unordered
+                if (d.tb < d.ta) d = new State {
+                    ta = d.tb, pa = d.pb, fa = d.fb,
+                    tb = d.ta, pb = d.pa, fb = d.fa,
+                    acc = d.acc, bits = d.bits
+                };
+                results.Add(d);
             }
-            n.IsOpen = true;
-            curPath.Add(n);
-            backtrack(valves, dist, time - ttg, n, pressure + n.FlowRate, cumulpressure + (pressure * ttg), available - 1, ref max, curPath, paths);
-            curPath.RemoveAt(curPath.Count- 1);
-            n.IsOpen = false;
         }
-    }
-    
-    private class Valve : IEquatable<Valve>
-    {
-        
-        private static Regex _valveRegex = new Regex(@"^Valve (?<name>\w\w) has flow rate=(?<flowRate>\d*); tunnels? leads? to valves? (?<tunnels>.*)$");
-        public string Name { get; }
-        public int FlowRate { get; }
-        public int MinutesOpened { get; private set; }
-        public bool IsOpen { get; set; }
-        public int TotalPressureRelease => MinutesOpened * FlowRate;
-        public List<string> _tunnelDestinationNames = new List<string>();
-        public List<Valve> TunnelDestinations { get; set; } = new List<Valve>();
-
-        public Valve(string input)
-        {
-            var match = _valveRegex.Match(input);
-            Name = match.Groups["name"].Value;
-            FlowRate = int.Parse(match.Groups["flowRate"].Value);
-            _tunnelDestinationNames = match.Groups["tunnels"].Value.Split(", ").ToList();
+        if (s.ta == s.tb) {
+            List<State> nresults = new List<State>();
+            foreach (State t in results) nresults.AddRange(generate(t));
+            results = nresults;
         }
-
-        public void LinkValveTunnels(List<Valve> allValves)
-        {
-            var relevantValves = allValves.Where(v => _tunnelDestinationNames.Contains(v.Name));
-            TunnelDestinations.AddRange(relevantValves);
-        }
-        public bool Equals(Valve other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Name == other.Name;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Valve)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (Name != null ? Name.GetHashCode() : 0);
-        }
-
-        public static bool operator ==(Valve left, Valve right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(Valve left, Valve right)
-        {
-            return !Equals(left, right);
-        }
+        return results;
     }
 }
