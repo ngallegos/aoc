@@ -9,7 +9,7 @@ namespace AOC2022.Modules;
 public class Day16 : DayBase
 {
     // https://www.reddit.com/r/adventofcode/comments/zn6k1l/2022_day_16_solutions/
-    public override bool Ignore => false;
+    public override bool Ignore => true;
     
     public List<int[]> graph = new List<int[]>(), cgraph = new List<int[]>();
     public List<int> flows = new List<int>();
