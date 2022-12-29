@@ -40,6 +40,35 @@ public class Day17 : DayBase
         throw new System.NotImplementedException();
     }
 
+    private void PushRock(List<string> rock, string topOfTower, bool left)
+    {
+        if (left)
+        {
+            if (rock.Any(r => r[0] == '#'))
+                return;
+            for (int i = 0; i < topOfTower.Length - 1; i++)
+                if (topOfTower[i] == '#' && rock.Last()[i + 1] == '#')
+                    return;
+        }
+        else
+        {
+            if (rock.Any(r => r[^1] == '#'))
+                return;
+            
+            for (int i = topOfTower.Length - 1; i > 0; i--)
+                if (topOfTower[i] == '#' && rock.Last()[i - 1] == '#')
+                    return;
+        }
+
+        for (int i = 0; i < rock.Count; i++)
+        {
+            if (left)
+                rock[i] = rock[i].Substring(1) + " ";
+            else
+                rock[i] = " " + rock[i].Substring(0, rock[i].Length - 1);
+        }
+    }
+
     private bool WillCollide(List<string> rock, string towerTop)
     {
         for (int r = rock.Count - 1; r <= 0; r--)
