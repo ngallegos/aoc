@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AOC2022.Modules;
 
@@ -7,12 +8,51 @@ public class Day17 : DayBase
     public override bool Ignore { get; }
     public override dynamic Part1()
     {
-        throw new System.NotImplementedException();
+        var gasJets = get_sample().First();
+        var rockQueue = getInitialRockQueue();
+        var jetIndex = 0;
+        var gasJetsCount = gasJets.Length;
+        var tower = new Stack<string>();
+        for (int r = 0; r < 2022; r++)
+        {
+            jetIndex = DropRock(tower, rockQueue, gasJets, jetIndex, gasJetsCount);
+        }
+
+        return "not done";
+    }
+
+    private int DropRock(Stack<string> tower, Queue<List<string>> rockQueue, string gasJets, int jetIndex, int totalJets)
+    {
+        var rock = rockQueue.Dequeue();
+        rockQueue.Enqueue(rock);
+
+        AddNewRockBuffer(tower);
+        for (int i = rock.Count-1; i <= 0; i--)
+        {
+            tower.Push(rock[i]);
+        }
+
+        return jetIndex;
     }
 
     public override dynamic Part2()
     {
         throw new System.NotImplementedException();
+    }
+
+    private bool WillCollide(List<string> rock, string towerTop)
+    {
+        for (int r = rock.Count - 1; r <= 0; r--)
+        {
+            var rockSlice = rock[r];
+            for (int i = 0; i < towerTop.Length; i++)
+            {
+                if (rockSlice[i] == '#' && rockSlice[i] == towerTop[i])
+                    return true;
+            }   
+        }
+
+        return false;
     }
 
     private Queue<List<string>> getInitialRockQueue()
@@ -26,12 +66,12 @@ public class Day17 : DayBase
         return queue;
     }
 
-    private List<string> _newRockBuffer = new List<string>
+    private void AddNewRockBuffer(Stack<string> tower)
     {
-        "       ",
-        "       ",
-        "       ",
-    };
+        tower.Push("       ");
+        tower.Push("       ");
+        tower.Push("       ");
+    }
 
     private List<string> _flat = new List<string>
     {
