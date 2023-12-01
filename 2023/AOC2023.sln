@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOC2023.Modules", "AOC2023.Modules\AOC2023.Modules.csproj", "{FD6EC09C-B030-4354-9284-8373F80081A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOC2023.Console", "AOC2023.Console\AOC2023.Console.csproj", "{7BBDE443-2725-4CEA-8BDE-84C3DCEB8576}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{1162A4F6-D7B0-48F3-857E-114C84CBA382}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD6EC09C-B030-4354-9284-8373F80081A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD6EC09C-B030-4354-9284-8373F80081A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD6EC09C-B030-4354-9284-8373F80081A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD6EC09C-B030-4354-9284-8373F80081A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BBDE443-2725-4CEA-8BDE-84C3DCEB8576}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BBDE443-2725-4CEA-8BDE-84C3DCEB8576}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BBDE443-2725-4CEA-8BDE-84C3DCEB8576}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BBDE443-2725-4CEA-8BDE-84C3DCEB8576}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

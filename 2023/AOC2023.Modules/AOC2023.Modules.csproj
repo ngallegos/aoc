@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Samples\day-01-01.txt" />
+      <EmbeddedResource Include="Samples\day-01-02.txt" />
+      <None Remove="Inputs\day-01-01txt.txt" />
+      <EmbeddedResource Include="Inputs\day-01-01.txt" />
+      <None Remove="Inputs\day-02-01.txt" />
+      <None Remove="Inputs\day-03-01.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Shared\" />
+    </ItemGroup>
+
+</Project>
