@@ -59,11 +59,31 @@ public class Day01Tests : TestBase
         calibrationSum.ShouldBe(expectedCalibrationSum);
     }
     
+    [Test]
+    public void Part2_Actual()
+    {
+        // Arrange
+        var expectedCalibrationSum = 54078;
+        var calibrationValues = get_input()
+            .Select(GetNumberFromFirstAndLastDigitsOrSpellingsInString).ToList();
+
+        // Act
+        var calibrationSum = calibrationValues.Sum();
+        
+        // Assert
+        calibrationSum.ShouldBe(expectedCalibrationSum);
+    }
+    
     private int GetNumberFromFirstAndLastDigitsOrSpellingsInString(string input)
     {
         var spellings = _spelledNumberMap.Select(x => x.spelling);
         var numRegex = new Regex($@"(\d|{string.Join("|", spellings)})");
-        var matches = numRegex.Matches(input);
+        var matches = new List<Match>();
+        matches.Add(numRegex.Match(input));
+        while (matches.Last().Success) {
+            matches.Add(numRegex.Match(input, matches.Last().Index + 1)); 
+        }
+        matches.RemoveAt(matches.Count - 1);
         var firstMatch = matches.First().Value;
         var lastMatch = matches.Last().Value;
         var firstNumber = _spelledNumberMap.FirstOrDefault(x => x.spelling == firstMatch).value;
@@ -82,7 +102,7 @@ public class Day01Tests : TestBase
         ("five", 5),
         ("six", 6),
         ("seven", 7),
-        ("eight", 9),
+        ("eight", 8),
         ("nine", 9)
     };
 }
