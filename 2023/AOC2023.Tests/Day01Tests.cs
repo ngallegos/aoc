@@ -3,10 +3,11 @@ using Shouldly;
 
 namespace AOC2023.Tests;
 
+[TestFixture]
 public class Day01Tests : TestBase
 {
     [Test]
-    public void Part1_Sample()
+    public override void Part1_Sample()
     {
         // Arrange
         var expectedCalibrationSum = 142;
@@ -22,7 +23,7 @@ public class Day01Tests : TestBase
     
     
     [Test]
-    public void Part1_Actual()
+    public override void Part1_Actual()
     {
         // Arrange
         var expectedCalibrationSum = 54601;
@@ -45,7 +46,7 @@ public class Day01Tests : TestBase
     }
     
     [Test]
-    public void Part2_Sample()
+    public override void Part2_Sample()
     {
         // Arrange
         var expectedCalibrationSum = 281;
@@ -60,7 +61,7 @@ public class Day01Tests : TestBase
     }
     
     [Test]
-    public void Part2_Actual()
+    public override void Part2_Actual()
     {
         // Arrange
         var expectedCalibrationSum = 54078;

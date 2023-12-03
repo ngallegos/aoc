@@ -3,8 +3,32 @@ using System.Reflection;
 
 namespace AOC2023.Tests;
 
-public class TestBase
+public abstract class TestBase
 {
+    [Test]
+    public virtual void Part1_Sample()
+    {
+        throw new NotImplementedException();
+    }
+    
+    [Test]
+    public virtual void Part1_Actual()
+    {
+        throw new NotImplementedException();
+    }
+    
+    [Test]
+    public virtual void Part2_Sample()
+    {
+        throw new NotImplementedException();
+    }
+    
+    [Test]
+    public virtual void Part2_Actual()
+    {
+        throw new NotImplementedException();
+    }
+
     protected IEnumerable<string> get_sample(int partNumber = 1)
     {
         return get_input(partNumber: partNumber, type: "sample");
