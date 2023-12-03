@@ -29,7 +29,7 @@ public class Day02Tests : TestBase
         // Arrange
         var games = get_input()
             .Select(GetGameStats).ToList();
-        var expectedSum = 8;
+        var expectedSum = 2283;
         
         // Act
         var possibleGames = games
@@ -39,7 +39,38 @@ public class Day02Tests : TestBase
         // Assert
         actualSum.ShouldBe(expectedSum);
     }
+    
+    [Test]
+    public override void Part2_Sample()
+    {
+        // Arrange
+        var games = get_sample()
+            .Select(GetGameStats).ToList();
+        var expectedSum = 2286;
+        
+        // Act
+        var actualSum = games.Sum(x => x.MinPower);
 
+        // Assert
+        actualSum.ShouldBe(expectedSum);
+    }
+
+    
+    [Test]
+    public override void Part2_Actual()
+    {
+        // Arrange
+        var games = get_input()
+            .Select(GetGameStats).ToList();
+        var expectedSum = 78669;
+        
+        // Act
+        var actualSum = games.Sum(x => x.MinPower);
+
+        // Assert
+        actualSum.ShouldBe(expectedSum);
+    }
+    
     private int _maxRed = 12;
     private int _maxGreen = 13;
     private int _maxBlue = 14;
@@ -83,5 +114,6 @@ public class Day02Tests : TestBase
         public int MaxRed { get; set; }
         public int MaxGreen { get; set; }
         public int MaxBlue { get; set; }
+        public int MinPower => MaxRed * MaxBlue * MaxGreen;
     }
 }
