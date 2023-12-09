@@ -16,7 +16,7 @@ public class Day05Tests : TestBase
     protected override void SolvePart2_Sample()
     {
         var almanacInput = get_sample().ToList();
-        var almanac = new Almanac(almanacInput);
+        var almanac = new Almanac(almanacInput, false);
         
         almanac.LowestLocationNumber.ShouldBe(46);
     }
@@ -31,7 +31,10 @@ public class Day05Tests : TestBase
 
     protected override void SolvePart2_Actual()
     {
-        throw new NotImplementedException();
+        var almanacInput = get_input().ToList();
+        var almanac = new Almanac(almanacInput, false);
+        
+        almanac.LowestLocationNumber.ShouldBe(46);
     }
 
 
@@ -48,8 +51,21 @@ public class Day05Tests : TestBase
             
             if (part1)
                 _seeds.AddRange(seedValues);
+            else
+            {
+                for (int i = 0; i < seedValues.Count; i += 2)
+                    _seeds.AddRange(GetSeedsToCheck(seedValues[i], seedValues[i+1]));
+            }
             
             Initialize(almanac);
+        }
+        
+        private IEnumerable<long> GetSeedsToCheck(long start, long count)
+        {
+            for (long i = 0; i < count; i++)
+            {
+                yield return start + i;
+            }
         }
 
         private void Initialize(List<string> almanac)
