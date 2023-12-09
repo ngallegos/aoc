@@ -3,7 +3,6 @@ using Shouldly;
 
 namespace AOC2023.Tests;
 
-[TestFixture]
 public class Day01Tests : TestBase
 {
     [Test]
