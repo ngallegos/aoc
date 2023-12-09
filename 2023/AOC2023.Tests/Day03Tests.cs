@@ -2,9 +2,23 @@ namespace AOC2023.Tests;
 
 public class Day03Tests : TestBase
 {
-    // [Test]
-    // public override void Part1_Sample()
-    // {
-    //     var schematic = get_sample_grid((c) => c);
-    // }
+    protected override void SolvePart1_Sample()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void SolvePart2_Sample()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void SolvePart1_Actual()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void SolvePart2_Actual()
+    {
+        throw new NotImplementedException();
+    }
 }

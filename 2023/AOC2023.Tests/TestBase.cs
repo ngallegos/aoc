@@ -5,28 +5,45 @@ namespace AOC2023.Tests;
 
 public abstract class TestBase
 {
+    protected abstract void SolvePart1_Sample();
+    protected abstract void SolvePart2_Sample();
+    protected abstract void SolvePart1_Actual();
+    protected abstract void SolvePart2_Actual();
+    
     [Test]
-    public virtual void Part1_Sample()
+    public void Part1_Sample()
     {
-        throw new NotImplementedException();
+        var t = Stopwatch.StartNew();
+        SolvePart1_Sample();
+        t.Stop();
+        Console.WriteLine($"Part 1 sample:\t{t.ElapsedMilliseconds}ms");
     }
     
     [Test]
-    public virtual void Part1_Actual()
+    public void Part1_Actual()
     {
-        throw new NotImplementedException();
+        var t = Stopwatch.StartNew();
+        SolvePart1_Actual();
+        t.Stop();
+        Console.WriteLine($"Part 1 actual:\t{t.ElapsedMilliseconds}ms");
     }
     
     [Test]
-    public virtual void Part2_Sample()
+    public void Part2_Sample()
     {
-        throw new NotImplementedException();
+        var t = Stopwatch.StartNew();
+        SolvePart2_Sample();
+        t.Stop();
+        Console.WriteLine($"Part 2 sample:\t{t.ElapsedMilliseconds}ms");
     }
     
     [Test]
-    public virtual void Part2_Actual()
+    public void Part2_Actual()
     {
-        throw new NotImplementedException();
+        var t = Stopwatch.StartNew();
+        SolvePart2_Actual();
+        t.Stop();
+        Console.WriteLine($"Part 2 actual:\t{t.ElapsedMilliseconds}ms");
     }
 
     protected IEnumerable<string> get_sample(int partNumber = 1)

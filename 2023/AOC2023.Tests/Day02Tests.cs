@@ -5,8 +5,7 @@ namespace AOC2023.Tests;
 
 public class Day02Tests : TestBase
 {
-    [Test]
-    public override void Part1_Sample()
+    protected override void SolvePart1_Sample()
     {
         // Arrange
         var games = get_sample()
@@ -23,8 +22,7 @@ public class Day02Tests : TestBase
     }
     
     
-    [Test]
-    public override void Part1_Actual()
+    protected override void SolvePart1_Actual()
     {
         // Arrange
         var games = get_input()
@@ -40,8 +38,7 @@ public class Day02Tests : TestBase
         actualSum.ShouldBe(expectedSum);
     }
     
-    [Test]
-    public override void Part2_Sample()
+    protected override void SolvePart2_Sample()
     {
         // Arrange
         var games = get_sample()
@@ -56,8 +53,7 @@ public class Day02Tests : TestBase
     }
 
     
-    [Test]
-    public override void Part2_Actual()
+    protected override void SolvePart2_Actual()
     {
         // Arrange
         var games = get_input()
