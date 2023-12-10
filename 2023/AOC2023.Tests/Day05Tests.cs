@@ -41,7 +41,6 @@ public class Day05Tests : TestBase
     private class Almanac
     {
         private readonly List<ResourceMap> _resourceMaps = new ();
-        private readonly List<long> _seeds = new ();
         public long LowestLocationNumber { get; private set; }
 
         public Almanac(List<string> almanac, bool part1 = true)
@@ -50,24 +49,18 @@ public class Day05Tests : TestBase
                 .Select(long.Parse).ToList();
             
             if (part1)
-                _seeds.AddRange(seedValues);
+                _resourceMaps.Add(new ResourceMap("seed", seedValues.Select(x => (x,x)).ToList()));
             else
             {
+                var seedRanges = new List<(long start, long end)>();
                 for (int i = 0; i < seedValues.Count; i += 2)
-                    _seeds.AddRange(GetSeedsToCheck(seedValues[i], seedValues[i+1]));
+                    seedRanges.Add((seedValues[i], seedValues[i] + seedValues[i+1] - 1));
+                _resourceMaps.Add(new ResourceMap("seed", seedRanges));
             }
             
             Initialize(almanac);
         }
         
-        private IEnumerable<long> GetSeedsToCheck(long start, long count)
-        {
-            for (long i = 0; i < count; i++)
-            {
-                yield return start + i;
-            }
-        }
-
         private void Initialize(List<string> almanac)
         {
             var currentMappingBlock = new List<string>();
@@ -84,8 +77,10 @@ public class Day05Tests : TestBase
                 currentMappingBlock.Add(almanacEntry);
             }
             _resourceMaps.Add(new ResourceMap(currentMappingBlock));
-            LowestLocationNumber = int.MaxValue;
+            LowestLocationNumber = long.MaxValue;
         
+            // helpful - looks similar to what I'm trying to do, just can't wrap my head around it yet
+            // https://github.com/warriordog/advent-of-code-2023/blob/main/Solutions/Day05/Almanac.cs
             foreach (var seed in _seeds)
             {
                 var currentLocation = FindMap(seed, "seed", "location");
@@ -114,6 +109,14 @@ public class Day05Tests : TestBase
         public List<(long start, long end)> DestinationMapping { get; private set; }
         public List<(long start, long end)> SourceMapping { get; private set; }
 
+        public ResourceMap (string destName, List<(long start, long end)> destMap)
+        {
+            Source = string.Empty;
+            Destination = destName;
+            SourceMapping = new List<(long start, long end)>();
+            DestinationMapping = new List<(long start, long end)>();
+            DestinationMapping.AddRange(destMap);
+        }
         public ResourceMap(List<string> definition)
         {
             var mapNameMatch = _mapNameRegex.Match(definition[0]);
@@ -142,6 +145,11 @@ public class Day05Tests : TestBase
             }
 
             return sourceValue;
+        }
+        
+        public bool ContainsDestinationValue(long destinationValue)
+        {
+            return DestinationMapping.Any(x => x.start <= destinationValue && x.end >= destinationValue);
         }
     }
 }
