@@ -81,12 +81,12 @@ public class Day05Tests : TestBase
         
             // helpful - looks similar to what I'm trying to do, just can't wrap my head around it yet
             // https://github.com/warriordog/advent-of-code-2023/blob/main/Solutions/Day05/Almanac.cs
-            foreach (var seed in _seeds)
-            {
-                var currentLocation = FindMap(seed, "seed", "location");
-                if (currentLocation < LowestLocationNumber)
-                    LowestLocationNumber = currentLocation;
-            }
+            // foreach (var seed in _seeds)
+            // {
+            //     var currentLocation = FindMap(seed, "seed", "location");
+            //     if (currentLocation < LowestLocationNumber)
+            //         LowestLocationNumber = currentLocation;
+            // }
         }
         
         
