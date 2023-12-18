@@ -20,7 +20,7 @@ public class Day08Tests : TestBase
     {
         var input = get_input().ToList();
         var step = FindStepsToZZZ(input);
-        step.ShouldBe(6);
+        step.ShouldBe(19637L);
     }
 
     protected override void SolvePart2_Actual()
@@ -35,7 +35,7 @@ public class Day08Tests : TestBase
             .Select(x => new Node(x))
             .ToList();
         nodes.ForEach(x => x.SetNodeLinks(nodes));
-        var currentNode = nodes[0];
+        var currentNode = nodes.First(x => x.ID == "AAA");
         var step = 0L;
         var totalInstructions = instructions.Length;
         while (currentNode.ID != "ZZZ")

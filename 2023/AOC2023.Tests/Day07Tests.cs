@@ -58,6 +58,15 @@ public class Day07Tests : TestBase
                 return -1;
             for (int i = 0; i < x.Cards.Length; i++)
             {
+                if (x.Type == HandType.HighCard)
+                {
+                    // var xHighest = x.Cards.MaxBy(c => _cardValueMap[c]);
+                    // var yHighest = y.Cards.MaxBy(c => _cardValueMap[c]);
+                    // if (xHighest > yHighest)
+                    //     return 1;
+                    // if (xHighest < yHighest)
+                    //     return -1;
+                }
                 if (_cardValueMap[x.Cards[i]] > _cardValueMap[y.Cards[i]])
                     return 1;
                 if (_cardValueMap[x.Cards[i]] < _cardValueMap[y.Cards[i]])
