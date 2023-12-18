@@ -14,36 +14,59 @@ public abstract class TestBase
     public void Part1_Sample()
     {
         var t = Stopwatch.StartNew();
-        SolvePart1_Sample();
-        t.Stop();
-        Console.WriteLine($"Part 1 sample:\t{t.ElapsedMilliseconds}ms");
+        try
+        {
+            SolvePart1_Sample();
+        }
+        finally
+        {
+            t.Stop();
+            Console.WriteLine($"Part 1 sample:\t{t.ElapsedMilliseconds}ms");            
+        }
+
     }
     
     [Test]
     public void Part1_Actual()
     {
         var t = Stopwatch.StartNew();
-        SolvePart1_Actual();
-        t.Stop();
-        Console.WriteLine($"Part 1 actual:\t{t.ElapsedMilliseconds}ms");
+        try
+        {
+            SolvePart1_Actual();
+        }
+        finally
+        {
+            t.Stop();
+            Console.WriteLine($"Part 1 actual:\t{t.ElapsedMilliseconds}ms");            
+        }
     }
     
     [Test]
     public void Part2_Sample()
     {
-        var t = Stopwatch.StartNew();
-        SolvePart2_Sample();
-        t.Stop();
-        Console.WriteLine($"Part 2 sample:\t{t.ElapsedMilliseconds}ms");
+        var t = Stopwatch.StartNew();try
+        {
+            SolvePart2_Sample();
+        }
+        finally
+        {
+            t.Stop();
+            Console.WriteLine($"Part 2 sample:\t{t.ElapsedMilliseconds}ms");            
+        }
     }
     
     [Test]
     public void Part2_Actual()
     {
-        var t = Stopwatch.StartNew();
-        SolvePart2_Actual();
-        t.Stop();
-        Console.WriteLine($"Part 2 actual:\t{t.ElapsedMilliseconds}ms");
+        var t = Stopwatch.StartNew();try
+        {
+            SolvePart2_Actual();
+        }
+        finally
+        {
+            t.Stop();
+            Console.WriteLine($"Part 2 actual:\t{t.ElapsedMilliseconds}ms");            
+        }
     }
 
     protected IEnumerable<string> get_sample(int partNumber = 1)

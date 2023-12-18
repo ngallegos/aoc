@@ -28,22 +28,23 @@ public class Day08Tests : TestBase
         throw new NotImplementedException();
     }
 
-    private int FindStepsToZZZ(List<string> input)
+    private long  FindStepsToZZZ(List<string> input)
     {
         var instructions = input[0].ToCharArray();
         var nodes = input.Skip(2)
             .Select(x => new Node(x))
             .ToList();
+        nodes.ForEach(x => x.SetNodeLinks(nodes));
         var currentNode = nodes[0];
-        var step = 0;
+        var step = 0L;
         var totalInstructions = instructions.Length;
         while (currentNode.ID != "ZZZ")
         {
             var instruction = instructions[ step % totalInstructions];
             if (instruction == 'L')
-                currentNode = nodes.First(x => x.ID == currentNode.Left);
+                currentNode = currentNode.Left;
             else
-                currentNode = nodes.First(x => x.ID == currentNode.Right);
+                currentNode = currentNode.Right;
             step++;
         }
 
@@ -53,15 +54,23 @@ public class Day08Tests : TestBase
     private class Node
     {
         public string ID { get; private set; }
-        public string Left { get; private set; }
-        public string Right { get; private set; }
+        public string LeftID { get; private set; }
+        public string RightID { get; private set; }
+        public Node Left { get; private set; }
+        public Node Right { get; private set; }
         public Node(string definition)
         {
             var parts = definition.Split('=', StringSplitOptions.TrimEntries);
             ID = parts[0];
             var destinations = parts[1].TrimStart('(').TrimEnd(')').Split(',', StringSplitOptions.TrimEntries);
-            Left = destinations[0];
-            Right = destinations[1];
+            LeftID = destinations[0];
+            RightID = destinations[1];
+        }
+        
+        public void SetNodeLinks(List<Node> nodes)
+        {
+            Left = nodes.First(x => x.ID == LeftID);
+            Right = nodes.First(x => x.ID == RightID);
         }
     }
 }
