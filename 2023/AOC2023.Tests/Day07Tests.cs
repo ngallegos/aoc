@@ -22,7 +22,7 @@ public class Day07Tests : TestBase
         var hands = get_input(x => new Hand(x))
             .ToList();
         var totalWinnings = FindTotalWinnings(hands);
-        totalWinnings.ShouldBe(6440L);
+        totalWinnings.ShouldBe(253638586L);
     }
 
     protected override void SolvePart2_Actual()

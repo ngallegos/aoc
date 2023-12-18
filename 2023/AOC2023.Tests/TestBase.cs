@@ -75,7 +75,7 @@ public abstract class TestBase
         Console.WriteLine($"Input parsing:\t{t.ElapsedMilliseconds}ms");
     }
         
-    protected IEnumerable<T> get_input<T>(Func<string, T> transform, int partNumber = 1, string type = "Input")
+    protected IEnumerable<T> get_input<T>(Func<string, T> transform, int partNumber = 1, string type = "day")
     {
         var inputs = get_input(partNumber, type);
         var t = new Stopwatch();
@@ -88,7 +88,7 @@ public abstract class TestBase
         Console.WriteLine($"Input transform:\t{t.ElapsedMilliseconds}ms");
     }
     
-    protected IEnumerable<T> get_sample<T>(Func<string, T> transform, int partNumber = 1, string type = "Input")
+    protected IEnumerable<T> get_sample<T>(Func<string, T> transform, int partNumber = 1, string type = "day")
     {
         var inputs = get_sample(partNumber);
         var t = new Stopwatch();
