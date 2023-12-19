@@ -48,6 +48,35 @@ public class Day19Tests : TestBase
         
         return acceptedParts.Sum(x => x.TotalRating);
     }
+    
+    private static int GetAcceptableCombinations(List<string> input)
+    {
+        var workflows = input.TakeWhile(x => !string.IsNullOrEmpty(x))
+            .Select(x => new Workflow(x)).ToList();
+        var bounds = workflows.SelectMany(x => x.Rules)
+            .Where(x => x.HasDefinition)
+            .GroupBy(x => new { x.RatingName, x.LessThan })
+            .Select(x => new
+            {
+                x.Key.RatingName, 
+                x.Key.LessThan,
+                Boundary = x.Key.LessThan ? x.Max(g => Math.Min(g.RatingLimit, 4000)) : x.Min(g => Math.Max(g.RatingLimit, 1))
+            })
+            .ToList();
+        var parts = input.Skip(workflows.Count + 1)
+            .Select(x => JsonConvert.DeserializeObject<Part>(x.Replace('=', ':')))
+            .ToList();
+        var inFlow = workflows.First(x => x.ID == "in");
+        var acceptedParts = new List<Part>();
+        foreach (var part in parts)
+        {
+            if (inFlow.CheckPart(part, workflows))
+                acceptedParts.Add(part);
+        }
+        
+        return acceptedParts.Sum(x => x.TotalRating);
+    }
+    
     private class Part
     {
         public int x { get; set; }
@@ -64,25 +93,34 @@ public class Day19Tests : TestBase
         private static Regex _definitionRegex = new Regex(@"^(?<prop>[xmas])(?<operator>[\<\>])(?<limit>\d+)$");
         private static PropertyInfo[] _partProps = typeof(Part).GetProperties();
         
+        public bool HasDefinition => !string.IsNullOrEmpty(_definition);
+        public string RatingName { get; private set; }
+        public bool LessThan { get; private set; }
+        public int RatingLimit { get; private set; }
+        
         public Rule(string expression)
         {
             var parts = expression.Split(':');
             _result = parts.Last();
             _definition = parts.Length < 2 ? "" : parts.First().Trim();
+            if (HasDefinition)
+            {
+                var match = _definitionRegex.Match(_definition);
+                RatingName = match.Groups["prop"].Value;
+                var op = match.Groups["operator"].Value;
+                LessThan = op == "<";
+                RatingLimit = int.Parse(match.Groups["limit"].Value);
+            }
         }
 
         public bool Evaluate(Part part)
         {
-            if (!string.IsNullOrEmpty(_definition))
+            if (HasDefinition)
             {
-                var match = _definitionRegex.Match(_definition);
-                var prop = match.Groups["prop"].Value;
-                var op = match.Groups["operator"].Value;
-                var limit = int.Parse(match.Groups["limit"].Value);
-                var propValue = GetPropertyValue(part, prop);
-                if (op == ">")
-                    return propValue > limit;
-                return propValue < limit;
+                var propValue = GetPropertyValue(part, RatingName);
+                if (LessThan)
+                    return propValue < RatingLimit;
+                return propValue > RatingLimit;
             }
 
             return true;
