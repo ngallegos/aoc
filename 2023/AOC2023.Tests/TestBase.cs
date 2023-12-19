@@ -6,8 +6,8 @@ namespace AOC2023.Tests;
 public abstract class TestBase
 {
     protected abstract void SolvePart1_Sample();
-    protected abstract void SolvePart2_Sample();
     protected abstract void SolvePart1_Actual();
+    protected abstract void SolvePart2_Sample();
     protected abstract void SolvePart2_Actual();
     
     [Test]
