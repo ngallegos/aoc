@@ -13,6 +13,7 @@ public class Day08Tests : TestBase
 
     protected override void SolvePart2_Sample()
     {
+        // https://www.reddit.com/r/adventofcode/comments/18df7px/2023_day_8_solutions/
         throw new NotImplementedException();
     }
 
