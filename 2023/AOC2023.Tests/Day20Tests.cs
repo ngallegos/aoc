@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Shouldly;
 
 namespace AOC2023.Tests;
 
@@ -8,6 +9,14 @@ public class Day20Tests : TestBase
     {
         var modules = get_sample(Module.Create)
             .ToList();
+        modules.ForEach(m => m.LinkInputsAndOutputs(modules));
+        var broadcast = modules.First(x => x.ID == "broadcaster");
+        for(int i = 0; i < 1000; i++)
+            broadcast.ProcessInput("", Pulse.Low);
+        var totalLowPulses = modules.Select(x => x.LowPulsesSent).Sum();
+        var totalHighPulses = modules.Select(x => x.HighPulsesSent).Sum();
+        long result = totalHighPulses * totalLowPulses;
+        result.ShouldBe(32000000L);
     }
 
     protected override void SolvePart1_Actual()
@@ -27,26 +36,48 @@ public class Day20Tests : TestBase
 
     private class FlipFlop : Module
     {
-        protected override Pulse Process(Pulse inputPulse)
+        private bool _isOn = false;
+        protected override Pulse? Process(string inputID, Pulse inputPulse)
         {
-            throw new NotImplementedException();
+            if (inputPulse == Pulse.High)
+                return null;
+            _isOn = !_isOn;
+            if (_isOn)
+                return Pulse.High;
+            return Pulse.Low;
         }
     }
     
     private class Conjunction : Module
     {
-        protected override Pulse Process(Pulse inputPulse)
+        private Dictionary<string, Pulse> _lastInputPulses = new();
+        
+        public Conjunction()
         {
-            throw new NotImplementedException();
+            InputsLinked += OnInputsLinked;
         }
+
+        private void OnInputsLinked(object? sender, EventArgs e)
+        {
+            _lastInputPulses = Inputs.ToDictionary(x => x.ID, _ => Pulse.Low);
+        }
+
+        protected override Pulse? Process(string inputID, Pulse inputPulse)
+        {
+            _lastInputPulses[inputID] = inputPulse;
+            if (_lastInputPulses.Values.All(x => x == Pulse.High))
+                return Pulse.Low;
+            return Pulse.High;
+        }
+        
+        
     }
     
     private class Broadcast : Module
     {
-
-        protected override Pulse Process(Pulse inputPulse)
+        protected override Pulse? Process(string inputID, Pulse inputPulse)
         {
-            throw new NotImplementedException();
+            return inputPulse;
         }
     }
     
@@ -56,7 +87,10 @@ public class Day20Tests : TestBase
         protected List<Module> Inputs { get; set; } = new();
         protected List<Module> Outputs { get; set; } = new();
         public string[] OutputIDS = Array.Empty<string>();
+        public int HighPulsesSent { get; private set; }
+        public int LowPulsesSent { get; private set; }
         public event EventHandler<InputProcessedEventArgs> InputProcessed;
+        public event EventHandler InputsLinked;
 
         private static Regex _definitionRegex = new Regex(@"^(?<type>[%&]?)(?<id>[a-z]+) -> (?<outputs>.*)$");
 
@@ -89,15 +123,34 @@ public class Day20Tests : TestBase
             return module;
         }
 
-        public void AssignInputs(List<Module> inputs)
+        public virtual void LinkInputsAndOutputs(List<Module> modules)
         {
-            
+            Inputs = modules.Where(x => x.OutputIDS.Contains(ID)).ToList();
+            Outputs = modules.Where(x => OutputIDS.Contains(x.ID)).ToList();
+            Inputs.ForEach(i => i.InputProcessed += OnInputProcessed);
+            InputsLinked?.Invoke(this, EventArgs.Empty);
         }
-        
-        protected abstract Pulse Process(Pulse inputPulse);
-        public void ProcessInput(Pulse inputPulse)
+
+        private void OnInputProcessed(object? sender, InputProcessedEventArgs e)
         {
-            var outputPulse = Process(inputPulse);
+            if (e.OutputPulse == Pulse.High)
+                HighPulsesSent++;
+            if (e.OutputPulse == Pulse.Low)
+                LowPulsesSent++;
+        }
+
+        protected abstract Pulse? Process(string inputID, Pulse inputPulse);
+        public void ProcessInput(string inputID, Pulse inputPulse)
+        {
+            var outputPulse = Process(inputID, inputPulse);
+            if (outputPulse.HasValue)
+            {
+                foreach (var output in Outputs)
+                {
+                    output.ProcessInput(ID, outputPulse.Value);
+                }
+            }
+
             InputProcessed?.Invoke(this, new InputProcessedEventArgs
             {
                 Module = this,
@@ -111,7 +164,7 @@ public class Day20Tests : TestBase
     {
         public Module Module { get; set; }
         public Pulse InputPulse { get; set; }
-        public Pulse OutputPulse { get; set; }
+        public Pulse? OutputPulse { get; set; }
     }
     private enum Pulse
     {
