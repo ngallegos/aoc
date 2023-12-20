@@ -27,6 +27,7 @@
       <EmbeddedResource Include="Inputs\day-08-01.txt" />
       <EmbeddedResource Include="Inputs\day-09-01.txt" />
       <EmbeddedResource Include="Inputs\day-19-01.txt" />
+      <EmbeddedResource Include="Inputs\day-20-01.txt" />
       <EmbeddedResource Include="Inputs\sample-01-01.txt" />
       <EmbeddedResource Include="Inputs\sample-01-02.txt" />
       <EmbeddedResource Include="Inputs\sample-02-01.txt" />
@@ -38,6 +39,7 @@
       <EmbeddedResource Include="Inputs\sample-08-01.txt" />
       <EmbeddedResource Include="Inputs\sample-09-01.txt" />
       <EmbeddedResource Include="Inputs\sample-19-01.txt" />
+      <EmbeddedResource Include="Inputs\sample-20-01.txt" />
     </ItemGroup>
 
 </Project>
