@@ -53,45 +53,63 @@ public class Day19Tests : TestBase
     
     private static long GetAcceptableCombinations(List<string> input)
     {
+        var maxBound = 4001;
+        var minBound = 0;
+        
         var workflows = input.TakeWhile(x => !string.IsNullOrEmpty(x))
             .Select(x => new Workflow(x)).ToList();
         
         var inFlow = workflows.First(x => x.ID == "in");
         var possibleWorkflows = inFlow.FindPossibleWorkflows(workflows);
         var bounds = possibleWorkflows.SelectMany(x => x.Rules)
-            .Where(x => x.HasDefinition)
-            .GroupBy(x => new { x.RatingName, x.LessThan })
+            .Where(x => (x.HasDefinition && x.ResultAccepts != false) || x.ResultAccepts == true)
+            .GroupBy(x => new { x.RatingName, x.HasDefinition })
             .Select(x => new
             {
                 x.Key.RatingName, 
-                x.Key.LessThan,
-                Boundary = x.Key.LessThan ? x.Max(g => Math.Min(g.RatingLimit, 4000)) : x.Min(g => Math.Max(g.RatingLimit, 1))
+                x.Key.HasDefinition,
+                Boundaries = !x.Key.HasDefinition ? new { Min = minBound, Max = maxBound }
+                    : new { 
+                        Min = x.Where(g => !g.LessThan).Select(g => g.RatingLimit).DefaultIfEmpty(minBound).Min(), 
+                        Max = x.Where(g => g.LessThan).Select(g => g.RatingLimit).DefaultIfEmpty(maxBound).Max() 
+                    }
+            })
+            .GroupBy(x => x.RatingName)
+            .Select(x => new
+            {
+                RatingName = x.Key,
+                Max = x.Select(g => g.Boundaries.Max).Max(),
+                Min = x.Select(g => g.Boundaries.Min).Min()
             })
             .ToList();
 
-        long x = bounds.GroupBy(b => b.RatingName == "x")
+        long x = bounds.Where(b => b.RatingName == "x")
+            .GroupBy(b => b.RatingName)
             .Select(b => new
             {
-                Max = b.FirstOrDefault(g => g.LessThan)?.Boundary ?? 4001,
-                Min = b.FirstOrDefault(g => !g.LessThan)?.Boundary ?? 0
+                Max = b.FirstOrDefault()?.Max ?? maxBound,
+                Min = b.FirstOrDefault()?.Min ?? minBound
             }).Select(b => b.Max - b.Min).First();
-        long m = bounds.GroupBy(b => b.RatingName == "m")
+        long m = bounds.Where(b => b.RatingName == "m")
+            .GroupBy(b => b.RatingName)
             .Select(b => new
             {
-                Max = b.FirstOrDefault(g => g.LessThan)?.Boundary ?? 4001,
-                Min = b.FirstOrDefault(g => !g.LessThan)?.Boundary ?? 0
+                Max = b.FirstOrDefault()?.Max ?? maxBound,
+                Min = b.FirstOrDefault()?.Min ?? minBound
             }).Select(b => b.Max - b.Min).First();
-        long a = bounds.GroupBy(b => b.RatingName == "a")
+        long a = bounds.Where(b => b.RatingName == "a")
+            .GroupBy(b => b.RatingName)
             .Select(b => new
             {
-                Max = b.FirstOrDefault(g => g.LessThan)?.Boundary ?? 4001,
-                Min = b.FirstOrDefault(g => !g.LessThan)?.Boundary ?? 0
+                Max = b.FirstOrDefault()?.Max ?? maxBound,
+                Min = b.FirstOrDefault()?.Min ?? minBound
             }).Select(b => b.Max - b.Min).First();
-        long s = bounds.GroupBy(b => b.RatingName == "s")
+        long s = bounds.Where(b => b.RatingName == "s")
+            .GroupBy(b => b.RatingName)
             .Select(b => new
             {
-                Max = b.FirstOrDefault(g => g.LessThan)?.Boundary ?? 4001,
-                Min = b.FirstOrDefault(g => !g.LessThan)?.Boundary ?? 0
+                Max = b.FirstOrDefault()?.Max ?? maxBound,
+                Min = b.FirstOrDefault()?.Min ?? minBound
             }).Select(b => b.Max - b.Min).First();
 
         return x * m * a * s;
@@ -115,6 +133,7 @@ public class Day19Tests : TestBase
         private static PropertyInfo[] _partProps = typeof(Part).GetProperties();
         private string _resultWorkflowID;
         public string ResultWorkflowID => _resultWorkflowID;
+        public bool? ResultAccepts => _result == "A" ? true : _result == "R" ? false : null;
         
         public bool HasDefinition => !string.IsNullOrEmpty(_definition);
         public string RatingName { get; private set; }
@@ -126,11 +145,11 @@ public class Day19Tests : TestBase
             var parts = expression.Split(':');
             _result = parts.Last();
             _definition = parts.Length < 2 ? "" : parts.First().Trim();
+            var workflowMatch = _workflowIDRegex.Match(_result);
+            if (workflowMatch.Success)
+                _resultWorkflowID = _result;
             if (HasDefinition)
             {
-                var workflowMatch = _workflowIDRegex.Match(_result);
-                if (workflowMatch.Success)
-                    _resultWorkflowID = _result;
                 var match = _definitionRegex.Match(_definition);
                 RatingName = match.Groups["prop"].Value;
                 var op = match.Groups["operator"].Value;
@@ -196,17 +215,17 @@ public class Day19Tests : TestBase
             return accepted;
         }
 
-        public List<Workflow> FindPossibleWorkflows(List<Workflow> allWorkFlows)
+        public List<Workflow> FindPossibleWorkflows(List<Workflow> allWorkFlows, List<Workflow> possibleWorkflows = null)
         {
-            var possibleWorkflows = new List<Workflow>();
+            possibleWorkflows ??= new List<Workflow>();
 
             possibleWorkflows.Add(this);
             foreach (var rule in Rules)
             {
-                if (!string.IsNullOrEmpty(rule.ResultWorkflowID))
+                if (!string.IsNullOrEmpty(rule.ResultWorkflowID) && possibleWorkflows.All(w => w.ID != rule.ResultWorkflowID))
                 {
                     var nextWorkflow = allWorkFlows.First(x => x.ID == rule.ResultWorkflowID);
-                    possibleWorkflows.AddRange(nextWorkflow.FindPossibleWorkflows(allWorkFlows));
+                    possibleWorkflows.AddRange(nextWorkflow.FindPossibleWorkflows(allWorkFlows, possibleWorkflows));
                 }
             }
             
