@@ -7,21 +7,43 @@ public class Day20Tests : TestBase
 {
     protected override void SolvePart1_Sample()
     {
-        var modules = get_sample(Module.Create)
-            .ToList();
-        modules.ForEach(m => m.LinkInputsAndOutputs(modules));
-        var broadcast = modules.First(x => x.ID == "broadcaster");
-        for(int i = 0; i < 1000; i++)
-            broadcast.ProcessInput("", Pulse.Low);
-        var totalLowPulses = modules.Select(x => x.LowPulsesSent).Sum();
-        var totalHighPulses = modules.Select(x => x.HighPulsesSent).Sum();
-        long result = totalHighPulses * totalLowPulses;
-        result.ShouldBe(32000000L);
+        var input = get_sample();
+        var result = GetProductOfHighAndLowPulses(input);
+        result.ShouldBe(11687500L);
     }
 
     protected override void SolvePart1_Actual()
     {
-        throw new NotImplementedException();
+        var input = get_input();
+        var result = GetProductOfHighAndLowPulses(input);
+        result.ShouldBe(11687500L);
+    }
+
+    private long GetProductOfHighAndLowPulses(IEnumerable<string> input)
+    {
+        var modules = input.Select(Module.Create)
+            .ToList();
+        modules.Insert(0, new Button());
+        modules.Add(new Output());
+        modules.ForEach(m => m.LinkInputsAndOutputs(modules));
+        for (int i = 0; i < 1000; i++)
+        {
+            var outgoingPulses = new Queue<(string inputID, Module output, Pulse pulse)>();
+            var button = modules.First(x => x.ID == "button");
+
+            outgoingPulses.Enqueue(button.ProcessInput(button.ID, Pulse.Low).First());
+            while (outgoingPulses.Any())
+            {
+                var pulseToProcess = outgoingPulses.Dequeue();
+                var outputs = pulseToProcess.output.ProcessInput(pulseToProcess.inputID, pulseToProcess.pulse);
+                foreach (var output in outputs)
+                    outgoingPulses.Enqueue(output);
+            }
+        }
+
+        long totalLowPulses = modules.Select(x => x.LowPulsesSent).Sum();
+        long totalHighPulses = modules.Select(x => x.HighPulsesSent).Sum();
+        return totalHighPulses * totalLowPulses;
     }
 
     protected override void SolvePart2_Sample()
@@ -69,8 +91,6 @@ public class Day20Tests : TestBase
                 return Pulse.Low;
             return Pulse.High;
         }
-        
-        
     }
     
     private class Broadcast : Module
@@ -78,6 +98,34 @@ public class Day20Tests : TestBase
         protected override Pulse? Process(string inputID, Pulse inputPulse)
         {
             return inputPulse;
+        }
+    }
+    
+    private class Output : Module
+    {
+        public Output()
+        {
+            ID = "output";
+            OutputIDS = new[] { "broadcaster" };
+        }
+        protected override Pulse? Process(string inputID, Pulse inputPulse)
+        {
+            return null;
+        }
+    }
+
+    private class Button : Module
+    {
+        public Button()
+        {
+            ID = "button";
+            OutputIDS = new[] { "broadcaster" };
+        }
+
+
+        protected override Pulse? Process(string inputID, Pulse inputPulse)
+        {
+            return Pulse.Low;
         }
     }
     
@@ -140,15 +188,14 @@ public class Day20Tests : TestBase
         }
 
         protected abstract Pulse? Process(string inputID, Pulse inputPulse);
-        public void ProcessInput(string inputID, Pulse inputPulse)
+        public List<(string inputID, Module output, Pulse pulse)> ProcessInput(string inputID, Pulse inputPulse)
         {
+            //Console.WriteLine($"{inputID} -{inputPulse}-> {ID}");
             var outputPulse = Process(inputID, inputPulse);
+            var outgoingPulses = new List<(string inputID, Module output, Pulse pulse)>();
             if (outputPulse.HasValue)
             {
-                foreach (var output in Outputs)
-                {
-                    output.ProcessInput(ID, outputPulse.Value);
-                }
+                outgoingPulses.AddRange(Outputs.Select(o => (ID, o, outputPulse.Value)));
             }
 
             InputProcessed?.Invoke(this, new InputProcessedEventArgs
@@ -157,6 +204,7 @@ public class Day20Tests : TestBase
                 InputPulse = inputPulse,
                 OutputPulse = outputPulse
             });
+            return outgoingPulses;
         }
     }
 
