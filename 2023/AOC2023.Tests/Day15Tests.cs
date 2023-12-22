@@ -18,7 +18,7 @@ public class Day15Tests : TestBase
         var hashSum = get_input(x => x.Split(',').Select(c => c.ComputeHash()))
             .SelectMany(x => x)
             .Sum();
-        hashSum.ShouldBe(1320);
+        hashSum.ShouldBe(518107);
     }
 
     protected override void SolvePart2_Sample()
@@ -26,6 +26,21 @@ public class Day15Tests : TestBase
         var steps = get_sample(x => x.Split(',').Select(i => new Step(i)))
             .SelectMany(x => x)
             .ToList();
+        var totalFocusingPower = GetTotalFocusingPower(steps);
+        totalFocusingPower.ShouldBe(145);
+    }
+
+    protected override void SolvePart2_Actual()
+    {
+        var steps = get_input(x => x.Split(',').Select(i => new Step(i)))
+            .SelectMany(x => x)
+            .ToList();
+        var totalFocusingPower = GetTotalFocusingPower(steps);
+        totalFocusingPower.ShouldBe(303404);
+    }
+
+    private int GetTotalFocusingPower(List<Step> steps)
+    {
         var lenses = new List<Lens>();
         foreach (var step in steps)
             step.Process(lenses);
@@ -37,17 +52,12 @@ public class Day15Tests : TestBase
                     .DefaultIfEmpty(0).Sum()
             });
         var totalFocusingPower = boxes.Sum(x => x.FocusingPower);
-        totalFocusingPower.ShouldBe(145);
-    }
-
-    protected override void SolvePart2_Actual()
-    {
-        throw new NotImplementedException();
+        return totalFocusingPower;
     }
 
     private class Step
     {
-        private static Regex _regex = new Regex(@"^(?<label>[a-z]+)(?<op>[+-])(?<flength>\d?)$");
+        private static Regex _regex = new Regex(@"^(?<label>[a-z]+)(?<op>[=-])(?<flength>\d?)$");
         public string Label { get; private set; }
         public char Operator { get; private set; }
         public int? FocalLength { get; private set; }
@@ -65,7 +75,7 @@ public class Day15Tests : TestBase
 
         public void Process(List<Lens> lenses)
         {
-            if (Operator == '+')
+            if (Operator == '=')
             {
                 var existingLens = lenses.FirstOrDefault(x => x.Label == Label);
                 if (existingLens == null)
