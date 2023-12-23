@@ -124,16 +124,30 @@ public abstract class TestBase
         Console.WriteLine($"Input transform:\t{t.ElapsedMilliseconds}ms");
     }
 
-    protected T[][] get_sample_grid<T>(Func<char, T> transform, int partNumber = 1)
+    protected T[,] get_sample_grid<T>(Func<char, (int x, int y), T> transform, int partNumber = 1)
     {
         var inputs = get_sample(partNumber).ToList();
-        var grid = new T[inputs.Count][];
-        for (var i = 0; i < inputs.Count; i++)
+        var grid = new T[inputs[0].Length, inputs.Count];
+        for (var j = 0; j < inputs.Count; j++)
         {
-            grid[i] = new T[inputs[i].Length];
-            for (var j = 0; j < inputs[i].Length; j++)
+            for (var i = 0; i < inputs[j].Length; i++)
             {
-                grid[i][j] = transform(inputs[i][j]);
+                grid[i,j] = transform(inputs[j][i], (i, j));
+            }
+        }
+
+        return grid;
+    }
+    
+    protected T[,] get_input_grid<T>(Func<char, (int x, int y), T> transform, int partNumber = 1)
+    {
+        var inputs = get_input(partNumber).ToList();
+        var grid = new T[inputs[0].Length, inputs.Count];
+        for (var j = 0; j < inputs.Count; j++)
+        {
+            for (var i = 0; i < inputs[j].Length; i++)
+            {
+                grid[i,j] = transform(inputs[j][i], (i, j));
             }
         }
 
