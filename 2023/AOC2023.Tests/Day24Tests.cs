@@ -33,7 +33,7 @@ public class Day24Tests : TestBase
                 if (intersects && intersection.HasValue)
                 {
                     var t = hailstone.GetTimeAtX(intersection.Value.x);
-                    if (t > 1) // future
+                    if (t > 0) // future
                         futureIntersections++;
                 }
             }
@@ -81,7 +81,7 @@ public class Day24Tests : TestBase
             return (Position.x + Velocity.x * time, Position.y + Velocity.y * time, Position.z + Velocity.z * time);
         }
 
-        private decimal GetY(decimal x)
+        private decimal Y(decimal x)
         {
             return _m * x + _b;
         }
@@ -95,12 +95,12 @@ public class Day24Tests : TestBase
             if (Math.Abs(Slope) == Math.Abs(other.Slope))
                 return null;
             var x = (other.Intercept - Intercept) / (Slope - other.Slope); 
-            return (x, GetY(x));
+            return (x, Y(x));
         }
         
-        public decimal GetTimeAtX(decimal x)
+        public long GetTimeAtX(decimal x)
         {
-            return (x - Position.x) / Velocity.x;
+            return (long)Math.Floor((x - Position.x) / Velocity.x);
         }
 
         public (bool, (decimal x, decimal y)?) IntersectsXY(Hailstone other, (long min, long max) bounds)
@@ -115,6 +115,12 @@ public class Day24Tests : TestBase
                 || intersection.y > bounds.max)
                 return (false, null);
             return (true, intersection);
+        }
+        
+        
+        public override string ToString()
+        {
+            return $"y = {_m}x + {_b}";
         }
     }
 }
