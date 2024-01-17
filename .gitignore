@@ -41,3 +41,6 @@ applicationhost.config
 obj/
 
 **/.idea/
+
+.DS_Store
+**/.DS_Store
