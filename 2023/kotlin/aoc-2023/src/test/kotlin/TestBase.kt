@@ -64,4 +64,21 @@ abstract class TestBase {
         }
         println("Part 2 actual:\t${timeTaken}");
     }
+    protected fun get_sample(partNumber: Int = 1) : Iterable<String>
+    {
+        return get_input(partNumber = partNumber, type = "sample");
+    }
+    protected fun get_input(partNumber: Int = 1, type: String = "day"): Iterable<String>{
+        val lines = mutableListOf<String>();
+        val timeTaken = measureTime {
+            val dayNumber = javaClass.name
+                .replace("Day", "")
+                .replace("Tests", "");
+            lines.addAll(javaClass.getResource("${type}-${dayNumber}-01.txt")
+                ?.readText()
+                ?.split("\n") ?: listOf<String>());
+        };
+        println("Input parsing:\t${timeTaken}")
+        return lines;
+    }
 }
