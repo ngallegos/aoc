@@ -46,11 +46,11 @@ class Day01Tests : TestBase() {
 
     private fun getNumberFromFirstAndLastLDigitsOrSpellingsInString(input: String): Int {
         val spellings = SpelledNumberMap.entries.map { e -> e.toString() };
-        val numRegex = Regex("""(\d|${spellings.joinToString("|")})""");
+        val numRegex = Regex("(\\d|${spellings.joinToString("|")})");
         val matches = mutableListOf<MatchResult?>();
-        matches.add(numRegex.matchAt(input, 0));
+        matches.add(numRegex.find(input, 0));
         while (matches.last() != null){
-            matches.add(numRegex.matchAt(input, matches.last()!!.range.first + 1));
+            matches.add(numRegex.find(input, matches.last()!!.range.first + 1));
         }
         matches.removeLast();
         val firstMatch = matches.first()!!.value;

@@ -74,7 +74,7 @@ abstract class TestBase {
             val dayNumber = javaClass.name
                 .replace("Day", "")
                 .replace("Tests", "");
-            lines.addAll(javaClass.getResource("${type}-${dayNumber}-01.txt")
+            lines.addAll(javaClass.getResource("${type}-${dayNumber}-${"%02d".format(partNumber)}.txt")
                 ?.readText()
                 ?.split("\n") ?: listOf<String>());
         };
