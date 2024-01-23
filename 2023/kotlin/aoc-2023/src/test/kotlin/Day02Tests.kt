@@ -21,6 +21,7 @@ class Day02Tests : TestBase() {
         // Arrange
         val games = get_input()
             .map{GetGameStats(it)};
+
         val expectedSum = 2283;
 
         // Act
