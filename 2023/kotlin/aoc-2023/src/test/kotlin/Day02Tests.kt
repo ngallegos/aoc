@@ -87,7 +87,7 @@ class Day02Tests : TestBase() {
         return game;
     }
 
-    public class Game {
+    class Game {
         public var GameNumber: Int = 0;
         public var MaxRed: Int = 0;
         public var MaxGreen: Int = 0;
