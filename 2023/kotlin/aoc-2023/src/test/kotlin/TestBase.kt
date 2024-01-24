@@ -1,84 +1,83 @@
 import kotlin.test.Test
-import kotlin.test.assertFails
 import kotlin.test.fail
 import kotlin.time.measureTime
 
 abstract class TestBase {
-    protected abstract fun SolvePart1_Sample();
-    protected abstract fun SolvePart1_Actual();
-    protected abstract fun SolvePart2_Sample();
-    protected abstract fun SolvePart2_Actual();
+    protected abstract fun solvePart1Sample()
+    protected abstract fun solvePart1Actual()
+    protected abstract fun solvePart2Sample()
+    protected abstract fun solvePart2Actual()
 
     @Test
-    public fun Part1_Sample(){
+    fun part1Sample(){
         val timeTaken = measureTime {
             try {
-                SolvePart1_Sample();
+                solvePart1Sample()
             } catch (e: Error){
-                fail(e.message);
+                fail(e.message)
             } catch (e: Exception){
-                fail(e.message);
+                fail(e.message)
             }
         }
-        println("Part 1 sample:\t${timeTaken}");
+        println("Part 1 sample:\t${timeTaken}")
     }
 
     @Test
-    public fun Part1_Actual(){
+    fun part1Actual(){
         val timeTaken = measureTime {
             try {
-                SolvePart1_Actual();
+                solvePart1Actual()
             } catch (e: Error){
-                fail(e.message);
+                fail(e.message)
             } catch (e: Exception){
-                fail(e.message);
+                fail(e.message)
             }
         }
-        println("Part 1 actual:\t${timeTaken}");
+        println("Part 1 actual:\t${timeTaken}")
     }
 
     @Test
-    public fun Part2_Sample(){
+    fun part2Sample(){
         val timeTaken = measureTime {
             try {
-                SolvePart2_Sample();
+                solvePart2Sample()
             } catch (e: Error){
-                fail(e.message);
+                fail(e.message)
             } catch (e: Exception){
-                fail(e.message);
+                fail(e.message)
             }
         }
-        println("Part 2 sample:\t${timeTaken}");
+        println("Part 2 sample:\t${timeTaken}")
     }
 
     @Test
-    public fun Part2_Actual(){
+    fun part2Actual(){
         val timeTaken = measureTime {
             try {
-                SolvePart2_Actual();
+                solvePart2Actual()
             } catch (e: Error){
-                fail(e.message);
+                fail(e.message)
             } catch (e: Exception){
-                fail(e.message);
+                fail(e.message)
             }
         }
-        println("Part 2 actual:\t${timeTaken}");
+        println("Part 2 actual:\t${timeTaken}")
     }
-    protected fun get_sample(partNumber: Int = 1) : Iterable<String>
+    protected fun getSample(partNumber: Int = 1) : Iterable<String>
     {
-        return get_input(partNumber = partNumber, type = "sample");
+        return getInput(partNumber = partNumber, type = "sample")
     }
-    protected fun get_input(partNumber: Int = 1, type: String = "day"): Iterable<String>{
-        val lines = mutableListOf<String>();
+    protected fun getInput(partNumber: Int = 1, type: String = "day"): Iterable<String>{
+        val lines = mutableListOf<String>()
         val timeTaken = measureTime {
             val dayNumber = javaClass.name
                 .replace("Day", "")
-                .replace("Tests", "");
+                .replace("Tests", "")
             lines.addAll(javaClass.getResource("${type}-${dayNumber}-${"%02d".format(partNumber)}.txt")
                 ?.readText()
-                ?.split("\n") ?: listOf<String>());
-        };
+                ?.split("\n") ?: listOf<String>())
+        }
         println("Input parsing:\t${timeTaken}")
-        return lines;
+        return lines
     }
 }
