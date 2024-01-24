@@ -41,20 +41,18 @@ class Day03Tests : TestBase() {
         lines.forEachIndexed { index, line -> engineParts.addAll(EnginePart.getPartsFromSchematicLine(line, index, lines)) }
 
         // Act
-        val validEngineParts = engineParts.filter { it.isAdjacentToGear }
-            .groupBy { it.gearLocation }
-            .filter { it.value.count() == 2 && it.key.isNotEmpty() }
-            .map{
-                object {
-                    val gearID = it.key
-                    val gearRatio = it.value[0].partNumber * it.value[1].partNumber
-                }
-            }
-        val actualSum = validEngineParts
-            .sumOf { it.gearRatio }
+        val validEngineParts = engineParts.filter { it.isAdjacentToGear }.asSequence();
+        val gears = validEngineParts.flatMap { it.gearLocations }.distinct();
+
+        var gearRatioSum = 0;
+        gears.forEach { gear ->
+            val parts = validEngineParts.filter { it.gearLocations.contains(gear) }.toList()
+            if (parts.count() == 2)
+                gearRatioSum += parts[0].partNumber * parts[1].partNumber
+        }
 
         // Assert
-        assertEquals(expectedGearRatioSum, actualSum)
+        assertEquals(expectedGearRatioSum, gearRatioSum)
     }
 
     override fun solvePart2Actual() {
@@ -65,28 +63,26 @@ class Day03Tests : TestBase() {
         lines.forEachIndexed { index, line -> engineParts.addAll(EnginePart.getPartsFromSchematicLine(line, index, lines)) }
 
         // Act
-        val validEngineParts = engineParts.filter { it.isAdjacentToGear }
-            .groupBy { it.gearLocation }
-            .filter { it.value.count() == 2 && it.key.isNotEmpty() }
-            .map{
-                object {
-                    val gearID = it.key
-                    val gearRatio = it.value[0].partNumber * it.value[1].partNumber
-                }
-            }
-        val actualSum = validEngineParts
-            .sumOf { it.gearRatio }
+        val validEngineParts = engineParts.filter { it.isAdjacentToGear }.asSequence();
+        val gears = validEngineParts.flatMap { it.gearLocations }.distinct();
+
+        var gearRatioSum = 0;
+        gears.forEach { gear ->
+            val parts = validEngineParts.filter { it.gearLocations.contains(gear) }.toList()
+            if (parts.count() == 2)
+                gearRatioSum += parts[0].partNumber * parts[1].partNumber
+        }
 
         // Assert
-        assertEquals(expectedGearRatioSum, actualSum)
+        assertEquals(expectedGearRatioSum, gearRatioSum)
     }
 
     class EnginePart{
         var partNumber: Int = 0
         var lineNumber: Int = 0
         var isAdjacentToSymbol: Boolean = false
-        var isAdjacentToGear: Boolean = false;
-        var gearLocation: String = "";
+        var isAdjacentToGear: Boolean = false
+        var gearLocations: MutableList<String> = mutableListOf()
 
         companion object {
             fun getPartsFromSchematicLine(line: String, lineNumber: Int, lines: List<String>): List<EnginePart>{
@@ -100,27 +96,26 @@ class Day03Tests : TestBase() {
                         ep.partNumber = it.value.toInt()
                         ep.lineNumber = lineNumber
                         if (it.range.first > 0){
-                            val precedingChar = line[it.range.first - 1];
+                            val precedingChar = line[it.range.first - 1]
                             if (precedingChar != '.') {
                                 ep.isAdjacentToSymbol = true
                                 if (precedingChar == '*') // gear
                                 {
-                                    ep.isAdjacentToGear = true;
-                                    ep.gearLocation = "${lineNumber}-${it.range.last - 1}";
+                                    ep.isAdjacentToGear = true
+                                    ep.gearLocations.add("${lineNumber}-${it.range.last - 1}")
                                 }
-                                return@map ep
                             }
                             possibleSymbolIndices.add(it.range.first - 1)
                         }
                         possibleSymbolIndices.addAll(it.range)
                         if (it.range.last < line.length - 1) {
-                            val succeedingChar = line[it.range.last + 1];
+                            val succeedingChar = line[it.range.last + 1]
                             if (line[it.range.last + 1] != '.'){
                                 ep.isAdjacentToSymbol = true
                                 if (succeedingChar == '*') // gear
                                 {
-                                    ep.isAdjacentToGear = true;
-                                    ep.gearLocation = "${lineNumber}-${it.range.last + 1}";
+                                    ep.isAdjacentToGear = true
+                                    ep.gearLocations.add("${lineNumber}-${it.range.last + 1}")
                                 }
                                 return@map  ep
                             }
@@ -128,30 +123,30 @@ class Day03Tests : TestBase() {
                         }
 
                         if (lineNumber > 0){
-                            val prevLineToCheck = lines[lineNumber - 1].substring(possibleSymbolIndices.first(), possibleSymbolIndices.last() + 1)
-                            val symbolChar = prevLineToCheck.find { c-> validSymbolRegex.matches(c.toString()) }
-                            if (symbolChar != null){
-                                ep.isAdjacentToSymbol = true
-                                if (symbolChar == '*') // gear
-                                {
-                                    ep.isAdjacentToGear = true;
-                                    ep.gearLocation = "${lineNumber - 1}-${lines[lineNumber - 1].indexOf(symbolChar)}";
+                            val prevLine = lines[lineNumber - 1]
+                            val prevLineToCheck = prevLine.substring(possibleSymbolIndices.first(), possibleSymbolIndices.last() + 1)
+                            prevLineToCheck.forEachIndexed{ index, c ->
+                                if (validSymbolRegex.matches(c.toString())){
+                                    ep.isAdjacentToSymbol = true;
+                                    if (c == '*'){
+                                        ep.isAdjacentToGear = true;
+                                        ep.gearLocations.add("${lineNumber - 1}-${possibleSymbolIndices.first() + index}")
+                                    }
                                 }
-                                return@map ep
                             }
                         }
 
                         if (lineNumber < lines.count() - 1){
-                            val nextLineToCheck = lines[lineNumber + 1].substring(possibleSymbolIndices.first(), possibleSymbolIndices.last() + 1)
-                            val symbolChar = nextLineToCheck.find { c-> validSymbolRegex.matches(c.toString()) }
-                            if (symbolChar != null){
-                                ep.isAdjacentToSymbol = true
-                                if (symbolChar == '*') // gear
-                                {
-                                    ep.isAdjacentToGear = true;
-                                    ep.gearLocation = "${lineNumber + 1}-${lines[lineNumber + 1].indexOf(symbolChar)}";
+                            val nextLine = lines[lineNumber + 1]
+                            val nextLineToCheck = nextLine.substring(possibleSymbolIndices.first(), possibleSymbolIndices.last() + 1)
+                            nextLineToCheck.forEachIndexed{ index, c ->
+                                if (validSymbolRegex.matches(c.toString())){
+                                    ep.isAdjacentToSymbol = true;
+                                    if (c == '*'){
+                                        ep.isAdjacentToGear = true;
+                                        ep.gearLocations.add("${lineNumber + 1}-${possibleSymbolIndices.first() + index}")
+                                    }
                                 }
-                                return@map ep
                             }
                         }
 
