@@ -41,10 +41,10 @@ class Day03Tests : TestBase() {
         lines.forEachIndexed { index, line -> engineParts.addAll(EnginePart.getPartsFromSchematicLine(line, index, lines)) }
 
         // Act
-        val validEngineParts = engineParts.filter { it.isAdjacentToGear }.asSequence();
-        val gears = validEngineParts.flatMap { it.gearLocations }.distinct();
+        val validEngineParts = engineParts.filter { it.isAdjacentToGear }.asSequence()
+        val gears = validEngineParts.flatMap { it.gearLocations }.distinct()
 
-        var gearRatioSum = 0;
+        var gearRatioSum = 0
         gears.forEach { gear ->
             val parts = validEngineParts.filter { it.gearLocations.contains(gear) }.toList()
             if (parts.count() == 2)
@@ -63,10 +63,10 @@ class Day03Tests : TestBase() {
         lines.forEachIndexed { index, line -> engineParts.addAll(EnginePart.getPartsFromSchematicLine(line, index, lines)) }
 
         // Act
-        val validEngineParts = engineParts.filter { it.isAdjacentToGear }.asSequence();
-        val gears = validEngineParts.flatMap { it.gearLocations }.distinct();
+        val validEngineParts = engineParts.filter { it.isAdjacentToGear }.asSequence()
+        val gears = validEngineParts.flatMap { it.gearLocations }.distinct()
 
-        var gearRatioSum = 0;
+        var gearRatioSum = 0
         gears.forEach { gear ->
             val parts = validEngineParts.filter { it.gearLocations.contains(gear) }.toList()
             if (parts.count() == 2)
@@ -127,9 +127,9 @@ class Day03Tests : TestBase() {
                             val prevLineToCheck = prevLine.substring(possibleSymbolIndices.first(), possibleSymbolIndices.last() + 1)
                             prevLineToCheck.forEachIndexed{ index, c ->
                                 if (validSymbolRegex.matches(c.toString())){
-                                    ep.isAdjacentToSymbol = true;
+                                    ep.isAdjacentToSymbol = true
                                     if (c == '*'){
-                                        ep.isAdjacentToGear = true;
+                                        ep.isAdjacentToGear = true
                                         ep.gearLocations.add("${lineNumber - 1}-${possibleSymbolIndices.first() + index}")
                                     }
                                 }
@@ -141,9 +141,9 @@ class Day03Tests : TestBase() {
                             val nextLineToCheck = nextLine.substring(possibleSymbolIndices.first(), possibleSymbolIndices.last() + 1)
                             nextLineToCheck.forEachIndexed{ index, c ->
                                 if (validSymbolRegex.matches(c.toString())){
-                                    ep.isAdjacentToSymbol = true;
+                                    ep.isAdjacentToSymbol = true
                                     if (c == '*'){
-                                        ep.isAdjacentToGear = true;
+                                        ep.isAdjacentToGear = true
                                         ep.gearLocations.add("${lineNumber + 1}-${possibleSymbolIndices.first() + index}")
                                     }
                                 }
