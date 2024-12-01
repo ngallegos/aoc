@@ -2,62 +2,88 @@ package day01
 
 import (
 	"bufio"
-	"log"
 	"os"
+	"slices"
+	"strconv"
+	"strings"
 	"testing"
 )
 
-func Part1(isSample bool) string {
-	var lines []string
+func Part1(isSample bool) int {
+	var col1 []int
+	var col2 []int
 	var err error
 	if isSample {
-		lines, err = readSample()
+		col1, col2, err = readSample()
 	} else {
-		lines, err = readInput()
+		col1, col2, err = readInput()
 	}
 
-	log.Println(err)
+	//log.Println(err)
 	if &err != nil {
-		return lines[0]
+		slices.Sort(col1)
+		slices.Sort(col2)
+		sum := 0
+
+		for i := 0; i < len(col1); i++ {
+			sum += absDiffInt(col1[i], col2[i])
+		}
+
+		return sum
 	}
-	return "failed to read"
+	return -1
 }
 
 func TestPart1(t *testing.T) {
 	result := Part1(false)
-	if result != "day 01" {
-		t.Errorf("Result was incorrect, got: %s, want: %s.", result, "day 1")
+	if result != 2367773 {
+		t.Errorf("Result was incorrect, got: %d, want: %s.", result, "2367773")
 	}
 
 }
 
 func TestSamplePart1(t *testing.T) {
 	result := Part1(true)
-	if result != "line1" {
-		t.Errorf("Result was incorrect, got: %s, want: %s.", result, "line1")
+	if result != 11 {
+		t.Errorf("Result was incorrect, got: %d, want: %s.", result, "11")
 	}
 }
 
-func readInput() ([]string, error) {
+func absDiffInt(x, y int) int {
+	if x < y {
+		return y - x
+	}
+	return x - y
+}
+
+func readInput() ([]int, []int, error) {
 	return readLines(`./input.txt`)
 }
 
-func readSample() ([]string, error) {
+func readSample() ([]int, []int, error) {
 	return readLines(`./sample.txt`)
 }
 
-func readLines(path string) ([]string, error) {
+func readLines(path string) ([]int, []int, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer file.Close()
 
-	var lines []string
+	var col1 []int
+	var col2 []int
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		line := strings.Fields(scanner.Text())
+		if i, err := strconv.Atoi(line[0]); err == nil {
+			col1 = append(col1, i)
+		}
+		if i, err := strconv.Atoi(line[1]); err == nil {
+			col2 = append(col2, i)
+		}
+		//lines = append(lines, scanner.Text())
 	}
-	log.Println(lines)
-	return lines, scanner.Err()
+	//log.Println(lines)
+	return col1, col2, scanner.Err()
 }
