@@ -2,7 +2,6 @@ package day02
 
 import (
 	"bufio"
-	"log"
 	"os"
 	"slices"
 	"strconv"
@@ -103,14 +102,14 @@ func Part2(isSample bool) int {
 			if unsafeReportFirstIndex > -1 {
 				moddedReport := slices.Clone(report)
 				moddedReport = append(moddedReport[:unsafeReportFirstIndex], moddedReport[unsafeReportFirstIndex+1:]...)
-				log.Println(report)
+				//log.Println(report)
 				for j := 0; j < (len(moddedReport) - 1); j++ {
 					prevDirection := direction
 					diff, curDirection := absDiffInt(moddedReport[j], moddedReport[j+1])
 					direction = curDirection
 					//log.Printf("%d -> %d", prevDirection, direction)
 					if diff < 1 || diff > 3 || (prevDirection != direction && prevDirection != 0) {
-						log.Printf("first chance: %v", moddedReport)
+						//log.Printf("first chance: %v", moddedReport)
 						reportIsSafe = false
 						break
 					}
@@ -121,14 +120,14 @@ func Part2(isSample bool) int {
 				reportIsSafe = true
 				moddedReport := slices.Clone(report)
 				moddedReport = append(moddedReport[:unsafeReportFirstIndex+1], moddedReport[unsafeReportFirstIndex+2:]...)
-				log.Println(report)
+				//log.Println(report)
 				for j := 0; j < (len(moddedReport) - 1); j++ {
 					prevDirection := direction
 					diff, curDirection := absDiffInt(moddedReport[j], moddedReport[j+1])
 					direction = curDirection
 					//log.Printf("%d -> %d", prevDirection, direction)
 					if diff < 1 || diff > 3 || (prevDirection != direction && prevDirection != 0) {
-						log.Printf("last chance: %v", moddedReport)
+						//log.Printf("last chance: %v", moddedReport)
 						reportIsSafe = false
 						break
 					}
