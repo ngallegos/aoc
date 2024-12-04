@@ -69,17 +69,15 @@ func Part2(isSample bool) int64 {
 
 	if &err != nil {
 		r := regexp.MustCompile(`mul\((\d+),(\d+)\)|do(n't)?\(\)`)
+		enabled := true
 		for i := 0; i < len(corruptedMemory); i++ {
 			matches := r.FindAllStringSubmatch(corruptedMemory[i], -1)
 			//log.Println(matches)
-			enabled := true
 			for _, m := range matches {
 				if m[0] == "do()" {
 					enabled = true
-					continue
 				} else if m[0] == "don't()" {
 					enabled = false
-					continue
 				} else if enabled {
 					arg1, err1 := strconv.Atoi(m[1])
 					arg2, err2 := strconv.Atoi(m[2])
@@ -99,8 +97,8 @@ func Part2(isSample bool) int64 {
 
 func TestPart2(t *testing.T) {
 	result := Part2(false)
-	if result != 175015740 {
-		t.Errorf("Result was incorrect, got: %d, want: %s.", result, "175015740")
+	if result != 112272912 {
+		t.Errorf("Result was incorrect, got: %d, want: %s.", result, "112272912")
 	}
 
 }
