@@ -2,7 +2,7 @@ package day11
 
 import (
 	"bufio"
-	"log"
+	//"log"
 	"os"
 	"strconv"
 	"strings"
@@ -19,17 +19,18 @@ func Part1(isSample bool) int {
 	}
 
 	if &err != nil && len(stones) > 0 {
-		numBlinks := 2
+		numBlinks := 25
 		curStoneCount := len(stones)
-		log.Printf("blink %d: curStoneCount %d stones\n\t %v", 0, curStoneCount, stones)
+		//log.Printf("blink %d: curStoneCount %d stones\n\t %v", 0, curStoneCount, stones)
 		for i := 0; i < numBlinks; i++ {
-			newStones := make([]int64, len(stones))
+			newStones := []int64{}
 			for _, stone := range stones {
 				newStones = append(newStones, blink(stone)...)
+				//log.Printf("new stone: %d\n\t%v", si, newStones)
 			}
 			curStoneCount = len(newStones)
 			stones = newStones
-			log.Printf("blink %d: curStoneCount %d stones\n\t %v", i+1, curStoneCount, stones)
+			//log.Printf("blink %d: curStoneCount %d stones\n\t %v\nnew stones\n\t %v", i+1, curStoneCount, stones, newStones)
 		}
 
 		return curStoneCount
@@ -45,7 +46,7 @@ func blink(stone int64) []int64 {
 	stoneStr := strconv.FormatInt(stone, 10)
 	if len(stoneStr)%2 == 0 {
 		mid := len(stoneStr) / 2
-		log.Println(mid)
+		//log.Println(mid)
 		newStone1, err1 := strconv.Atoi(stoneStr[:mid])
 		newStone2, err2 := strconv.Atoi(stoneStr[mid:])
 		if err1 != nil {
@@ -62,8 +63,8 @@ func blink(stone int64) []int64 {
 
 func TestPart1(t *testing.T) {
 	result := Part1(false)
-	if result != 0 {
-		t.Errorf("Result was incorrect, got: %d, want: %s.", result, "0")
+	if result != 229043 {
+		t.Errorf("Result was incorrect, got: %d, want: %s.", result, "229043")
 	}
 
 }
