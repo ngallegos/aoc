@@ -77,20 +77,30 @@ func TestSamplePart1(t *testing.T) {
 }
 
 func Part2(isSample bool) int {
-	var lines []int64
+	var stones []int64
 	var err error
 	if isSample {
-		lines, err = readSample()
+		stones, err = readSample()
 	} else {
-		lines, err = readInput()
+		stones, err = readInput()
 	}
 
-	results := -1
+	if &err != nil && len(stones) > 0 {
+		numBlinks := 75
+		curStoneCount := len(stones)
+		//log.Printf("blink %d: curStoneCount %d stones\n\t %v", 0, curStoneCount, stones)
+		for i := 0; i < numBlinks; i++ {
+			newStones := []int64{}
+			for _, stone := range stones {
+				newStones = append(newStones, blink(stone)...)
+				//log.Printf("new stone: %d\n\t%v", si, newStones)
+			}
+			curStoneCount = len(newStones)
+			stones = newStones
+			//log.Printf("blink %d: curStoneCount %d stones\n\t %v\nnew stones\n\t %v", i+1, curStoneCount, stones, newStones)
+		}
 
-	if &err != nil && len(lines) > 0 {
-		// todo - implement
-
-		return results
+		return curStoneCount
 	}
 
 	panic(err)
