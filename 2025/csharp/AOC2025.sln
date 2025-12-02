@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{1162A4F6-D7B0-48F3-857E-114C84CBA382}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOC2025.Tests", "AOC2025.Tests\AOC2025.Tests.csproj", "{48314B4F-B3D9-4CBE-BECE-873902FC8B6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOC.Helpers", "..\..\shared\csharp\AOC.Helpers\AOC.Helpers.csproj", "{EE676D27-9E19-4FF2-A910-CC809FD16B69}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48314B4F-B3D9-4CBE-BECE-873902FC8B6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48314B4F-B3D9-4CBE-BECE-873902FC8B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48314B4F-B3D9-4CBE-BECE-873902FC8B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48314B4F-B3D9-4CBE-BECE-873902FC8B6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE676D27-9E19-4FF2-A910-CC809FD16B69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE676D27-9E19-4FF2-A910-CC809FD16B69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE676D27-9E19-4FF2-A910-CC809FD16B69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE676D27-9E19-4FF2-A910-CC809FD16B69}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
