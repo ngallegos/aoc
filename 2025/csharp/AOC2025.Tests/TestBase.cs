@@ -87,9 +87,10 @@ public abstract class TestBase
         resouceName ??= resources.FirstOrDefault(x => x.Contains(type) && x.EndsWith($"{type}-{dayNumber:00}-01.txt"));
         using (var s = assembly.GetManifestResourceStream($"{resouceName}"))
         {
-            using (var sr = new StreamReader(s))
+            if (s != null)
             {
-                string line;
+                using var sr = new StreamReader(s);
+                string? line;
                 while ((line = sr.ReadLine()) != null)
                     yield return line;
             }
