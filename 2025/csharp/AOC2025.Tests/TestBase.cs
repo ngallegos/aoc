@@ -9,13 +9,18 @@ public abstract class TestBase
     protected abstract void SolvePart1_Actual();
     protected abstract void SolvePart2_Sample();
     protected abstract void SolvePart2_Actual();
-    
+
     [Test]
     public void Part1_Sample()
     {
         var t = Stopwatch.StartNew();
         try
         {
+            if (IsIgnored(nameof(SolvePart1_Sample), out var reason))
+            {
+                Assert.Ignore(reason ?? "Test is ignored");
+                return;
+            }
             SolvePart1_Sample();
         }
         finally
@@ -32,6 +37,11 @@ public abstract class TestBase
         var t = Stopwatch.StartNew();
         try
         {
+            if (IsIgnored(nameof(SolvePart1_Actual), out var reason))
+            {
+                Assert.Ignore(reason ?? "Test is ignored");
+                return;
+            }
             SolvePart1_Actual();
         }
         finally
@@ -46,6 +56,11 @@ public abstract class TestBase
     {
         var t = Stopwatch.StartNew();try
         {
+            if (IsIgnored(nameof(SolvePart2_Sample), out var reason))
+            {
+                Assert.Ignore(reason ?? "Test is ignored");
+                return;
+            }
             SolvePart2_Sample();
         }
         finally
@@ -60,6 +75,11 @@ public abstract class TestBase
     {
         var t = Stopwatch.StartNew();try
         {
+            if (IsIgnored(nameof(SolvePart2_Actual), out var reason))
+            {
+                Assert.Ignore(reason ?? "Test is ignored");
+                return;
+            }
             SolvePart2_Actual();
         }
         finally
@@ -67,6 +87,18 @@ public abstract class TestBase
             t.Stop();
             Console.WriteLine($"Part 2 actual:\t{t.ElapsedMilliseconds}ms");            
         }
+    }
+
+    bool IsIgnored(string methodName, out string? message)
+    {
+        var instanceType = this.GetType();
+        var methodInfo = instanceType.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
+        
+        var ignoreAttribute = methodInfo?.GetCustomAttributes(typeof(IgnoreAttribute), false).FirstOrDefault() as IgnoreAttribute;
+        
+        message = ignoreAttribute?.Reason;
+        
+        return ignoreAttribute != null;
     }
 
     protected IEnumerable<string> get_sample(int partNumber = 1)
