@@ -66,10 +66,9 @@ public class Day03Tests : TestBase
     {
         public long MaxJoltage { get; } = 0;
 
-        public Bank(string bank, int numBatteries = 2)
+        public Bank(string bank, int batteriesToProcess = 2)
         {
             var batteries = bank[..].Select(b => (int)char.GetNumericValue(b)).ToArray();
-            var batteriesToProcess = numBatteries;
             
             MaxJoltage = FindMaxJoltage(batteries, batteriesToProcess);
         }
@@ -82,19 +81,19 @@ public class Day03Tests : TestBase
                 return max;
             }
             
-            var maxIndex = Array.IndexOf(batteries, max);
+            var indexOfMaximum = Array.IndexOf(batteries, max);
             var remainingBatteries = batteriesToProcess - 1;
-            var maxPossibleIndex = batteries.Length - remainingBatteries;
+            var lastValidIndex = batteries.Length - remainingBatteries - 1;
             var multiplier = (long)Math.Pow(10, remainingBatteries);
-            if (maxIndex >= maxPossibleIndex)
+            if (indexOfMaximum > lastValidIndex)
             {
                 var validBatteries = batteries[..^remainingBatteries];
                 max = validBatteries.Max();
-                maxIndex = Array.IndexOf(validBatteries, max);
-                return max * multiplier + FindMaxJoltage(batteries[(maxIndex+1)..], remainingBatteries);
+                indexOfMaximum = Array.IndexOf(validBatteries, max);
+                return max * multiplier + FindMaxJoltage(batteries[(indexOfMaximum+1)..], remainingBatteries);
             }
             
-            return max * multiplier + FindMaxJoltage(batteries[(maxIndex+1)..], remainingBatteries);
+            return max * multiplier + FindMaxJoltage(batteries[(indexOfMaximum+1)..], remainingBatteries);
         }
     }
 }

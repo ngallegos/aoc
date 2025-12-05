@@ -33,19 +33,19 @@ public class BFS<T> where T : IEquatable<T>
         return null;
     }
 
-    private class BFSNode<T> : IEquatable<BFSNode<T>> where T : IEquatable<T>
+    private class BFSNode<TN> : IEquatable<BFSNode<T>> where TN : IEquatable<T>
     {
-        public T Item { get; }
-        public BFSNode<T> Parent { get; set; }
+        public TN Item { get; }
+        public BFSNode<TN>? Parent { get; set; }
 
-        public BFSNode(T item)
+        public BFSNode(TN item)
         {
             Item = item;
         }
 
-        public List<T> GetPath()
+        public List<TN> GetPath()
         {
-            var path = new List<T>();
+            var path = new List<TN>();
             var current = this;
             while (current != null)
             {
@@ -57,14 +57,14 @@ public class BFS<T> where T : IEquatable<T>
             return path;
         }
 
-        public bool Equals(BFSNode<T> other)
+        public bool Equals(BFSNode<T>? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Item.Equals(other.Item);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
