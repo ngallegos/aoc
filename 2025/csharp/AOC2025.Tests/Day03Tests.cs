@@ -14,7 +14,7 @@ public class Day03Tests : TestBase
         
         // Assert
         input.ShouldNotBeEmpty();
-        totalJoltage.ShouldBe(357);
+        totalJoltage.ShouldBe(357L);
     }
 
     protected override void SolvePart1_Actual()
@@ -29,37 +29,72 @@ public class Day03Tests : TestBase
         
         // Assert
         input.ShouldNotBeEmpty();
-        totalJoltage.ShouldBe(17166);
+        totalJoltage.ShouldBe(17166L);
     }
 
     protected override void SolvePart2_Sample()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var input = get_sample()
+            .Select(x => new Bank(x, 12))
+            .ToArray();
+        
+        // Act
+        var totalJoltage = input.Sum(b => b.MaxJoltage);
+        
+        // Assert
+        input.ShouldNotBeEmpty();
+        totalJoltage.ShouldBe(3121910778619L);
     }
 
     protected override void SolvePart2_Actual()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var input = get_input()
+            .Select(x => new Bank(x, 12))
+            .ToArray();
+        
+        // Act
+        var totalJoltage = input.Sum(b => b.MaxJoltage);
+        
+        // Assert
+        input.ShouldNotBeEmpty();
+        totalJoltage.ShouldBe(169077317650774L);
     }
 
     class Bank
     {
-        private int[] batteries;
-        public int MaxJoltage { get; } = 0;
+        public long MaxJoltage { get; } = 0;
 
-        public Bank(string bank)
+        public Bank(string bank, int numBatteries = 2)
         {
-            batteries = bank[..].Select(b => (int)char.GetNumericValue(b)).ToArray();
+            var batteries = bank[..].Select(b => (int)char.GetNumericValue(b)).ToArray();
+            var batteriesToProcess = numBatteries;
+            
+            MaxJoltage = FindMaxJoltage(batteries, batteriesToProcess);
+        }
+        
+        private long FindMaxJoltage(int[] batteries, int batteriesToProcess)
+        {
             var max = batteries.Max();
+            if (batteriesToProcess == 1)
+            {
+                return max;
+            }
+            
             var maxIndex = Array.IndexOf(batteries, max);
-            if (maxIndex == batteries.Length - 1)
+            var remainingBatteries = batteriesToProcess - 1;
+            var maxPossibleIndex = batteries.Length - remainingBatteries;
+            var multiplier = (long)Math.Pow(10, remainingBatteries);
+            if (maxIndex >= maxPossibleIndex)
             {
-                MaxJoltage = batteries[..^1].Max() * 10 + max;
+                var validBatteries = batteries[..^remainingBatteries];
+                max = validBatteries.Max();
+                maxIndex = Array.IndexOf(validBatteries, max);
+                return max * multiplier + FindMaxJoltage(batteries[(maxIndex+1)..], remainingBatteries);
             }
-            else
-            {
-                MaxJoltage = max * 10 + batteries[(maxIndex+1)..].Max();
-            }
+            
+            return max * multiplier + FindMaxJoltage(batteries[(maxIndex+1)..], remainingBatteries);
         }
     }
 }
