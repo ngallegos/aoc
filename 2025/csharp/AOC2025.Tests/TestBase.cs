@@ -1,3 +1,5 @@
+global using Shouldly;
+
 using System.Diagnostics;
 using System.Reflection;
 
