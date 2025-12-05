@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash
+jobs:
+  deploy:
+    name: CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5.0.1
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v5.0.1
+        with:
+          dotnet-version: 10.0.x
+      - name: Build
+        run: dotnet build 2025/csharp --configuration Release
+      - name: Run tests
+        run: dotnet test 2025/csharp
