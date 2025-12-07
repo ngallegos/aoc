@@ -2,6 +2,7 @@ global using Shouldly;
 
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace AOC2025.Tests;
 
@@ -105,12 +106,12 @@ public abstract class TestBase
         return ignoreAttribute != null;
     }
 
-    protected IEnumerable<string> get_sample(int partNumber = 1)
+    protected IEnumerable<string> get_sample(int partNumber = 1, [CallerMemberName] string callerName = "")
     {
-        return get_input(partNumber: partNumber, type: "sample");
+        return get_input(partNumber: partNumber, type: "sample", callerName: callerName);
     }
 
-    protected IEnumerable<string> get_input(int partNumber = 1, string type = "day")
+    protected IEnumerable<string> get_input(int partNumber = 1, string type = "day", [CallerMemberName] string callerName = "")
     {
         var t = new Stopwatch();
         t.Start();
@@ -132,10 +133,10 @@ public abstract class TestBase
             }
         }
         t.Stop();
-        Console.WriteLine($"Input parsing:\t{t.ElapsedMilliseconds}ms");
+        Console.WriteLine($"{TestClassName}.{callerName} Input parsing:\t{t.ElapsedMilliseconds}ms");
     }
         
-    protected IEnumerable<T> get_input<T>(Func<string, T> transform, int partNumber = 1, string type = "day")
+    protected IEnumerable<T> get_input<T>(Func<string, T> transform, int partNumber = 1, string type = "day", [CallerMemberName] string callerName = "")
     {
         var inputs = get_input(partNumber, type);
         var t = new Stopwatch();
@@ -145,10 +146,10 @@ public abstract class TestBase
             yield return transform(input);
         }
         t.Stop();
-        Console.WriteLine($"Input transform:\t{t.ElapsedMilliseconds}ms");
+        Console.WriteLine($"{TestClassName}.{callerName} Input transform:\t{t.ElapsedMilliseconds}ms");
     }
     
-    protected IEnumerable<T> get_sample<T>(Func<string, T> transform, int partNumber = 1, string type = "day")
+    protected IEnumerable<T> get_sample<T>(Func<string, T> transform, int partNumber = 1, string type = "day", [CallerMemberName] string callerName = "")
     {
         var inputs = get_sample(partNumber);
         var t = new Stopwatch();
@@ -158,7 +159,7 @@ public abstract class TestBase
             yield return transform(input);
         }
         t.Stop();
-        Console.WriteLine($"Input transform:\t{t.ElapsedMilliseconds}ms");
+        Console.WriteLine($"{TestClassName}.{callerName} Input transform:\t{t.ElapsedMilliseconds}ms");
     }
 
     protected T[,] get_sample_grid<T>(Func<char, (int x, int y), T> transform, int partNumber = 1)
