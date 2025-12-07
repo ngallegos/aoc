@@ -27,10 +27,12 @@
       <EmbeddedResource Include="Inputs\day-02-01.txt" />
       <EmbeddedResource Include="Inputs\day-03-01.txt" />
       <EmbeddedResource Include="Inputs\day-04-01.txt" />
+      <EmbeddedResource Include="Inputs\day-05-01.txt" />
       <EmbeddedResource Include="Inputs\sample-01-01.txt" />
       <EmbeddedResource Include="Inputs\sample-02-01.txt" />
       <EmbeddedResource Include="Inputs\sample-03-01.txt" />
       <EmbeddedResource Include="Inputs\sample-04-01.txt" />
+      <EmbeddedResource Include="Inputs\sample-05-01.txt" />
     </ItemGroup>
 
     <ItemGroup>
