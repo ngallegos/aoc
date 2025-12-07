@@ -12,6 +12,8 @@ public abstract class TestBase
     protected abstract void SolvePart2_Sample();
     protected abstract void SolvePart2_Actual();
 
+    string TestClassName => this.GetType().Name;
+    
     [Test]
     public void Part1_Sample()
     {
@@ -20,7 +22,7 @@ public abstract class TestBase
         {
             if (IsIgnored(nameof(SolvePart1_Sample), out var reason))
             {
-                Assert.Ignore(reason ?? "Test is ignored");
+                Assert.Ignore($"{TestClassName} {reason ?? "Test is ignored"}");
                 return;
             }
             SolvePart1_Sample();
@@ -28,7 +30,7 @@ public abstract class TestBase
         finally
         {
             t.Stop();
-            Console.WriteLine($"Part 1 sample:\t{t.ElapsedMilliseconds}ms");            
+            Console.WriteLine($"{TestClassName} Part 1 sample:\t{t.ElapsedMilliseconds}ms");            
         }
 
     }
@@ -41,7 +43,7 @@ public abstract class TestBase
         {
             if (IsIgnored(nameof(SolvePart1_Actual), out var reason))
             {
-                Assert.Ignore(reason ?? "Test is ignored");
+                Assert.Ignore($"{TestClassName} {reason ?? "Test is ignored"}");
                 return;
             }
             SolvePart1_Actual();
@@ -49,7 +51,7 @@ public abstract class TestBase
         finally
         {
             t.Stop();
-            Console.WriteLine($"Part 1 actual:\t{t.ElapsedMilliseconds}ms");            
+            Console.WriteLine($"{TestClassName} Part 1 actual:\t{t.ElapsedMilliseconds}ms");            
         }
     }
     
@@ -60,7 +62,7 @@ public abstract class TestBase
         {
             if (IsIgnored(nameof(SolvePart2_Sample), out var reason))
             {
-                Assert.Ignore(reason ?? "Test is ignored");
+                Assert.Ignore($"{TestClassName} {reason ?? "Test is ignored"}");
                 return;
             }
             SolvePart2_Sample();
@@ -68,7 +70,7 @@ public abstract class TestBase
         finally
         {
             t.Stop();
-            Console.WriteLine($"Part 2 sample:\t{t.ElapsedMilliseconds}ms");            
+            Console.WriteLine($"{TestClassName} Part 2 sample:\t{t.ElapsedMilliseconds}ms");            
         }
     }
     
@@ -79,7 +81,7 @@ public abstract class TestBase
         {
             if (IsIgnored(nameof(SolvePart2_Actual), out var reason))
             {
-                Assert.Ignore(reason ?? "Test is ignored");
+                Assert.Ignore($"{TestClassName} {reason ?? "Test is ignored"}");
                 return;
             }
             SolvePart2_Actual();
@@ -87,7 +89,7 @@ public abstract class TestBase
         finally
         {
             t.Stop();
-            Console.WriteLine($"Part 2 actual:\t{t.ElapsedMilliseconds}ms");            
+            Console.WriteLine($"{TestClassName} Part 2 actual:\t{t.ElapsedMilliseconds}ms");            
         }
     }
 
