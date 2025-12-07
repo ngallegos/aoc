@@ -10,7 +10,7 @@ defaults:
     shell: bash
 jobs:
   deploy:
-    name: CI
+    name: Run Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
