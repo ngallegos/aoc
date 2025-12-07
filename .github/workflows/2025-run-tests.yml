@@ -22,4 +22,5 @@ jobs:
       - name: Build
         run: dotnet build 2025/csharp --configuration Release
       - name: Run tests
-        run: dotnet test 2025/csharp
+        run: dotnet test 2025/csharp --logger "console;verbosity=normal"
+
