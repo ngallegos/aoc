@@ -12,7 +12,7 @@ public class Day04Tests : TestBase
             .ToArray();
         
         // Act
-        var accessiblePositions = CountAccessibleRolls(grid);
+        var accessiblePositions = GetAccessibleRolls(grid).Count;
 
         // Assert
         accessiblePositions.ShouldBe(13);
@@ -26,7 +26,7 @@ public class Day04Tests : TestBase
             .ToArray();
         
         // Act
-        var accessiblePositions = CountAccessibleRolls(grid);
+        var accessiblePositions = GetAccessibleRolls(grid).Count;
 
         // Assert
         accessiblePositions.ShouldBe(1587);
@@ -34,17 +34,35 @@ public class Day04Tests : TestBase
 
     protected override void SolvePart2_Sample()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var grid = get_sample()
+            .Select((line, i) => line.ToArray())
+            .ToArray();
+        
+        // Act
+        var accessiblePositions = RemoveAccessibleRolls(grid);
+
+        // Assert
+        accessiblePositions.ShouldBe(43);
     }
 
     protected override void SolvePart2_Actual()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var grid = get_input()
+            .Select((line, i) => line.ToArray())
+            .ToArray();
+        
+        // Act
+        var accessiblePositions = RemoveAccessibleRolls(grid);
+
+        // Assert
+        accessiblePositions.ShouldBe(8946);
     }
 
-    private int CountAccessibleRolls(char[][] grid)
+    private List<(int, int)> GetAccessibleRolls(char[][] grid)
     {
-        var accessiblePositions = 0;
+        var accessibleRolls = new List<(int, int)>();
         for (int y = 0; y < grid.Length; y++)
         {
             for (int x = 0; x < grid[y].Length; x++)
@@ -52,11 +70,28 @@ public class Day04Tests : TestBase
                 var value = grid[y][x];
                 if (value == '@' && grid.CountAdjacent(x, y, c => c == '.') > 4)
                 {
-                    accessiblePositions++;
+                    accessibleRolls.Add((x, y));
                 }
             }
         }
         
-        return accessiblePositions;
+        return accessibleRolls;
+    }
+
+    private int RemoveAccessibleRolls(char[][] grid)
+    {
+        var accessibleRolls = GetAccessibleRolls(grid);
+
+        if (accessibleRolls.Count == 0)
+        {
+            return 0;
+        }
+        
+        foreach (var (x, y) in accessibleRolls)
+        {
+            grid[y][x] = '.';
+        }
+
+        return accessibleRolls.Count + RemoveAccessibleRolls(grid);
     }
 }
