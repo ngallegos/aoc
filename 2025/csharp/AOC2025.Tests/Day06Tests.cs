@@ -8,7 +8,7 @@ public class Day06Tests : TestBase
         var worksheet = get_sample().ToList();
         
         // Act
-        var runningTotals = GetRunningTotals(worksheet);
+        var runningTotals = GetRunningTotals_RowLeftToRight(worksheet);
         
         var grandTotal = runningTotals.Sum();
         
@@ -22,7 +22,7 @@ public class Day06Tests : TestBase
         var worksheet = get_input().ToList();
         
         // Act
-        var runningTotals = GetRunningTotals(worksheet);
+        var runningTotals = GetRunningTotals_RowLeftToRight(worksheet);
         
         var grandTotal = runningTotals.Sum();
         
@@ -30,17 +30,19 @@ public class Day06Tests : TestBase
         grandTotal.ShouldBe(5381996914800L);
     }
 
+    [Ignore("Coming back to this...")]
     protected override void SolvePart2_Sample()
     {
         throw new System.NotImplementedException();
     }
 
+    [Ignore("Coming back to this...")]
     protected override void SolvePart2_Actual()
     {
         throw new System.NotImplementedException();
     }
 
-    long[] GetRunningTotals(List<string> worksheet)
+    long[] GetRunningTotals_RowLeftToRight(List<string> worksheet)
     {
         var operators = worksheet.Last().Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray();
         var numbers = worksheet[..^1].Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray()).ToArray();
