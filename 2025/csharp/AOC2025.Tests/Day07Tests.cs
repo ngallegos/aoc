@@ -1,4 +1,3 @@
-using System.Globalization;
 
 namespace AOC2025.Tests;
 
