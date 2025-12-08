@@ -44,7 +44,7 @@ public class Day07Tests : TestBase
             .Where(x => x.success)
             .Select(x => x.val).Sum();
 
-        printDiagram(diagram);
+        PrintDiagram(diagram);
         // Assert
         numberOfTimelines.ShouldBe(40);
     }
@@ -125,7 +125,7 @@ public class Day07Tests : TestBase
         PopulateParticlePaths(diagram, rowIndex, particleLocation + 1);
     }
     
-    private void printDiagram(string[][] diagram)
+    private void PrintDiagram(string[][] diagram)
     {
         foreach (var row in diagram)
         {
