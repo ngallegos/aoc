@@ -19,8 +19,8 @@ day_padded=$(printf "%02d" "$day")
 inputs_dir="./AOC2025.tests/Inputs"
 mkdir -p "$inputs_dir"
 
-day_file="$inputs_dir/day-${day}-01.txt"
-sample_file="$inputs_dir/sample-${day}-01.txt"
+day_file="$inputs_dir/day-${day_padded}-01.txt"
+sample_file="$inputs_dir/sample-${day_padded}-01.txt"
 
 for f in "$day_file" "$sample_file"; do
   if [ -e "$f" ]; then
