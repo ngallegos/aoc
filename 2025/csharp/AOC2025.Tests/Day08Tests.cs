@@ -14,7 +14,7 @@ public class Day08Tests : TestBase
             })
             .ToList();
         
-        var circuits = ProcessJunctionBoxes(junctionBoxes, connectionsToMake: 10);
+        var (circuits, _) = ProcessJunctionBoxes(junctionBoxes, connectionsToMake: 10);
         
         
         // Act
@@ -36,7 +36,7 @@ public class Day08Tests : TestBase
             })
             .ToList();
         
-        var circuits = ProcessJunctionBoxes(junctionBoxes, connectionsToMake: 1000);
+        var (circuits, _) = ProcessJunctionBoxes(junctionBoxes, connectionsToMake: 1000);
         
         
         // Act
@@ -49,34 +49,55 @@ public class Day08Tests : TestBase
     protected override void SolvePart2_Sample()
     {
         // Arrange
-        var _ = get_sample().ToList();
+        var junctionBoxes = get_sample((location) =>
+            {
+                var coords = location.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(int.Parse)
+                    .ToArray();
+                return new JunctionBox(coords[0], coords[1], coords[2]);
+            })
+            .ToList();
+        
+        var (_, lastProcessedConnection) = ProcessJunctionBoxes(junctionBoxes);
+        
         
         // Act
+        var result = (long?)lastProcessedConnection?.BoxA.X * lastProcessedConnection?.BoxB.X;
         
         // Assert
-        throw new System.NotImplementedException();
+        result.ShouldBe(25272L);
     }
 
     protected override void SolvePart2_Actual()
     {
         // Arrange
-        var _ = get_input().ToList();
+        var junctionBoxes = get_input((location) =>
+            {
+                var coords = location.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(int.Parse)
+                    .ToArray();
+                return new JunctionBox(coords[0], coords[1], coords[2]);
+            })
+            .ToList();
+        
+        var (_, lastProcessedConnection) = ProcessJunctionBoxes(junctionBoxes);
+        
         
         // Act
+        var result = (long?)lastProcessedConnection?.BoxA.X * lastProcessedConnection?.BoxB.X;
         
         // Assert
-        throw new System.NotImplementedException();
+        result.ShouldBe(9617397716L);
     }
 
-    List<Circuit> ProcessJunctionBoxes(List<JunctionBox> junctionBoxes, int connectionsToMake = 10)
+    (List<Circuit> circuits, JunctionBoxConnection? lastProcessedConnection) ProcessJunctionBoxes(List<JunctionBox> junctionBoxes, int? connectionsToMake = null)
     {
-        var allConnections = new List<JunctionBoxConnection>();
+        var allConnections = new List<JunctionBoxConnection?>();
         for (var i = 0; i < junctionBoxes.Count; i++)
         {
             for (var j = i + 1; j < junctionBoxes.Count; j++)
             {
-                var connection = new JunctionBoxConnection(junctionBoxes[i], junctionBoxes[j]);
-                allConnections.Add(connection);
+                allConnections.Add(new JunctionBoxConnection(junctionBoxes[i], junctionBoxes[j]));
             }
         }
 
@@ -85,9 +106,13 @@ public class Day08Tests : TestBase
         
         var circuits = new List<Circuit>();
 
+        connectionsToMake ??= allConnections.Count;
+        
+        JunctionBoxConnection? connection = null;
+        
         for (var i = 0; i < connectionsToMake; i++)
         {
-            var connection = allConnections[i];
+            connection = allConnections[i];
             var existingCircuits = circuits
                 .Where(c => c.Contains(connection.BoxA) || c.Contains(connection.BoxB))
                 .ToList();
@@ -109,9 +134,14 @@ public class Day08Tests : TestBase
             }
             
             circuits.AddRange(existingCircuits);
+            
+            if (circuits.Count == 1 && circuits[0].Count == junctionBoxes.Count)
+            {
+                break;
+            }
         }
         
-        return circuits;
+        return (circuits, connection);
     }
     
     record JunctionBox(int X, int Y, int Z)
