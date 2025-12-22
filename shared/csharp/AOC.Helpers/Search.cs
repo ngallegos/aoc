@@ -1,17 +1,17 @@
 ﻿// ReSharper disable InconsistentNaming
 namespace AOC.Helpers;
 
-public class BFS<T> where T : IEquatable<T>
+public class Search<T> where T : IEquatable<T>
 {
-    public static List<T>? Search(T start, Func<T, List<T>> getAdjacent, 
+    public static List<T>? BFS(T start, Func<T, List<T>> getAdjacent, 
         Func<T, bool> destinationReached)
     {
-        var queue = new Queue<BFSNode<T>>();
-        var checkedNodes = new HashSet<BFSNode<T>>();
-        var startNode = new BFSNode<T>(start);
+        var queue = new Queue<SearchNode<T>>();
+        var checkedNodes = new HashSet<SearchNode<T>>();
+        var startNode = new SearchNode<T>(start);
         checkedNodes.Add(startNode);
         queue.Enqueue(startNode);
-        BFSNode<T> node;
+        SearchNode<T> node;
         while (queue.Count > 0)
         {
             node = queue.Dequeue();
@@ -21,7 +21,7 @@ public class BFS<T> where T : IEquatable<T>
 
             foreach (var adjacent in adjacentItems)
             {
-                var adjacentNode = new BFS<T>.BFSNode<T>(adjacent);
+                var adjacentNode = new SearchNode<T>(adjacent);
                 if (checkedNodes.Add(adjacentNode))
                 {
                     adjacentNode.Parent = node;
@@ -33,12 +33,38 @@ public class BFS<T> where T : IEquatable<T>
         return null;
     }
 
-    private class BFSNode<TN> : IEquatable<BFSNode<T>> where TN : IEquatable<T>
+    public static void DFS(T start, Func<T, List<T>> getChildren,
+        Func<T, bool> destinationReached)
+    {
+        var stack = new Stack<SearchNode<T>>();
+        var visitedNodes = new HashSet<SearchNode<T>>();
+        stack.Push(new SearchNode<T>(start));
+        while (stack.Count > 0)
+        {
+            var node = stack.Pop();
+            
+            if (destinationReached(node.Item))
+                return;
+
+            if (visitedNodes.Add(node))
+            {
+                var children = getChildren(node.Item);
+                foreach (var child in children)
+                {
+                    var childNode = new SearchNode<T>(child);
+                    childNode.Parent = node;
+                    stack.Push(childNode);
+                }
+            }
+        }
+    }
+
+    private class SearchNode<TN> : IEquatable<SearchNode<T>> where TN : IEquatable<T>
     {
         public TN Item { get; }
-        public BFSNode<TN>? Parent { get; set; }
+        public SearchNode<TN>? Parent { get; set; }
 
-        public BFSNode(TN item)
+        public SearchNode(TN item)
         {
             Item = item;
         }
@@ -57,7 +83,7 @@ public class BFS<T> where T : IEquatable<T>
             return path;
         }
 
-        public bool Equals(BFSNode<T>? other)
+        public bool Equals(SearchNode<T>? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -69,7 +95,7 @@ public class BFS<T> where T : IEquatable<T>
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((BFSNode<T>)obj);
+            return Equals((SearchNode<T>)obj);
         }
 
         public override int GetHashCode()
