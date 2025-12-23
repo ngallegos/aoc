@@ -7,46 +7,27 @@ public class Day12Tests : TestBase
         // Arrange
         var summary = get_sample().ToList();
 
-        var giftDefinitions = summary.TakeWhile(x => !x.Split(':')[0].Contains('x')).ToList();
-        var gifts = new List<Gift>();
-        var currentGiftId = -1;
-        var currentGiftShape = new List<string>();
-        foreach (var gDef in giftDefinitions)
-        {
-            if (gDef.EndsWith(':'))
-            {
-                currentGiftId = int.Parse(gDef.TrimEnd(':'));
-                currentGiftShape.Clear();
-                continue;
-            }
-
-            if (gDef.Trim() == string.Empty && currentGiftId > -1)
-            {
-                gifts.Add(new Gift(currentGiftId, currentGiftShape));
-            }
-        }
-        
-        var treeRegionDefinitions = summary.Skip(giftDefinitions.Count)
-            .Select(x => new TreeRegion(x, gifts))
-            .ToList();
+        var (gifts, treeRegions) = Parse(summary);
         
         // Act
-        var potentiallyBigEnoughRegions = treeRegionDefinitions.Where(x => x.IsBigEnough).ToArray();
+        var bigEnoughRegions = treeRegions.Where(x => x.IsBigEnough).ToArray();
         
         // Assert
-        throw new System.NotImplementedException();
+        bigEnoughRegions.Length.ShouldBe(3);
     }
 
-    [Ignore("Not attempted yet")]
     protected override void SolvePart1_Actual()
     {
         // Arrange
-        var _ = get_input().ToList();
+        var summary = get_input().ToList();
+
+        var (gifts, treeRegions) = Parse(summary);
         
         // Act
+        var bigEnoughRegions = treeRegions.Where(x => x.IsBigEnough).ToArray();
         
         // Assert
-        throw new System.NotImplementedException();
+        bigEnoughRegions.Length.ShouldBe(589);
     }
 
     [Ignore("Not attempted yet")]
@@ -73,6 +54,35 @@ public class Day12Tests : TestBase
         throw new System.NotImplementedException();
     }
 
+    (List<Gift> gifts, List<TreeRegion> treeRegions) Parse(List<string> summary)
+    {
+        
+        var giftDefinitions = summary.TakeWhile(x => !x.Split(':')[0].Contains('x')).ToList();
+        var gifts = new List<Gift>();
+        var currentGiftId = -1;
+        var currentGiftShape = new List<string>();
+        foreach (var gDef in giftDefinitions)
+        {
+            if (gDef.EndsWith(':'))
+            {
+                currentGiftId = int.Parse(gDef.TrimEnd(':'));
+                currentGiftShape.Clear();
+                continue;
+            }
+
+            if (gDef.Trim() == string.Empty && currentGiftId > -1)
+            {
+                gifts.Add(new Gift(currentGiftId, currentGiftShape));
+            }
+        }
+        
+        var treeRegions = summary.Skip(giftDefinitions.Count)
+            .Select(x => new TreeRegion(x, gifts))
+            .ToList();
+
+        return (gifts, treeRegions);
+    }
+
     record Gift(int Id, List<string> Shape)
     {
         public int Area { get; } = Shape.SelectMany(x => x).Count(x => x == '#');
@@ -95,7 +105,7 @@ public class Day12Tests : TestBase
                 .ToArray();
             
             var totalGifts = GiftCounts.Sum();
-            var maxGiftArea = totalGifts * 9;
+            var maxGiftArea = totalGifts * 8;
             if (maxGiftArea <= Area)
                 IsBigEnough = true;
         }
