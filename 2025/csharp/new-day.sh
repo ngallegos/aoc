@@ -105,6 +105,7 @@ namespace AOC2025.Tests;
 
 public class Day${day_padded}Tests : TestBase
 {
+    [Ignore("Not attempted yet")]
     protected override void SolvePart1_Sample()
     {
         // Arrange
@@ -116,6 +117,7 @@ public class Day${day_padded}Tests : TestBase
         throw new System.NotImplementedException();
     }
 
+    [Ignore("Not attempted yet")]
     protected override void SolvePart1_Actual()
     {
         // Arrange
@@ -127,6 +129,7 @@ public class Day${day_padded}Tests : TestBase
         throw new System.NotImplementedException();
     }
 
+    [Ignore("Not attempted yet")]
     protected override void SolvePart2_Sample()
     {
         // Arrange
@@ -138,6 +141,7 @@ public class Day${day_padded}Tests : TestBase
         throw new System.NotImplementedException();
     }
 
+    [Ignore("Not attempted yet")]
     protected override void SolvePart2_Actual()
     {
         // Arrange
