@@ -6,7 +6,7 @@ public class Day02Tests : TestBase
 {
     static Regex _rangeRegex = new(@"(\d+)-(\d+)", RegexOptions.Compiled);
     static Regex _repeatingOnceRegex = new (@"^(\d+)\1$", RegexOptions.Compiled);
-    static Regex _repeatingAtLeastOnceRegex = new (@"(\d+)\1+", RegexOptions.Compiled);
+    static Regex _repeatingAtLeastOnceRegex = new (@"^(\d+?)\1+$", RegexOptions.Compiled);
     protected override void SolvePart1_Sample()
     {
         // Arrange
@@ -38,7 +38,6 @@ public class Day02Tests : TestBase
         totalInvalid.ShouldBe(20223751480L);
     }
 
-    [Ignore("Didn't solve - moving on")]
     protected override void SolvePart2_Sample()
     {
         // Arrange
@@ -55,10 +54,20 @@ public class Day02Tests : TestBase
         totalInvalid.ShouldBe(4174379265L);
     }
 
-    [Ignore("Didn't solve - moving on")]
     protected override void SolvePart2_Actual()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var input = get_input();
+        var ranges = input.FirstOrDefault()?.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(r => new ProductIdRange(r, _repeatingAtLeastOnceRegex))
+            .ToArray() ?? [];
+        
+        // Act
+        var totalInvalid = ranges.SelectMany(r => r.InvalidIDs).Sum();
+        
+        // Assert
+        input.ShouldNotBeEmpty();
+        totalInvalid.ShouldBe(30260171216L);;
     }
 
     class ProductIdRange
