@@ -82,7 +82,6 @@ public class Day10Tests : TestBase
             return (path?.Count ?? 0) - 1;
         }
 
-        string Definition { get; }
         long LightValue { get; }
         string LightDiagram { get; }
         int[][] WiringSchematics { get; }

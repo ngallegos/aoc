@@ -78,7 +78,7 @@ public class Day11Tests : TestBase
         pathCount.ShouldBe(2);
     }
 
-    List<string> FindPaths(string start, string end, Device[] devices, string currentPath = "", List<string> paths = null)
+    List<string> FindPaths(string start, string end, Device[] devices, string currentPath = "", List<string>? paths = null)
     {
         paths ??= new List<string>();
         if (start == end)
@@ -88,7 +88,7 @@ public class Day11Tests : TestBase
         }
 
         var startDevice = devices.FirstOrDefault(x => x.Id == start);
-        foreach (var output in startDevice.Outputs)
+        foreach (var output in startDevice?.Outputs ?? [])
         {
             paths = FindPaths(output, end, devices, currentPath + "," + output, paths);
         }
