@@ -30,45 +30,25 @@ public class Day07Tests : TestBase
     protected override void SolvePart2_Sample()
     {
         // Arrange
-        var diagram = get_sample().Select(x => x.Select(c => c.ToString()).ToArray()).ToArray();
+        var diagram = get_sample().ToArray();
 
         // Act
-        PopulateParticlePaths(diagram, 1, Array.IndexOf(diagram[0], "S"));
-        var numberOfTimelines = diagram.Last()
-            .Select(x => 
-                new 
-                { 
-                    success = int.TryParse(x, out var i),
-                    val = i
-                })
-            .Where(x => x.success)
-            .Select(x => x.val).Sum();
+        var paths = CountPaths(diagram, 1, diagram[0].IndexOf('S'));
 
-        PrintDiagram(diagram);
         // Assert
-        numberOfTimelines.ShouldBe(40);
+        paths.ShouldBe(40L);
     }
 
-    [Ignore("Didn't solve - it runs forever so moving on..")]
     protected override void SolvePart2_Actual()
     {
         // Arrange
-        var diagram = get_input().Select(x => x.Select(c => c.ToString()).ToArray()).ToArray();
+        var diagram = get_input().ToArray();
 
         // Act
-        PopulateParticlePaths(diagram, 1, Array.IndexOf(diagram[0], "S"));
-        var numberOfTimelines = diagram.Last()
-            .Select(x => 
-                new 
-                { 
-                    success = int.TryParse(x, out var i),
-                    val = i
-                })
-            .Where(x => x.success)
-            .Select(x => x.val).Sum();
+        var paths = CountPaths(diagram, 1, diagram[0].IndexOf('S'));
 
         // Assert
-        numberOfTimelines.ShouldBe(40);
+        paths.ShouldBe(27055852018812L);
     }
     
     private int GetNumberOfBeamSplits(string[] diagram)
@@ -95,42 +75,28 @@ public class Day07Tests : TestBase
         
         return numberOfBeamSplits;
     }
-    
-    private void PopulateParticlePaths(string[][] diagram, int rowIndex, int particleLocation)
-    {
-        if (rowIndex >= diagram.Length)
-        {
-            return;
-        }
-        
-        var currentItem = diagram[rowIndex][particleLocation];
 
-        if (currentItem.Equals("."))
-        {
-            diagram[rowIndex][particleLocation] = "1";
-            PopulateParticlePaths(diagram, rowIndex + 1, particleLocation);
-            return;
-        }
-
-        if (!currentItem.Equals("^"))
-        {
-            int.TryParse(currentItem, out var count);
-            count++;
-            diagram[rowIndex][particleLocation] = count.ToString();
-            PopulateParticlePaths(diagram, rowIndex + 1, particleLocation);
-            return;
-        }
-        
-        PopulateParticlePaths(diagram, rowIndex, particleLocation - 1);
-        PopulateParticlePaths(diagram, rowIndex, particleLocation + 1);
-    }
-    
-    private void PrintDiagram(string[][] diagram)
+    private long CountPaths(string[] diagram, int index, int location, Dictionary<(int index, int location), long>? cache = null)
     {
-        foreach (var row in diagram)
-        {
-            Console.WriteLine(string.Join("", row));
-        }
-        Console.WriteLine();
+        cache ??= new Dictionary<(int index, int location), long>();
+
+        if (index >= diagram.Length)
+            return 1;
+
+        if (location >= diagram[index].Length || location < 0)
+            return 0;
+        
+        if (cache.ContainsKey((index, location)))
+            return cache[(index, location)];
+
+        long paths;
+        
+        if (diagram[index][location] == '^')
+            paths = CountPaths(diagram, index + 1, location + 1, cache) + CountPaths(diagram, index + 1, location - 1, cache);
+        else
+            paths = CountPaths(diagram, index + 1, location, cache);
+        
+        cache.Add((index, location), paths);
+        return paths;
     }
 }
