@@ -28,21 +28,20 @@ public class Day09Tests : TestBase
         maxArea.ShouldBe(4761736832L);
     }
 
-    [Ignore("Coming back to this...")]
     protected override void SolvePart2_Sample()
     {
         // Arrange
         var redTileLocations = get_sample(ParseRedTileLocation).ToArray();
+        var redTileShape = new Shape(redTileLocations);
         var rectangles = GetAllRectangles(redTileLocations)
             .OrderByDescending(x => x.Area)
             .ToList();
-        var coveredPositions = GetCoveredPositions(rectangles);
         
         // Act
         var maxCoveredArea = 0L;
         foreach (var rectangle in rectangles)
         {
-            if (rectangle.AllPositionsCovered(coveredPositions))
+            if (redTileShape.Contains(rectangle))
             {
                 maxCoveredArea = rectangle.Area;
                 break;
@@ -53,22 +52,78 @@ public class Day09Tests : TestBase
         maxCoveredArea.ShouldBe(24L);
     }
 
-    [Ignore("Coming back to this...")]
+    [Ignore("Incorrect right now - too high at 4598541075L")]
     protected override void SolvePart2_Actual()
     {
         // Arrange
-        var _ = get_input().ToList();
+        var redTileLocations = get_input(ParseRedTileLocation).ToArray();
+        var redTileShape = new Shape(redTileLocations);
+        var rectangles = GetAllRectangles(redTileLocations)
+            .OrderByDescending(x => x.Area)
+            .ToList();
         
         // Act
+        var maxCoveredArea = 0L;
+        foreach (var rectangle in rectangles)
+        {
+            if (redTileShape.Contains(rectangle))
+            {
+                maxCoveredArea = rectangle.Area;
+                break;
+            }
+        }
         
         // Assert
-        throw new System.NotImplementedException();
+        maxCoveredArea.ShouldBe(24L);
     }
 
     (long x, long y) ParseRedTileLocation(string location)
     {
         var locationParts = location.Split(',', StringSplitOptions.RemoveEmptyEntries);
         return (x: int.Parse(locationParts[0]), y: int.Parse(locationParts[1]));
+    }
+
+    class Shape
+    {
+        private List<(long x, long y)> Points { get; init; }
+        public Shape((long x, long y)[] redTiles)
+        {
+            Points = new List<(long, long)>();
+            Points.AddRange(redTiles);
+        }
+        
+        public (long x, long y) this[int index] => index < 0 ? Points[^1] : Points[index % Points.Count];
+
+        public bool Contains(Rectangle rectangle)
+        {
+            var corners = new List<(long, long)>
+            {
+                (rectangle.DiagonalCorner1.x, rectangle.DiagonalCorner1.y),
+                (rectangle.DiagonalCorner1.x, rectangle.DiagonalCorner2.y),
+                (rectangle.DiagonalCorner2.x, rectangle.DiagonalCorner1.y),
+                (rectangle.DiagonalCorner2.x, rectangle.DiagonalCorner2.y)
+            };
+            var containedRedTiles = Points
+                .Where(p => !corners.Contains((p.x, p.y)))
+                .Where(p => rectangle.Contains(p.x, p.y))
+                .ToArray();
+
+            if (containedRedTiles.Length == 0)
+                return true;
+
+            foreach (var redTile in containedRedTiles)
+            {
+                var index = Points.IndexOf(redTile);
+                var previous = this[index - 1];
+                var next = this[index + 1];
+
+                if (rectangle.Contains(previous.x, previous.y) || rectangle.Contains(next.x, next.y))
+                    return false;
+                // todo - find if its neighbors go outside the rectangle
+            }
+            
+            return true;
+        }
     }
     
     List<Rectangle> GetAllRectangles((long x, long y)[] redTileLocations)
