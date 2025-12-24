@@ -92,7 +92,7 @@ public class Day08Tests : TestBase
 
     (List<Circuit> circuits, JunctionBoxConnection? lastProcessedConnection) ProcessJunctionBoxes(List<JunctionBox> junctionBoxes, int? connectionsToMake = null)
     {
-        var allConnections = new List<JunctionBoxConnection?>();
+        var allConnections = new List<JunctionBoxConnection>();
         for (var i = 0; i < junctionBoxes.Count; i++)
         {
             for (var j = i + 1; j < junctionBoxes.Count; j++)
