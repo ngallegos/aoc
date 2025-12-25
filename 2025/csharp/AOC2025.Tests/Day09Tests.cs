@@ -1,5 +1,3 @@
-using AOC.Helpers;
-
 namespace AOC2025.Tests;
 
 public class Day09Tests : TestBase
@@ -38,7 +36,7 @@ public class Day09Tests : TestBase
             .ToList();
         
         // Act
-        var maxCoveredArea = 0L;
+        var maxCoveredArea = 0.0;
         foreach (var rectangle in rectangles)
         {
             if (redTileShape.Contains(rectangle))
@@ -52,7 +50,7 @@ public class Day09Tests : TestBase
         maxCoveredArea.ShouldBe(24L);
     }
 
-    [Ignore("Incorrect right now - too high at 4598541075L")]
+    //[Ignore("Incorrect right now - too high at 4598541075L")]
     protected override void SolvePart2_Actual()
     {
         // Arrange
@@ -63,7 +61,7 @@ public class Day09Tests : TestBase
             .ToList();
         
         // Act
-        var maxCoveredArea = 0L;
+        var maxCoveredArea = 0.0;
         foreach (var rectangle in rectangles)
         {
             if (redTileShape.Contains(rectangle))
@@ -74,59 +72,109 @@ public class Day09Tests : TestBase
         }
         
         // Assert
+        var invalidAnswers =  new Dictionary<double, string>
+        {
+            { 4598541075, "too high" },
+            { 1417, "too low" }
+        };
+
+        if (invalidAnswers.TryGetValue(maxCoveredArea, out var answer))
+            throw new Exception($"{maxCoveredArea} is {answer}");
+        
         maxCoveredArea.ShouldBe(24L);
     }
 
-    (long x, long y) ParseRedTileLocation(string location)
+    Point ParseRedTileLocation(string location)
     {
         var locationParts = location.Split(',', StringSplitOptions.RemoveEmptyEntries);
-        return (x: int.Parse(locationParts[0]), y: int.Parse(locationParts[1]));
+        return new (int.Parse(locationParts[0]), int.Parse(locationParts[1]));
     }
 
     class Shape
     {
-        private List<(long x, long y)> Points { get; init; }
-        public Shape((long x, long y)[] redTiles)
+        List<Point> Points { get; init; }
+        int Length => Points.Count;
+
+        public Shape(Point[] redTiles)
         {
-            Points = new List<(long, long)>();
+            Points = new List<Point>();
             Points.AddRange(redTiles);
         }
         
-        public (long x, long y) this[int index] => index < 0 ? Points[^1] : Points[index % Points.Count];
+        public Point this[int index] => index < 0 ? Points[^1] : Points[index % Points.Count];
 
         public bool Contains(Rectangle rectangle)
         {
-            var corners = new List<(long, long)>
+            var corners = rectangle.Corners;
+            var edges = rectangle.Edges;
+            
+            // Check if all corners are inside the shape
+            foreach (var corner in corners)
             {
-                (rectangle.DiagonalCorner1.x, rectangle.DiagonalCorner1.y),
-                (rectangle.DiagonalCorner1.x, rectangle.DiagonalCorner2.y),
-                (rectangle.DiagonalCorner2.x, rectangle.DiagonalCorner1.y),
-                (rectangle.DiagonalCorner2.x, rectangle.DiagonalCorner2.y)
-            };
-            var containedRedTiles = Points
-                .Where(p => !corners.Contains((p.x, p.y)))
-                .Where(p => rectangle.Contains(p.x, p.y))
-                .ToArray();
-
-            if (containedRedTiles.Length == 0)
-                return true;
-
-            foreach (var redTile in containedRedTiles)
-            {
-                var index = Points.IndexOf(redTile);
-                var previous = this[index - 1];
-                var next = this[index + 1];
-
-                if (rectangle.Contains(previous.x, previous.y) || rectangle.Contains(next.x, next.y))
+                if (!IsPointInsideShape(corner))
+                {
                     return false;
-                // todo - find if its neighbors go outside the rectangle
+                }
+            }
+        
+            // Check if any rectangle edge intersects with shape boundary
+            for (int i = 0; i < this.Length; i++)
+            {
+                var boundaryEdge = new Segment(this[i], this[i + 1]);
+            
+                foreach (var rectEdge in edges)
+                {
+                    if (rectEdge.Intersects(boundaryEdge))
+                    {
+                        return false;
+                    }
+                }
+            }
+        
+            return true;
+        }
+    
+        /// <summary>
+        /// Ray casting algorithm to determine if a point is inside a polygon.
+        /// </summary>
+        /// <param name="point">The point to test</param>
+        /// <param name="polygon">List of points representing polygon vertices</param>
+        /// <returns>True if point is inside polygon, false otherwise</returns>
+        bool IsPointInsideShape(Point point)
+        {
+            bool inside = false;
+            
+            var p1 = this[0];
+            for (int i = 1; i <= this.Length; i++)
+            {
+                var p2 = this[i];
+                
+                if (point.Y > Math.Min(p1.Y, p2.Y))
+                {
+                    if (point.Y <= Math.Max(p1.Y, p2.Y))
+                    {
+                        if (point.X <= Math.Max(p1.X, p2.X))
+                        {
+                            if (p1.Y != p2.Y)
+                            {
+                                var xInters = (double)(point.Y - p1.Y) * (p2.X - p1.X) / (p2.Y - p1.Y) + p1.X;
+                                if (p1.X == p2.X || point.X <= xInters)
+                                {
+                                    inside = !inside;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                p1 = p2;
             }
             
-            return true;
+            return inside;
         }
     }
     
-    List<Rectangle> GetAllRectangles((long x, long y)[] redTileLocations)
+    List<Rectangle> GetAllRectangles(Point[] redTileLocations)
     {
         var rectangles = new List<Rectangle>();
 
@@ -141,15 +189,15 @@ public class Day09Tests : TestBase
         return rectangles;
     }
     
-    long FindMaxArea((long x, long y)[] redTileLocations)
+    double FindMaxArea(Point[] redTileLocations)
     {
         var rectangles = GetAllRectangles(redTileLocations);
         return FindMaxArea(rectangles);
     }
     
-    long FindMaxArea(List<Rectangle> rectangles)
+    double FindMaxArea(List<Rectangle> rectangles)
     {
-        var maxArea = 0L;
+        var maxArea = 0.0;
 
         foreach (var rectangle in rectangles)
         {
@@ -158,70 +206,98 @@ public class Day09Tests : TestBase
                 maxArea = rectangle.Area;
             }
         }
-
+        
         return maxArea;
     }
-    
-    HashSet<(long x, long y)> GetCoveredPositions(List<Rectangle> rectangles)
+
+    record Point(double X, double Y);
+
+    record Line(double A, double B, double C)
     {
-        var coveredPositions = new HashSet<(long x, long y)>();
-
-        foreach (var rectangle in rectangles)
+        public Point? GetIntersectionPoint(Line other)
         {
-            coveredPositions = coveredPositions.Concat(rectangle.CoveredPositions).ToHashSet();
-            for (var x = rectangle.MinX; x <= rectangle.MaxX; x++)
-            {
-                for (var y = rectangle.MinY; y <= rectangle.MaxY; y++)
-                {
-                    coveredPositions.Add((x, y));
-                }
-            }
-        }
+            var delta = this.A * other.B - other.A * this.B;
 
-        return coveredPositions;
+            if (delta == 0) // parallel
+                return null;
+
+            var x = (other.B * this.C - this.B * other.C) / delta;
+            var y = (this.A * other.C - other.A * this.C) / delta;
+            return new Point(x, y);
+        
+        }
     }
 
-    record Rectangle((long x, long y) DiagonalCorner1, (long x, long y) DiagonalCorner2)
+    record Segment(Point P1, Point P2)
     {
-        public (long x, long y) DiagonalCorner1 { get; init; } = DiagonalCorner1;
-        public (long x, long y) DiagonalCorner2 { get; init; } = DiagonalCorner2;
-        public long MinX { get; init; } = Math.Min(DiagonalCorner1.x, DiagonalCorner2.x);
-        public long MaxX { get; init; } = Math.Max(DiagonalCorner1.x, DiagonalCorner2.x);
-        public long MinY { get; init; } = Math.Min(DiagonalCorner1.y, DiagonalCorner2.y);
-        public long MaxY { get; init; } = Math.Max(DiagonalCorner1.y, DiagonalCorner2.y);
-        public long Width { get; } = Math.Abs(DiagonalCorner2.x - DiagonalCorner1.x) + 1;
-        public long Height { get; } = Math.Abs(DiagonalCorner2.y - DiagonalCorner1.y) + 1;
-        public long Area => Width * Height;
-
-        public bool Contains(long x, long y)
+        public Segment((double X, double Y) p1, (double X, double Y) p2) : 
+            this(new Point(p1.X, p1.Y), new Point(p2.X, p2.Y))
         {
-            return x >= MinX && x <= MaxX && y >= MinY && y <= MaxY;
         }
 
-
-        private HashSet<(long x, long y)> _coveredPositions = new();
-        public HashSet<(long x, long y)> CoveredPositions {
-            get
-            {
-                if (_coveredPositions.Count == 0)
-                {
-
-                    for (var x = MinX; x <= MaxX; x++)
-                    {
-                        for (var y = MinY; y <= MaxY; y++)
-                        {
-                            _coveredPositions.Add((x, y));
-                        }
-                    }
-                }
-
-                return _coveredPositions;
-            }
+        // For Ax + By = C definition of a line
+        Line GetLineDefinition()
+        {
+            var a = P1.Y - P2.Y;
+            var b = P2.X - P1.X;
+            
+            var c= -((P1.X * P2.Y) - (P2.X * P1.Y)); 
+            
+            return new Line(a, b, c);
         }
 
-        public bool AllPositionsCovered(HashSet<(long x, long y)> coveredPositions)
+        Point? GetIntersectionPoint(Segment other)
         {
-            return CoveredPositions.All(coveredPositions.Contains);
+            var line1 = this.GetLineDefinition();
+            var line2  = other.GetLineDefinition();
+            
+            return line1.GetIntersectionPoint(line2);
+        }
+
+        public bool Intersects(Segment boundaryEdge)
+        {
+            var intersection = GetIntersectionPoint(boundaryEdge);
+            if (intersection == null)
+                return (this.P1.X == this.P2.X && boundaryEdge.P1.X == boundaryEdge.P2.X && this.P1.X == boundaryEdge.P1.X)
+                    ||
+                    (this.P1.Y == this.P2.Y && boundaryEdge.P1.Y == boundaryEdge.P2.Y && this.P1.Y == boundaryEdge.P1.Y);
+
+            return true;
+        }
+    }
+
+    record Rectangle(Point DiagonalCorner1, Point DiagonalCorner2)
+    {
+        public double MinX { get; init; } = Math.Min(DiagonalCorner1.X, DiagonalCorner2.X);
+        public double MaxX { get; init; } = Math.Max(DiagonalCorner1.X, DiagonalCorner2.X);
+        public double MinY { get; init; } = Math.Min(DiagonalCorner1.Y, DiagonalCorner2.Y);
+        public double MaxY { get; init; } = Math.Max(DiagonalCorner1.Y, DiagonalCorner2.Y);
+        public double Width { get; } = Math.Abs(DiagonalCorner2.X - DiagonalCorner1.X) + 1;
+        public double Height { get; } = Math.Abs(DiagonalCorner2.Y - DiagonalCorner1.Y) + 1;
+        public double Area => Width * Height;
+        
+        public Point[] Corners { get; } =
+        [
+            new (DiagonalCorner1.X, DiagonalCorner1.Y),
+            new (DiagonalCorner1.X, DiagonalCorner2.Y),
+            new (DiagonalCorner2.X, DiagonalCorner1.Y),
+            new (DiagonalCorner2.X, DiagonalCorner2.Y)
+        ];
+
+        public Segment[] Edges =>
+        [
+            new (Corners[0], Corners[1]),
+            new (Corners[1], Corners[2]),
+            new (Corners[2], Corners[3]),
+            new (Corners[3], Corners[0]),
+        ];
+
+        public bool Contains(long x, long y, bool includeBorder = true)
+        {
+            if (includeBorder)
+                return x >= MinX && x <= MaxX && y >= MinY && y <= MaxY;
+            
+            return x > MinX && x < MaxX && y > MinY && y < MaxY;
         }
     }
 }
