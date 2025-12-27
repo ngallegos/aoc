@@ -39,7 +39,7 @@ public class Day09Tests : TestBase
         var maxCoveredArea = 0.0;
         foreach (var rectangle in rectangles)
         {
-            if (redTileShape.Contains(rectangle))
+            if (redTileShape.IsInShape(rectangle))
             {
                 maxCoveredArea = rectangle.Area;
                 break;
@@ -64,7 +64,7 @@ public class Day09Tests : TestBase
         var maxCoveredArea = 0.0;
         foreach (var rectangle in rectangles)
         {
-            if (redTileShape.Contains(rectangle))
+            if (redTileShape.IsInShape(rectangle))
             {
                 maxCoveredArea = rectangle.Area;
                 break;
@@ -75,6 +75,7 @@ public class Day09Tests : TestBase
         var invalidAnswers =  new Dictionary<double, string>
         {
             { 4598541075, "too high" },
+            { 702645, "too low" },
             { 1417, "too low" }
         };
 
@@ -102,54 +103,18 @@ public class Day09Tests : TestBase
         }
         
         public Point this[int index] => index < 0 ? Points[^1] : Points[index % Points.Count];
-
-        public bool Contains(Rectangle rectangle)
-        {
-            var corners = rectangle.Corners;
-            var edges = rectangle.Edges;
-            
-            // Check if all corners are inside the shape
-            foreach (var corner in corners)
-            {
-                if (!IsPointInsideShape(corner))
-                {
-                    return false;
-                }
-            }
         
-            // Check if any rectangle edge intersects with shape boundary
-            for (int i = 0; i < this.Length; i++)
-            {
-                var boundaryEdge = new Segment(this[i], this[i + 1]);
-            
-                foreach (var rectEdge in edges)
-                {
-                    if (rectEdge.Intersects(boundaryEdge))
-                    {
-                        return false;
-                    }
-                }
-            }
-        
-            return true;
-        }
-    
-        /// <summary>
-        /// Ray casting algorithm to determine if a point is inside a polygon.
-        /// </summary>
-        /// <param name="point">The point to test</param>
-        /// <param name="polygon">List of points representing polygon vertices</param>
-        /// <returns>True if point is inside polygon, false otherwise</returns>
-        bool IsPointInsideShape(Point point)
+        bool IsInShape(Point point)
         {
+            var n = Points.Count;
             bool inside = false;
-            
+        
             var p1 = this[0];
-            for (int i = 1; i <= this.Length; i++)
+            for (int i = 1; i <= n; i++)
             {
                 var p2 = this[i];
-                
-                if (point.Y > Math.Min(p1.Y, p2.Y))
+            
+                if (point.Y >= Math.Min(p1.Y, p2.Y))
                 {
                     if (point.Y <= Math.Max(p1.Y, p2.Y))
                     {
@@ -157,7 +122,7 @@ public class Day09Tests : TestBase
                         {
                             if (p1.Y != p2.Y)
                             {
-                                var xInters = (double)(point.Y - p1.Y) * (p2.X - p1.X) / (p2.Y - p1.Y) + p1.X;
+                                double xInters = (point.Y - p1.Y) * (p2.X - p1.X) / (p2.Y - p1.Y) + p1.X;
                                 if (p1.X == p2.X || point.X <= xInters)
                                 {
                                     inside = !inside;
@@ -166,11 +131,44 @@ public class Day09Tests : TestBase
                         }
                     }
                 }
-                
+            
                 p1 = p2;
             }
-            
+        
             return inside;
+        }
+
+        
+        public bool IsInShape(Rectangle rectangle)
+        {
+            // Check if corners are in the shape
+            if (!rectangle.Corners.All(IsInShape)) return false;
+            
+            // Check if any rectangle edge intersects with shape boundary
+            for (int i = 0; i < this.Length; i++)
+            {
+                var boundaryEdge = new Segment(this[i], this[i + 1]);
+            
+                foreach (var rectEdge in rectangle.Edges)
+                {
+                    if (rectEdge.Intersects(boundaryEdge, out var intersection))
+                    {
+                        if (intersection != null)
+                        {
+                            if (rectangle.Contains(intersection, false)
+                                && !Points.Contains(intersection)
+                                && !rectEdge.Contains(intersection, false))
+                                return false;
+                            // if (!Points.Contains(intersection))
+                            //     return false;
+                            // if (!rectEdge.Contains(intersection, false))
+                            //     return false;
+                        }
+                    }
+                }
+            }
+        
+            return true;
         }
     }
     
@@ -210,7 +208,20 @@ public class Day09Tests : TestBase
         return maxArea;
     }
 
-    record Point(double X, double Y);
+    record Point(double X, double Y)
+    {
+        public virtual bool Equals(Point? other)
+        {
+            if (other == null)
+                return false;
+            return X.Equals(other.X) && Y.Equals(other.Y);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
+        }
+    }
 
     record Line(double A, double B, double C)
     {
@@ -254,15 +265,33 @@ public class Day09Tests : TestBase
             return line1.GetIntersectionPoint(line2);
         }
 
-        public bool Intersects(Segment boundaryEdge)
+        public bool Intersects(Segment boundaryEdge, out Point? intersection)
         {
-            var intersection = GetIntersectionPoint(boundaryEdge);
+            intersection = GetIntersectionPoint(boundaryEdge);
             if (intersection == null)
-                return (this.P1.X == this.P2.X && boundaryEdge.P1.X == boundaryEdge.P2.X && this.P1.X == boundaryEdge.P1.X)
-                    ||
-                    (this.P1.Y == this.P2.Y && boundaryEdge.P1.Y == boundaryEdge.P2.Y && this.P1.Y == boundaryEdge.P1.Y);
+                return false;
 
             return true;
+        }
+
+        public bool Contains(Point? p, bool includeEndpoints = true)
+        {
+            if (p == null)
+                return false;
+
+            if (!includeEndpoints)
+            {
+                if (P1.Equals(p) || P2.Equals(p))
+                    return false;
+            }
+            
+            if (P1.X == P2.X && P1.X == p.X)
+                return true;
+
+            if (P1.Y == P2.Y && P1.Y == p.Y)
+                return true;
+            
+            return false;
         }
     }
 
@@ -292,12 +321,15 @@ public class Day09Tests : TestBase
             new (Corners[3], Corners[0]),
         ];
 
-        public bool Contains(long x, long y, bool includeBorder = true)
+        public bool Contains(Point? p, bool includeBorder = true)
         {
-            if (includeBorder)
-                return x >= MinX && x <= MaxX && y >= MinY && y <= MaxY;
+            if (p == null)
+                return false;
             
-            return x > MinX && x < MaxX && y > MinY && y < MaxY;
+            if (includeBorder)
+                return p.X >= MinX && p.X <= MaxX && p.Y >= MinY && p.Y <= MaxY;
+            
+            return p.X > MinX && p.X < MaxX && p.Y > MinY && p.Y < MaxY;
         }
     }
 }
