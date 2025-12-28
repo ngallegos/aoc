@@ -11,7 +11,7 @@ public class Day10Tests : TestBase
         var machineDefinitions = get_sample(x => new Machine(x)).ToList();
         
         // Act
-        var shortestPresses = machineDefinitions.Select(m => m.ComputeFewestButtonPresses());
+        var shortestPresses = machineDefinitions.Select(m => m.ComputeFewestButtonPressesForLightDiagram());
         
         // Assert
         shortestPresses.Sum().ShouldBe(7);
@@ -23,7 +23,7 @@ public class Day10Tests : TestBase
         var machineDefinitions = get_input(x => new Machine(x)).ToList();
         
         // Act
-        var shortestPresses = machineDefinitions.Select(m => m.ComputeFewestButtonPresses());
+        var shortestPresses = machineDefinitions.Select(m => m.ComputeFewestButtonPressesForLightDiagram());
         
         // Assert
         shortestPresses.Sum().ShouldBe(520);
@@ -35,7 +35,7 @@ public class Day10Tests : TestBase
         var machineDefinitions = get_sample(x => new Machine(x)).ToList();
         
         // Act
-        var shortestPresses = machineDefinitions.Select(m => m.GetValidVoltageCombination());
+        var shortestPresses = machineDefinitions.Select(m => m.ComputeFewestButtonPressesForVoltageCombination());
         
         // Assert
         shortestPresses.Sum().ShouldBe(33);
@@ -47,7 +47,7 @@ public class Day10Tests : TestBase
         var machineDefinitions = get_input(x => new Machine(x)).ToList();
         
         // Act
-        var shortestPresses = machineDefinitions.Select(m => m.GetValidVoltageCombination());
+        var shortestPresses = machineDefinitions.Select(m => m.ComputeFewestButtonPressesForVoltageCombination());
         
         // Assert
         shortestPresses.Sum().ShouldBe(20626);
@@ -74,7 +74,7 @@ public class Day10Tests : TestBase
             JoltageRequirements = parts[^1].Trim('{', '}').Split(',').Select(int.Parse).ToArray();
         }
 
-        public int ComputeFewestButtonPresses()
+        public int ComputeFewestButtonPressesForLightDiagram()
         {
             var path = Search<long>.BFS(0L, 
                 x => WiringSchematicsValues.Select(s => x ^ s).ToList(), 
@@ -85,7 +85,7 @@ public class Day10Tests : TestBase
         
         // https://www.reddit.com/r/adventofcode/comments/1pity70/2025_day_10_solutions/
         // https://developers.google.com/optimization/lp/lp_example
-        public int GetValidVoltageCombination()
+        public int ComputeFewestButtonPressesForVoltageCombination()
         {
             var solver = Solver.CreateSolver("SCIP");
             var objective = solver.Objective();
