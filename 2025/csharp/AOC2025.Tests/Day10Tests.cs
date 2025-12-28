@@ -1,4 +1,5 @@
 using AOC.Helpers;
+using Google.OrTools.LinearSolver;
 
 namespace AOC2025.Tests;
 
@@ -28,28 +29,28 @@ public class Day10Tests : TestBase
         shortestPresses.Sum().ShouldBe(520);
     }
 
-    [Ignore("Not attempted yet")]
     protected override void SolvePart2_Sample()
     {
         // Arrange
-        var _ = get_sample().ToList();
+        var machineDefinitions = get_sample(x => new Machine(x)).ToList();
         
         // Act
+        var shortestPresses = machineDefinitions.Select(m => m.GetValidVoltageCombination());
         
         // Assert
-        throw new System.NotImplementedException();
+        shortestPresses.Sum().ShouldBe(33);
     }
 
-    [Ignore("Not attempted yet")]
     protected override void SolvePart2_Actual()
     {
         // Arrange
-        var _ = get_input().ToList();
+        var machineDefinitions = get_input(x => new Machine(x)).ToList();
         
         // Act
+        var shortestPresses = machineDefinitions.Select(m => m.GetValidVoltageCombination());
         
         // Assert
-        throw new System.NotImplementedException();
+        shortestPresses.Sum().ShouldBe(20626);
     }
 
     class Machine
@@ -80,6 +81,47 @@ public class Day10Tests : TestBase
                 x => x == LightValue);
 
             return (path?.Count ?? 0) - 1;
+        }
+        
+        // https://www.reddit.com/r/adventofcode/comments/1pity70/2025_day_10_solutions/
+        // https://developers.google.com/optimization/lp/lp_example
+        public int GetValidVoltageCombination()
+        {
+            var solver = Solver.CreateSolver("SCIP");
+            var objective = solver.Objective();
+            objective.SetMinimization();
+            var buttonVariables = new List<Variable>();
+            for (int bVar = 0; bVar < WiringSchematics.Length; bVar++)
+            {
+                var bVariable = solver.MakeIntVar(0, 1000, $"b{bVar}");
+                buttonVariables.Add(bVariable);
+                objective.SetCoefficient(bVariable, 1);
+            }
+            for (int joltageIndex = 0; joltageIndex < JoltageRequirements.Length; joltageIndex++)
+            {
+                var expectedJoltage = JoltageRequirements[joltageIndex];
+                var releventButtonVariables = new List<Variable>();
+                for (int buttonIndex = 0; buttonIndex < WiringSchematics.Length; buttonIndex++)
+                {
+                    if (WiringSchematics[buttonIndex].Contains(joltageIndex))
+                    {
+                        releventButtonVariables.Add(buttonVariables[buttonIndex]);
+                    }
+                }
+                var expr = new LinearExpr();
+                foreach (var bVar in releventButtonVariables)
+                    expr += bVar;
+                var constraint = expr == expectedJoltage;
+                solver.Add(constraint);
+            }
+            
+            solver.Solve();
+            var totalSum = (int)buttonVariables.Sum(bVar => bVar.SolutionValue());
+            // Console.WriteLine($"solution = {totalSum}: {string.Join(", ", buttonVariables.Select(bv =>
+            //     $"{bv.Name()}={bv.SolutionValue()}"
+            // ))}");
+            return totalSum;
+
         }
 
         long LightValue { get; }
