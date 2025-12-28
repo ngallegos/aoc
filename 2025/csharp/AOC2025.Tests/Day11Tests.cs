@@ -9,10 +9,10 @@ public class Day11Tests : TestBase
         {
             var device = x.Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             return new Device(device[0], device[1].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
-        }).ToList();
+        }).ToArray();
         
         // Act
-        var pathCount = FindPaths("you", "out", devices.ToArray()).Count;
+        var pathCount = CountPaths(devices, "you", "out");
         
         // Assert
         pathCount.ShouldBe(5);
@@ -25,10 +25,10 @@ public class Day11Tests : TestBase
         {
             var device = x.Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             return new Device(device[0], device[1].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
-        }).ToList();
+        }).ToArray();
         
         // Act
-        var pathCount = FindPaths("you", "out", devices.ToArray()).Count;
+        var pathCount = CountPaths(devices, "you", "out");
         
         // Assert
         pathCount.ShouldBe(696);
@@ -41,21 +41,24 @@ public class Day11Tests : TestBase
         {
             var device = x.Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             return new Device(device[0], device[1].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
-        }, partNumber: 2).ToList();
+        }, partNumber: 2).ToArray();
         
         // Act
-        var pathCount = FindPaths("svr", "out", devices.ToArray())
-            .Count(x =>
-            {
-                var pathSegments = x.Split(',');
-                return pathSegments.Contains("dac") && pathSegments.Contains("fft");
-            });
+        var svrToDac = CountPaths(devices, "svr", "dac");
+        var svrToFft = CountPaths(devices, "svr", "fft");
+        var dacToFft = CountPaths(devices, "dac", "fft");
+        var fftToDac = CountPaths(devices, "fft", "dac");
+        var dacToOut = CountPaths(devices, "dac", "out");
+        var fftToOut = CountPaths(devices, "fft", "out");
+        
+        var pathCount = svrToDac * dacToFft * fftToOut 
+                        + svrToFft * fftToDac * dacToOut;
         
         // Assert
         pathCount.ShouldBe(2);
     }
 
-    [Ignore("Running way too long...")]
+    // https://www.reddit.com/r/adventofcode/comments/1pjp1rm/2025_day_11_solutions/
     protected override void SolvePart2_Actual()
     {
         // Arrange
@@ -63,36 +66,46 @@ public class Day11Tests : TestBase
         {
             var device = x.Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             return new Device(device[0], device[1].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
-        }).ToList();
+        }).ToArray();
         
         // Act
-        var paths = FindPaths("svr", "out", devices.ToArray());
-        var pathCount = paths
-            .Count(x =>
-            {
-                var pathSegments = x.Split(',');
-                return pathSegments.Contains("dac") && pathSegments.Contains("fft");
-            });
+        var svrToDac = CountPaths(devices, "svr", "dac");
+        var svrToFft = CountPaths(devices, "svr", "fft");
+        var dacToFft = CountPaths(devices, "dac", "fft");
+        var fftToDac = CountPaths(devices, "fft", "dac");
+        var dacToOut = CountPaths(devices, "dac", "out");
+        var fftToOut = CountPaths(devices, "fft", "out");
+        
+        var pathCount = svrToDac * dacToFft * fftToOut 
+                        + svrToFft * fftToDac * dacToOut;
         
         // Assert
-        pathCount.ShouldBe(2);
+        pathCount.ShouldBe(473741288064360);
     }
 
-    List<string> FindPaths(string start, string end, Device[] devices, string currentPath = "", List<string>? paths = null)
+    long CountPaths(Device[] devices, string start, string end, Dictionary<string, long>? cache = null)
     {
-        paths ??= new List<string>();
+        cache ??= new Dictionary<string, long>();
+        
         if (start == end)
         {
-            paths.Add(currentPath);
+            return 1;
+        }
+
+        if (cache.TryGetValue(start, out var paths))
+        {
             return paths;
         }
-
+        
         var startDevice = devices.FirstOrDefault(x => x.Id == start);
+        
         foreach (var output in startDevice?.Outputs ?? [])
         {
-            paths = FindPaths(output, end, devices, currentPath + "," + output, paths);
+            paths += CountPaths(devices, output, end, cache);
         }
 
+        cache[start] = paths;
+        
         return paths;
     }
     
