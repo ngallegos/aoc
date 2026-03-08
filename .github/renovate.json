@@ -12,6 +12,20 @@
       "automergeType": "pr"
     },
     {
+      "matchManagers": ["gradle", "gradle-wrapper"],
+      "groupName": "Gradle dependencies",
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchManagers": ["npm"],
+      "groupName": "npm dependencies",
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
       "matchManagers": ["gomod"],
       "groupName": "Go dependencies",
       "matchUpdateTypes": ["minor", "patch", "digest"],
