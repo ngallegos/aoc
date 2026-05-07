@@ -20,7 +20,7 @@ jobs:
         id: get-token
         uses: actions/create-github-app-token@v3.1.1
         with:
-          app-id: 3060316
+          client-id: 3060316
           private-key: ${{ secrets.NGRENOVATE_PRIVATE_KEY }}
           owner: ngallegos
       - name: Run Renovate
