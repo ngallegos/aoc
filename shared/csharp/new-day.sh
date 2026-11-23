@@ -8,6 +8,13 @@ fi
 
 day="$1"
 
+# Run from <year>/csharp; the year comes from the parent folder
+year="$(basename "$(dirname "$PWD")")"
+if ! [[ "$year" =~ ^[0-9]{4}$ && -d "./AOC${year}.Tests" ]]; then
+  echo "Error: run this from a <year>/csharp folder containing AOC<year>.Tests."
+  exit 1
+fi
+
 if ! [[ "$day" =~ ^[0-9]+$ ]]; then
   echo "Error: day must be a positive integer."
   exit 1
@@ -16,7 +23,7 @@ fi
 day_padded=$(printf "%02d" "$day")
 
 # Inputs directory and files
-inputs_dir="./AOC2026.Tests/Inputs"
+inputs_dir="./AOC${year}.Tests/Inputs"
 mkdir -p "$inputs_dir"
 
 day_file="$inputs_dir/day-${day_padded}-01.txt"
@@ -93,7 +100,7 @@ else
 fi
 
 # Tests directory and file (creates DayNNTests.cs)
-tests_dir="./AOC2026.Tests"
+tests_dir="./AOC${year}.Tests"
 mkdir -p "$tests_dir"
 
 test_file="$tests_dir/Day${day_padded}Tests.cs"
@@ -101,7 +108,7 @@ if [ -e "$test_file" ]; then
   echo "Skipping existing: $test_file"
 else
   cat > "$test_file" <<EOF
-namespace AOC2026.Tests;
+namespace AOC${year}.Tests;
 
 public class Day${day_padded}Tests : TestBase
 {

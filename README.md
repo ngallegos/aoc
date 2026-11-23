@@ -59,3 +59,7 @@ Require the `CI` check in branch protection.
 3. Add a row to the table above.
 
 Adding a year needs no CI changes.
+
+## Adding a day
+
+From a year's language folder, run the scaffolding script: `cd 2026/csharp && ../../shared/csharp/new-day.sh 2` for C#, or `cd 2024/go && ./new-day.sh <day>` for Go. The C# script is shared by all years and takes the year from the folder name. It scaffolds the test file, empty sample and input files, and a docs stub, and links the day in that folder's README calendar.
