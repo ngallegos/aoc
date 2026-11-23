@@ -1,0 +1,28 @@
+name: Test .NET
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: Directory containing the solution (e.g. 2025/csharp)
+        type: string
+        required: true
+      dotnet-version:
+        type: string
+        default: 10.0.x
+defaults:
+  run:
+    shell: bash
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v6.1.0
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+      - name: Test
+        working-directory: ${{ inputs.path }}
+        run: dotnet test --configuration Release --logger "console;verbosity=normal"
