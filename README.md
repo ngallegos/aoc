@@ -11,12 +11,12 @@ My attempts over the years at Advent of Code.
   - [Kotlin](2023/kotlin)
   - [C#](2023/csharp)
 - 2022
-  - [C#](2022)
+  - [C#](2022/csharp)
 - 2021
-  - [C#](2021)
+  - [C#](2021/csharp)
 - 2019
-  - [C#](2019)
+  - [C#](2019/csharp)
 - 2018
-  - [C#](2018)
+  - [C#](2018/csharp)
 - 2015
-  - [C#](2015)
+  - [C#](2015/csharp)
