@@ -1,0 +1,27 @@
+name: Test Go
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: Directory containing go.mod (e.g. 2024/go)
+        type: string
+        required: true
+defaults:
+  run:
+    shell: bash
+jobs:
+  test:
+    name: Run Tests
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+      - name: Setup Go
+        uses: actions/setup-go@v7.1.0
+        with:
+          go-version-file: ${{ inputs.path }}/go.mod
+          cache-dependency-path: ${{ inputs.path }}/go.mod
+      - name: Test
+        working-directory: ${{ inputs.path }}
+        run: go test -v ./...

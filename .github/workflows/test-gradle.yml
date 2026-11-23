@@ -1,0 +1,35 @@
+name: Test Gradle
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: Directory containing the Gradle wrapper (e.g. 2023/kotlin)
+        type: string
+        required: true
+      java-version:
+        description: JDK used to run Gradle; project toolchains are provisioned by Gradle
+        type: string
+        default: '21'
+defaults:
+  run:
+    shell: bash
+jobs:
+  test:
+    name: Run Tests
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+      - name: Setup Java
+        uses: actions/setup-java@v6.3.0
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.java-version }}
+          cache: gradle
+          cache-dependency-path: |
+            ${{ inputs.path }}/*.gradle*
+            ${{ inputs.path }}/gradle/wrapper/gradle-wrapper.properties
+      - name: Test
+        working-directory: ${{ inputs.path }}
+        run: ./gradlew test --no-daemon
