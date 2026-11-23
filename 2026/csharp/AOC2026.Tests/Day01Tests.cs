@@ -1,0 +1,52 @@
+namespace AOC2026.Tests;
+
+public class Day01Tests : TestBase
+{
+    [Ignore("Not attempted yet")]
+    protected override void SolvePart1_Sample()
+    {
+        // Arrange
+        var _ = get_sample().ToList();
+        
+        // Act
+        
+        // Assert
+        throw new System.NotImplementedException();
+    }
+
+    [Ignore("Not attempted yet")]
+    protected override void SolvePart1_Actual()
+    {
+        // Arrange
+        var _ = get_input().ToList();
+        
+        // Act
+        
+        // Assert
+        throw new System.NotImplementedException();
+    }
+
+    [Ignore("Not attempted yet")]
+    protected override void SolvePart2_Sample()
+    {
+        // Arrange
+        var _ = get_sample().ToList();
+        
+        // Act
+        
+        // Assert
+        throw new System.NotImplementedException();
+    }
+
+    [Ignore("Not attempted yet")]
+    protected override void SolvePart2_Actual()
+    {
+        // Arrange
+        var _ = get_input().ToList();
+        
+        // Act
+        
+        // Assert
+        throw new System.NotImplementedException();
+    }
+}
