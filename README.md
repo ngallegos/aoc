@@ -2,6 +2,8 @@
 
 My attempts over the years at Advent of Code.
 
+- 2026
+  - [C#](2026/csharp)
 - 2025
   - [C#](2025/csharp)
 - 2024
