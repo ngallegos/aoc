@@ -10,9 +10,17 @@ day="$1"
 
 # Run from <year>/csharp; the year comes from the parent folder
 year="$(basename "$(dirname "$PWD")")"
-if ! [[ "$year" =~ ^[0-9]{4}$ && -d "./AOC${year}.Tests" ]]; then
-  echo "Error: run this from a <year>/csharp folder containing AOC<year>.Tests."
+if ! [[ "$year" =~ ^[0-9]{4}$ ]]; then
+  echo "Error: run this from a <year>/csharp folder."
   exit 1
+fi
+
+# Years without a test project only get the docs (and README link, if a README exists)
+has_tests=false
+if [ -d "./AOC${year}.Tests" ]; then
+  has_tests=true
+else
+  echo "No AOC${year}.Tests found; only creating docs."
 fi
 
 if ! [[ "$day" =~ ^[0-9]+$ ]]; then
@@ -22,21 +30,45 @@ fi
 
 day_padded=$(printf "%02d" "$day")
 
-# Inputs directory and files
-inputs_dir="./AOC${year}.Tests/Inputs"
-mkdir -p "$inputs_dir"
+if $has_tests; then
+  # Inputs directory and files
+  inputs_dir="./AOC${year}.Tests/Inputs"
+  mkdir -p "$inputs_dir"
 
-day_file="$inputs_dir/day-${day_padded}-01.txt"
-sample_file="$inputs_dir/sample-${day_padded}-01.txt"
+  day_file="$inputs_dir/day-${day_padded}-01.txt"
+  sample_file="$inputs_dir/sample-${day_padded}-01.txt"
 
-for f in "$day_file" "$sample_file"; do
-  if [ -e "$f" ]; then
-    echo "Skipping existing: $f"
-  else
-    touch "$f"
-    echo "Created: $f"
+  for f in "$day_file" "$sample_file"; do
+    if [ -e "$f" ]; then
+      echo "Skipping existing: $f"
+    else
+      touch "$f"
+      echo "Created: $f"
+    fi
+  done
+fi
+
+# Prints the puzzle description as markdown; fails (with a warning) so the caller can fall back
+fetch_description() {
+  if ! command -v pandoc >/dev/null 2>&1; then
+    echo "Warning: pandoc not installed; using placeholder description." >&2
+    return 1
   fi
-done
+
+  local html article
+  if ! html="$(curl -fsSL -A "new-day.sh (advent of code scaffolder)" "https://adventofcode.com/${year}/day/${day}")"; then
+    echo "Warning: could not fetch puzzle page; using placeholder description." >&2
+    return 1
+  fi
+
+  article="$(printf "%s" "$html" | perl -0777 -ne 'print $1 if /<article class="day-desc">(.*?)<\/article>/s')"
+  if [ -z "$article" ]; then
+    echo "Warning: no day-desc article found; using placeholder description." >&2
+    return 1
+  fi
+
+  printf "%s" "$article" | pandoc -f html -t gfm-raw_html --wrap=none
+}
 
 # Docs directory and file
 docs_dir="./docs"
@@ -46,14 +78,43 @@ doc_file="$docs_dir/day-${day_padded}.md"
 if [ -e "$doc_file" ]; then
   echo "Skipping existing: $doc_file"
 else
-  printf "# Day %s\n\nDescription and notes for Day %s.\n" "$day" "$day" > "$doc_file"
+  if fetch_description > "$doc_file.tmp"; then
+    mv "$doc_file.tmp" "$doc_file"
+  else
+    rm -f "$doc_file.tmp"
+    printf "# Day %s\n\nDescription and notes for Day %s.\n" "$day" "$day" > "$doc_file"
+  fi
   echo "Created: $doc_file"
 fi
+
+# Writes a README with a December calendar table (plain day numbers)
+init_readme() {
+  # Weekday of Dec 1 (0=Sunday), Sakamoto's algorithm
+  local y=$((year))
+  local first_weekday=$(( (y + y/4 - y/100 + y/400 + 5) % 7 ))
+  {
+    printf "# Advent of Code %s C#\n\n### December %s\n" "$year" "$year"
+    printf "| Sun |  Mon  | Tue | Wed | Thu | Fri | Sat |\n"
+    printf "|:---:|:-----:|:---:|:---:|:---:|:---:|:---:|\n"
+    local cell
+    local row=""
+    for ((cell = 0; cell < 42; cell++)); do
+      local d=$((cell - first_weekday + 1))
+      if ((d >= 1 && d <= 31)); then row+="| $d "; else row+="|  "; fi
+      if (((cell + 1) % 7 == 0)); then
+        printf "%s|\n" "$row"
+        row=""
+        if ((d >= 31)); then break; fi
+      fi
+    done
+  } > "$readme"
+  echo "Created: $readme"
+}
 
 # Update README.md table cell with link to the doc (if not already present)
 readme="./README.md"
 if [ ! -e "$readme" ]; then
-  touch "$readme"
+  init_readme
 fi
 
 link_line="- [Day ${day}](docs/day-${day_padded}.md)"
@@ -99,15 +160,16 @@ else
   fi
 fi
 
-# Tests directory and file (creates DayNNTests.cs)
-tests_dir="./AOC${year}.Tests"
-mkdir -p "$tests_dir"
+if $has_tests; then
+  # Tests directory and file (creates DayNNTests.cs)
+  tests_dir="./AOC${year}.Tests"
+  mkdir -p "$tests_dir"
 
-test_file="$tests_dir/Day${day_padded}Tests.cs"
-if [ -e "$test_file" ]; then
-  echo "Skipping existing: $test_file"
-else
-  cat > "$test_file" <<EOF
+  test_file="$tests_dir/Day${day_padded}Tests.cs"
+  if [ -e "$test_file" ]; then
+    echo "Skipping existing: $test_file"
+  else
+    cat > "$test_file" <<EOF
 namespace AOC${year}.Tests;
 
 public class Day${day_padded}Tests : TestBase
@@ -161,5 +223,6 @@ public class Day${day_padded}Tests : TestBase
     }
 }
 EOF
-  echo "Created: $test_file"
+    echo "Created: $test_file"
+  fi
 fi
