@@ -62,7 +62,6 @@ jobs:
           done
 
   csharp:
-    name: ${{ matrix.path }}
     needs: changes
     if: ${{ needs.changes.outputs.csharp != '[]' }}
     strategy:
@@ -74,7 +73,6 @@ jobs:
       path: ${{ matrix.path }}
 
   kotlin:
-    name: ${{ matrix.path }}
     needs: changes
     if: ${{ needs.changes.outputs.kotlin != '[]' }}
     strategy:
@@ -86,7 +84,6 @@ jobs:
       path: ${{ matrix.path }}
 
   go:
-    name: ${{ matrix.path }}
     needs: changes
     if: ${{ needs.changes.outputs.go != '[]' }}
     strategy:
