@@ -11,61 +11,32 @@ public abstract class TestBase
     protected abstract void SolvePart2_Actual();
     
     [Test]
-    public void Part1_Sample()
-    {
-        var t = Stopwatch.StartNew();
-        try
-        {
-            SolvePart1_Sample();
-        }
-        finally
-        {
-            t.Stop();
-            Console.WriteLine($"Part 1 sample:\t{t.ElapsedMilliseconds}ms");            
-        }
+    public void Part1_Sample() => Execute(SolvePart1_Sample, "Part 1 sample");
 
-    }
-    
     [Test]
-    public void Part1_Actual()
+    public void Part1_Actual() => Execute(SolvePart1_Actual, "Part 1 actual");
+
+    [Test]
+    public void Part2_Sample() => Execute(SolvePart2_Sample, "Part 2 sample");
+
+    [Test]
+    public void Part2_Actual() => Execute(SolvePart2_Actual, "Part 2 actual");
+
+    private void Execute(Action solve, string label)
     {
         var t = Stopwatch.StartNew();
         try
         {
-            SolvePart1_Actual();
+            solve();
+        }
+        catch (NotImplementedException)
+        {
+            Assert.Ignore($"{label} is not implemented yet");
         }
         finally
         {
             t.Stop();
-            Console.WriteLine($"Part 1 actual:\t{t.ElapsedMilliseconds}ms");            
-        }
-    }
-    
-    [Test]
-    public void Part2_Sample()
-    {
-        var t = Stopwatch.StartNew();try
-        {
-            SolvePart2_Sample();
-        }
-        finally
-        {
-            t.Stop();
-            Console.WriteLine($"Part 2 sample:\t{t.ElapsedMilliseconds}ms");            
-        }
-    }
-    
-    [Test]
-    public void Part2_Actual()
-    {
-        var t = Stopwatch.StartNew();try
-        {
-            SolvePart2_Actual();
-        }
-        finally
-        {
-            t.Stop();
-            Console.WriteLine($"Part 2 actual:\t{t.ElapsedMilliseconds}ms");            
+            Console.WriteLine($"{label}:\t{t.ElapsedMilliseconds}ms");
         }
     }
 

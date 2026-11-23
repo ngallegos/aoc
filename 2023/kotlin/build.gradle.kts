@@ -15,6 +15,9 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    testLogging {
+        events("skipped", "failed")
+    }
 }
 kotlin {
     jvmToolchain(11)

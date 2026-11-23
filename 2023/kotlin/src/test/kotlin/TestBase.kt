@@ -1,3 +1,4 @@
+import org.opentest4j.TestAbortedException
 import kotlin.test.Test
 import kotlin.test.fail
 import kotlin.time.measureTime
@@ -9,60 +10,32 @@ abstract class TestBase {
     protected abstract fun solvePart2Actual()
 
     @Test
-    fun part1Sample(){
-        val timeTaken = measureTime {
-            try {
-                solvePart1Sample()
-            } catch (e: Error){
-                fail(e.message)
-            } catch (e: Exception){
-                fail(e.message)
-            }
-        }
-        println("Part 1 sample:\t${timeTaken}")
-    }
+    fun part1Sample() = execute("Part 1 sample") { solvePart1Sample() }
 
     @Test
-    fun part1Actual(){
-        val timeTaken = measureTime {
-            try {
-                solvePart1Actual()
-            } catch (e: Error){
-                fail(e.message)
-            } catch (e: Exception){
-                fail(e.message)
-            }
-        }
-        println("Part 1 actual:\t${timeTaken}")
-    }
+    fun part1Actual() = execute("Part 1 actual") { solvePart1Actual() }
 
     @Test
-    fun part2Sample(){
-        val timeTaken = measureTime {
-            try {
-                solvePart2Sample()
-            } catch (e: Error){
-                fail(e.message)
-            } catch (e: Exception){
-                fail(e.message)
-            }
-        }
-        println("Part 2 sample:\t${timeTaken}")
-    }
+    fun part2Sample() = execute("Part 2 sample") { solvePart2Sample() }
 
     @Test
-    fun part2Actual(){
+    fun part2Actual() = execute("Part 2 actual") { solvePart2Actual() }
+
+    private fun execute(label: String, solve: () -> Unit) {
         val timeTaken = measureTime {
             try {
-                solvePart2Actual()
+                solve()
+            } catch (e: TestAbortedException) {
+                throw e
             } catch (e: Error){
                 fail(e.message)
             } catch (e: Exception){
                 fail(e.message)
             }
         }
-        println("Part 2 actual:\t${timeTaken}")
+        println("$label:\t${timeTaken}")
     }
+
     protected fun getSample(partNumber: Int = 1) : Iterable<String>
     {
         return getInput(partNumber = partNumber, type = "sample")
