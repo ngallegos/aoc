@@ -38,6 +38,28 @@ for f in "$day_file" "$sample_file"; do
   fi
 done
 
+# Prints the puzzle description as markdown; fails (with a warning) so the caller can fall back
+fetch_description() {
+  if ! command -v pandoc >/dev/null 2>&1; then
+    echo "Warning: pandoc not installed; using placeholder description." >&2
+    return 1
+  fi
+
+  local html article
+  if ! html="$(curl -fsSL -A "new-day.sh (advent of code scaffolder)" "https://adventofcode.com/${year}/day/${day}")"; then
+    echo "Warning: could not fetch puzzle page; using placeholder description." >&2
+    return 1
+  fi
+
+  article="$(printf "%s" "$html" | perl -0777 -ne 'print $1 if /<article class="day-desc">(.*?)<\/article>/s')"
+  if [ -z "$article" ]; then
+    echo "Warning: no day-desc article found; using placeholder description." >&2
+    return 1
+  fi
+
+  printf "%s" "$article" | pandoc -f html -t gfm-raw_html --wrap=none
+}
+
 # Docs directory and file
 docs_dir="./docs"
 mkdir -p "$docs_dir"
@@ -46,7 +68,12 @@ doc_file="$docs_dir/day-${day_padded}.md"
 if [ -e "$doc_file" ]; then
   echo "Skipping existing: $doc_file"
 else
-  printf "# Day %s\n\nDescription and notes for Day %s.\n" "$day" "$day" > "$doc_file"
+  if fetch_description > "$doc_file.tmp"; then
+    mv "$doc_file.tmp" "$doc_file"
+  else
+    rm -f "$doc_file.tmp"
+    printf "# Day %s\n\nDescription and notes for Day %s.\n" "$day" "$day" > "$doc_file"
+  fi
   echo "Created: $doc_file"
 fi
 
