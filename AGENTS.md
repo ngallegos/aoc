@@ -22,6 +22,7 @@ Add `.github/workflows/test-<language>.yml` (reusable, `path` input), then updat
 ## Learning lessons
 
 - A lesson teaches a reusable concept, not a day's puzzle. Use neutral examples and don't solve the puzzle in the lesson.
+- Be more verbose than usual: this overrides any terse response style for lesson content. Write for easy understanding: define jargon, use examples and walk through each step.
 - Each lesson lives at `learning/<concept>/` with a `README.md` (written explanation), an `index.html` (interactive page) and `exercises.js`. Shared styles and the exercise runner are in `learning/assets/`.
 - Exercises are JavaScript skeletons with TODOs, each with `starter`, `tests` and `solution`. The solution must pass the tests and the starter must not.
 - Add a "Where this helped" link to the puzzle section in `<year>/<language>/docs/day-<NN>.md`, and link back from that folder's `README.md`. Don't edit the day docs; `new-day.sh --refresh` overwrites them.
