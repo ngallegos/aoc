@@ -1,50 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using AOC2015.Modules.Shared;
+using AOC2015.Tests.Shared;
 
-namespace AOC2015.Modules;
+namespace AOC2015.Tests;
 
-public class Day06 : DayBase
+public class Day06Tests : TestBase
 {
-    public override bool Ignore => true;
+    protected override void SolvePart1_Sample()
+    {
+        // Arrange
+        var instructions = get_sample().Select(x => new LightingInstruction(x)).ToList();
+        var grid = new LightGrid();
 
-    private static Regex _instructionRegex =
+        // Act
+        instructions.ForEach(x => x.ExecutePart1(grid));
+
+        // Assert
+        grid.LightsLit.ShouldBe(998996);
+    }
+
+    protected override void SolvePart1_Actual()
+    {
+        // Arrange
+        var instructions = get_input().Select(x => new LightingInstruction(x)).ToList();
+        var grid = new LightGrid();
+
+        // Act
+        instructions.ForEach(x => x.ExecutePart1(grid));
+
+        // Assert
+        grid.LightsLit.ShouldBe(400410);
+    }
+
+    protected override void SolvePart2_Sample()
+    {
+        // Arrange
+        var instructions = get_sample(2).Select(x => new LightingInstruction(x)).ToList();
+        var grid = new LightGrid();
+
+        // Act
+        instructions.ForEach(x => x.ExecutePart2(grid));
+
+        // Assert
+        grid.LightsLit.ShouldBe(2000001);
+    }
+
+    protected override void SolvePart2_Actual()
+    {
+        // Arrange
+        var instructions = get_input().Select(x => new LightingInstruction(x)).ToList();
+        var grid = new LightGrid();
+
+        // Act
+        instructions.ForEach(x => x.ExecutePart2(grid));
+
+        // Assert
+        grid.LightsLit.ShouldBe(15343601);
+    }
+
+    private static readonly Regex _instructionRegex =
         new Regex(@"^(?<type>turn|toggle) ?(?<state>on|off)? (?<start>\d*,\d*) through (?<end>\d*,\d*)$");
-
-    private List<LightingInstruction> _instructions = null;
-    public override dynamic Part1()
-    {
-        _instructions ??= get_input().Select(x => new LightingInstruction(x))
-            .ToList();
-        var grid = new LightGrid();
-        foreach (var instruction in _instructions)
-        {
-            instruction.ExecutePart1(grid);
-        }
-
-        return grid;
-    }
-
-    public override dynamic Part2()
-    {
-        _instructions ??= get_input().Select(x => new LightingInstruction(x))
-            .ToList();
-        var grid = new LightGrid();
-        foreach (var instruction in _instructions)
-        {
-            instruction.ExecutePart2(grid);
-        }
-
-        return grid;
-    }
 
     private class LightGrid : Grid<int>
     {
         public LightGrid()
         {
-            Initialize(new GridLocation(0, 0), new GridLocation(999, 999));
+            Initialize(new GridLocation(0, 0), new GridLocation(999, 999), 0);
         }
 
         public int LightsLit => _grid.Sum(x => x.Sum());

@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+refresh=false
+if [ "${1:-}" = "--refresh" ]; then
+  refresh=true
+  shift
+fi
+
 if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 <day-number>"
+  echo "Usage: $0 [--refresh] <day-number>"
   exit 1
 fi
 
@@ -55,13 +61,23 @@ fetch_description() {
     return 1
   fi
 
+  # Part 2 is only served to a logged-in session that has solved part 1
+  local session="${AOC_SESSION:-}"
+  local session_file="${XDG_CONFIG_HOME:-$HOME/.config}/aoc/session"
+  if [ -z "$session" ] && [ -r "$session_file" ]; then
+    session="$(<"$session_file")"
+  fi
+
   local html article
-  if ! html="$(curl -fsSL -A "new-day.sh (advent of code scaffolder)" "https://adventofcode.com/${year}/day/${day}")"; then
+  # The cookie goes through a config file descriptor to keep it out of the process list
+  if ! html="$(curl -fsSL -A "new-day.sh (advent of code scaffolder)" \
+    -K <(if [ -n "$session" ]; then printf 'cookie = "session=%s"\n' "$session"; fi) \
+    "https://adventofcode.com/${year}/day/${day}")"; then
     echo "Warning: could not fetch puzzle page; using placeholder description." >&2
     return 1
   fi
 
-  article="$(printf "%s" "$html" | perl -0777 -ne 'print $1 if /<article class="day-desc">(.*?)<\/article>/s')"
+  article="$(printf "%s" "$html" | perl -0777 -ne 'print "$1\n" while /<article class="day-desc">(.*?)<\/article>/sg')"
   if [ -z "$article" ]; then
     echo "Warning: no day-desc article found; using placeholder description." >&2
     return 1
@@ -75,16 +91,20 @@ docs_dir="./docs"
 mkdir -p "$docs_dir"
 
 doc_file="$docs_dir/day-${day_padded}.md"
-if [ -e "$doc_file" ]; then
+if [ -e "$doc_file" ] && ! $refresh; then
   echo "Skipping existing: $doc_file"
 else
   if fetch_description > "$doc_file.tmp"; then
     mv "$doc_file.tmp" "$doc_file"
+    echo "Wrote: $doc_file"
+  elif [ -e "$doc_file" ]; then
+    rm -f "$doc_file.tmp"
+    echo "Keeping existing: $doc_file"
   else
     rm -f "$doc_file.tmp"
     printf "# Day %s\n\nDescription and notes for Day %s.\n" "$day" "$day" > "$doc_file"
+    echo "Created: $doc_file"
   fi
-  echo "Created: $doc_file"
 fi
 
 # Writes a README with a December calendar table (plain day numbers)

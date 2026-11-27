@@ -1,25 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace AOC2015.Modules;
+namespace AOC2015.Tests;
 
 /// <summary>
 /// https://www.reddit.com/r/adventofcode/comments/3w192e/day_9_solutions/
 /// https://stackoverflow.com/questions/756055/listing-all-permutations-of-a-string-integer
 /// </summary>
-public class Day09 : DayBase
+public class Day09Tests : TestBase
 {
-    public override bool Ignore { get; }
-    public override dynamic Part1()
+    [Ignore("Not attempted yet")]
+    protected override void SolvePart1_Sample()
     {
-        var pairs = get_sample()
-            .Select(x => new TownPair(x))
-            .ToList();
         throw new System.NotImplementedException();
     }
 
-    public override dynamic Part2()
+    [Ignore("Not attempted yet")]
+    protected override void SolvePart1_Actual()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    [Ignore("Not attempted yet")]
+    protected override void SolvePart2_Sample()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    [Ignore("Not attempted yet")]
+    protected override void SolvePart2_Actual()
     {
         throw new System.NotImplementedException();
     }

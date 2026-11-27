@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AOC2015.Modules.Shared;
+namespace AOC2015.Tests.Shared;
 
 public class Grid<T>
 {
-    protected List<List<T>> _grid;
+    protected List<List<T>> _grid = [];
     public List<T> this[int index] => _grid[index];
     protected int Length => _grid.Count;
     protected int _xMinOffset;
     protected int _yMinOffset;
 
-    protected void Initialize(GridLocation upperLeft, GridLocation lowerRight, List<GridLocation<T>> initialValues = null, T defaultValue = default)
+    protected void Initialize(GridLocation upperLeft, GridLocation lowerRight, T defaultValue, List<GridLocation<T>>? initialValues = null)
     {
         initialValues ??= new List<GridLocation<T>>();
         _xMinOffset = upperLeft.X;
@@ -30,9 +30,9 @@ public class Grid<T>
                 }).ToList()).ToList();
     }
 
-    public List<string> Render(Func<T, string> transform = null)
+    public List<string> Render(Func<T, string>? transform = null)
     {
-        transform = transform ?? (x => x.ToString()); 
+        transform = transform ?? (x => x?.ToString() ?? string.Empty);
         return _grid.Select(y => string.Join("", y.Select(x => transform(x)))).ToList();
     }
 }
