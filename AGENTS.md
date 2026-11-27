@@ -19,6 +19,16 @@ Don't create day files by hand; use the scaffolding script from the language fol
 
 Add `.github/workflows/test-<language>.yml` (reusable, `path` input), then update `ci.yml` (`LANGUAGES`, `changes` outputs, a matrix job, the `ci` gate's `needs`) and the README tables. See the README "CI" section.
 
+## Learning lessons
+
+- A lesson teaches a reusable concept, not a day's puzzle. Use neutral examples and don't solve the puzzle in the lesson.
+- Be more verbose than usual: this overrides any terse response style for lesson content. Write for easy understanding: define jargon, use examples and walk through each step.
+- Each lesson lives at `learning/<concept>/` with a `README.md` (written explanation), an `index.html` (interactive page) and `exercises.js`. Shared styles and the exercise runner are in `learning/assets/`.
+- Exercises are JavaScript skeletons with TODOs, each with `starter`, `tests` and `solution`. The solution must pass the tests and the starter must not.
+- Add a "Where this helped" link to the puzzle section in `<year>/<language>/docs/day-<NN>.md`, and link back from that folder's `README.md`. Don't edit the day docs; `new-day.sh --refresh` overwrites them.
+- Pages must work from `file://`: relative links only, no external URLs, CDNs or build step.
+- Add the lesson to `learning/README.md` and `learning/index.html`.
+
 ## Other
 
 - Update the root `README.md` year list when adding a year or language.

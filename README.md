@@ -23,11 +23,16 @@ My attempts over the years at Advent of Code.
 - 2015
   - [C#](2015/csharp)
 
+## Learning
+
+[Learning paths](learning/README.md) explain concepts picked up while solving puzzles, with interactive exercises.
+
 ## Repository layout
 
 ```
 <year>/<language>/   one self-contained project per year and language
 shared/<language>/   code reused across years (e.g. shared/csharp/AOC.Helpers)
+learning/<topic>/    lessons and interactive exercises
 .github/workflows/   CI
 ```
 

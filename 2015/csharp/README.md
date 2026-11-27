@@ -8,3 +8,7 @@
 | 13 | 14 | 15 | 16 | 17 | 18 | 19 |
 | 20 | 21 | 22 | 23 | 24 | 25 | 26 |
 | 27 | 28 | 29 | 30 | 31 |  |  |
+
+### Learning
+- Day 9: [Bitmask sets and Dynamic Programming over subsets](../../learning/bitmask-dp/README.md)
+- Day 10: [Counting instead of building](../../learning/counting-not-building/README.md)

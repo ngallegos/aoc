@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counting instead of building</title>
+<link rel="stylesheet" href="../assets/learning.css">
+</head>
+<body>
+<p><a href="../index.html">Learning paths</a></p>
+<h1>Counting instead of building</h1>
+<p><a href="README.md">Written lesson</a></p>
+
+<p>
+  Some problems describe something that grows step by step, then ask only how big it gets.
+  You can often answer that without ever creating the thing.
+</p>
+
+<section>
+  <h2>The idea</h2>
+  <p>
+    Replace every letter at once: <code>A</code> becomes <code>B</code>, and <code>B</code> becomes <code>AB</code>.
+    Starting from <code>A</code> you get <code>B</code>, <code>AB</code>, <code>BAB</code>, <code>ABBAB</code>.
+    The string soon becomes too large to store.
+  </p>
+  <p>
+    Length does not depend on order, so keep only how many of each letter there are. With 2 <code>A</code>s and
+    3 <code>B</code>s, the next step has 3 <code>A</code>s and 5 <code>B</code>s: every <code>A</code> adds one
+    <code>B</code>, and every <code>B</code> adds one of each.
+  </p>
+</section>
+
+<section>
+  <h2>When is this allowed?</h2>
+  <p>
+    Each part must change <strong>independently</strong>, without looking at its neighbors. If neighbors affect
+    each other, look for bigger chunks that never do, and count those instead.
+  </p>
+  <p>
+    If working out what a part becomes is slow, do it the first time you see that part and save the result.
+    This is called <strong>memoization</strong>.
+  </p>
+</section>
+
+<section>
+  <h2>String versus counts</h2>
+  <p>Step through the example and compare how much each approach has to store.</p>
+  <div class="row"><button id="step">Step</button><button id="reset">Reset</button></div>
+  <p id="summary" role="status"></p>
+  <pre class="break" id="preview" style="white-space: pre-wrap"></pre>
+</section>
+
+<section>
+  <h2>Exercises</h2>
+  <p>Fill in each TODO in JavaScript, then run the tests.</p>
+  <div id="exercises"></div>
+</section>
+
+<section>
+  <h2>Where this helped</h2>
+  <p><a href="../../2015/csharp/docs/day-10.md#----day-10-elves-look-elves-say----">2015 Day 10</a> (<a href="../../2015/csharp/docs/day-10.md#----part-two----">part two</a>)</p>
+</section>
+
+<script src="../assets/learning.js"></script>
+<script src="exercises.js"></script>
+<script>
+const maxStep = 40;
+const maxStringStep = 15;
+let current, a, b, text;
+
+function show() {
+  $("#summary").textContent = `Step ${current}: length ${(a + b).toLocaleString()}, stored as counts A = ${a.toLocaleString()}, B = ${b.toLocaleString()}.`;
+  $("#preview").textContent = current > maxStringStep ? "String no longer shown. The counts are still two numbers." : text;
+  $("#step").disabled = current === maxStep;
+}
+
+function reset() {
+  [current, a, b, text] = [0, 1, 0, "A"];
+  show();
+}
+
+$("#step").onclick = () => {
+  current++;
+  [a, b] = [b, a + b];
+  if (current <= maxStringStep) text = text.replace(/[AB]/g, symbol => symbol === "A" ? "B" : "AB");
+  show();
+};
+$("#reset").onclick = reset;
+reset();
+renderExercises($("#exercises"), exercises);
+</script>
+</body>
+</html>
