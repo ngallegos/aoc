@@ -32,16 +32,28 @@ public class Day09Tests : TestBase
         shortest.ShouldBe(141);
     }
 
-    [Ignore("Not attempted yet")]
     protected override void SolvePart2_Sample()
     {
-        throw new System.NotImplementedException();
+        // Arrange
+        var distances = BuildDistances(get_sample(x => new TownPair(x)).ToList());
+
+        // Act
+        var longest = BestRoute(distances, Math.Max);
+
+        // Assert
+        longest.ShouldBe(982);
     }
 
-    [Ignore("Not attempted yet")]
     protected override void SolvePart2_Actual()
     {
-        throw new System.NotImplementedException();
+        // Arrange
+        var distances = BuildDistances(get_input(x => new TownPair(x)).ToList());
+
+        // Act
+        var longest = BestRoute(distances, Math.Max);
+
+        // Assert
+        longest.ShouldBe(736);
     }
 
     private static int[,] BuildDistances(IReadOnlyList<TownPair> pairs)
