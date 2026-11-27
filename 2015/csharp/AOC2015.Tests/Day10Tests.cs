@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace AOC2015.Tests;
 
 public class Day10Tests : TestBase
@@ -29,28 +31,29 @@ public class Day10Tests : TestBase
         //Console.WriteLine($"Length of {sequence}: {sequence.Length}");
     }
 
-    [Ignore("Not attempted yet")]
     protected override void SolvePart2_Sample()
     {
         // Arrange
-        var _ = get_sample().ToList();
+        var sequence = get_sample().ToList()[0];
         
         // Act
+        sequence = LookAndSay(sequence);
         
         // Assert
-        throw new System.NotImplementedException();
+        sequence.ShouldBe("312211");
+        sequence.Length.ShouldBe(6);
     }
 
-    [Ignore("Not attempted yet")]
     protected override void SolvePart2_Actual()
     {
         // Arrange
-        var _ = get_input().ToList();
+        var sequence = get_input().ToList()[0];
         
         // Act
+        sequence = LookAndSay(sequence, 50);
         
         // Assert
-        throw new System.NotImplementedException();
+        sequence.Length.ShouldBe(5103798);
     }
 
     string LookAndSay(string sequence, int iterations = 1)
@@ -58,7 +61,7 @@ public class Day10Tests : TestBase
         while (iterations > 0)
         {
             var currentLook = sequence[0];
-            var nextSequence = string.Empty;
+            var nextSequence = new StringBuilder();
             var currentSay = 1;
             for (var ix = 1; ix < sequence.Length; ix++)
             {
@@ -68,13 +71,13 @@ public class Day10Tests : TestBase
                 }
                 else
                 {
-                    nextSequence += $"{currentSay}{currentLook}";
+                    nextSequence.Append(currentSay).Append(currentLook);
                     currentSay = 1;
                 }
                 currentLook = sequence[ix];
             }
-            nextSequence += $"{currentSay}{currentLook}";
-            sequence = nextSequence;
+            nextSequence.Append(currentSay).Append(currentLook);
+            sequence = nextSequence.ToString();
             iterations--;
         }
 
