@@ -1,34 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+namespace AOC2015.Tests;
 
-namespace AOC2015.Modules;
-
-public class Day07 : DayBase
+public class Day07Tests : TestBase
 {
-    public override bool Ignore => true;
-    public override dynamic Part1()
+    protected override void SolvePart1_Sample()
     {
-        var sampleCircuit = new Circuit(get_sample());
-        var actualCircuit = new Circuit(get_input());
+        // Arrange
+        var circuit = new Circuit(get_sample());
 
-        return new { 
-            sample = sampleCircuit.GetAllSignals()
-                .OrderBy(x => x.wire)
-                .Select(x => $"{x.wire}: {x.signal}"),
-            
-            actualAWireSignal = actualCircuit.GetSignal("a")
-        };
+        // Act
+        var signals = circuit.GetAllSignals()
+            .OrderBy(x => x.wire)
+            .Select(x => $"{x.wire}: {x.signal}");
+
+        // Assert
+        signals.ShouldBe([
+            "d: 72",
+            "e: 507",
+            "f: 492",
+            "g: 114",
+            "h: 65412",
+            "i: 65079",
+            "x: 123",
+            "y: 456"
+        ]);
     }
 
-    public override dynamic Part2()
+    protected override void SolvePart1_Actual()
     {
-        var actualCircuit = new Circuit(get_input());
-        actualCircuit.Override("b", 3176);
+        // Arrange
+        var circuit = new Circuit(get_input());
 
-        return new {
-            actualAWireSignal = actualCircuit.GetSignal("a")
-        };
+        // Act
+        var signal = circuit.GetSignal("a");
+
+        // Assert
+        signal.ShouldBe((ushort)3176);
+    }
+
+    [Ignore("No sample")]
+    protected override void SolvePart2_Sample()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void SolvePart2_Actual()
+    {
+        // Arrange
+        var part1Signal = new Circuit(get_input()).GetSignal("a");
+        var circuit = new Circuit(get_input());
+
+        // Act
+        circuit.Override("b", part1Signal);
+        var signal = circuit.GetSignal("a");
+
+        // Assert
+        signal.ShouldBe((ushort)14710);
     }
 
     private class Circuit

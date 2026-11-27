@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/config/">
+    <File Path="../../shared/csharp/new-day.sh" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="../../shared/csharp/AOC.Helpers/AOC.Helpers.csproj" />
+  <Project Path="AOC2015.Tests/AOC2015.Tests.csproj" />
+</Solution>

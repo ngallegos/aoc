@@ -1,46 +1,79 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+namespace AOC2015.Tests;
 
-namespace AOC2015.Modules;
-
-public class Day03 : DayBase
+public class Day03Tests : TestBase
 {
-    public override bool Ignore => true;
-    public override dynamic Part1()
+    protected override void SolvePart1_Sample()
     {
+        // Arrange
+        var instructions = get_sample().First();
+
+        // Act
+        var housesDeliveredTo = DeliverAlone(instructions);
+
+        // Assert
+        housesDeliveredTo.ShouldBe(2);
+    }
+
+    protected override void SolvePart1_Actual()
+    {
+        // Arrange
         var instructions = get_input().First();
+
+        // Act
+        var housesDeliveredTo = DeliverAlone(instructions);
+
+        // Assert
+        housesDeliveredTo.ShouldBe(2592);
+    }
+
+    protected override void SolvePart2_Sample()
+    {
+        // Arrange
+        var instructions = get_sample().First();
+
+        // Act
+        var housesDeliveredTo = DeliverWithRoboSanta(instructions);
+
+        // Assert
+        housesDeliveredTo.ShouldBe(11);
+    }
+
+    protected override void SolvePart2_Actual()
+    {
+        // Arrange
+        var instructions = get_input().First();
+
+        // Act
+        var housesDeliveredTo = DeliverWithRoboSanta(instructions);
+
+        // Assert
+        housesDeliveredTo.ShouldBe(2360);
+    }
+
+    private static int DeliverAlone(string instructions)
+    {
         var deliveryState = new PresentDeliveryState();
         foreach (var instruction in instructions)
         {
             deliveryState.Navigate(instruction);
         }
 
-        return new { deliveryState };
+        return deliveryState.HousesDeliveredTo;
     }
 
-    public override dynamic Part2()
+    private static int DeliverWithRoboSanta(string instructions)
     {
-        var instructions = get_input().First();
         var santaDeliveryState = new PresentDeliveryState();
         var roboSantaDeliveryState = new PresentDeliveryState();
-        for (int i = 0; i < instructions.Length; i += 2)
+        for (var i = 0; i < instructions.Length; i += 2)
         {
             santaDeliveryState.Navigate(instructions[i]);
-            roboSantaDeliveryState.Navigate(instructions[i+1]);
+            roboSantaDeliveryState.Navigate(instructions[i + 1]);
         }
 
-        var santaDeliveries = santaDeliveryState.GetCurrentDeliveries();
-        var roboSantaDeliveries = roboSantaDeliveryState.GetCurrentDeliveries();
-        var totalHousesDeliveredTo = santaDeliveries.UnionBy(roboSantaDeliveries, house => house.ToString())
-            .DistinctBy(house => house.ToString())
-            .ToList();
-        
-        return new
-        {
-            santaDeliveryState,
-            roboSantaDeliveryState,
-            totalHousesDeliveredTo = totalHousesDeliveredTo.Count
-        };
+        return santaDeliveryState.GetCurrentDeliveries()
+            .UnionBy(roboSantaDeliveryState.GetCurrentDeliveries(), house => house.ToString())
+            .Count();
     }
 
     private class PresentDeliveryState
@@ -81,12 +114,13 @@ public class Day03 : DayBase
                     break;
             }
 
-            _currentDelivery = _deliveries.FirstOrDefault(d => d.X == x && d.Y == y);
-            if (_currentDelivery == null)
+            var house = _deliveries.FirstOrDefault(d => d.X == x && d.Y == y);
+            if (house == null)
             {
-                _currentDelivery = new House(x, y);
-                _deliveries.Add(_currentDelivery);
+                house = new House(x, y);
+                _deliveries.Add(house);
             }
+            _currentDelivery = house;
             _currentDelivery.ReceivePresent();
         }
     }
