@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bitmask sets and Dynamic Programming over subsets</title>
+<link rel="stylesheet" href="../assets/learning.css">
+</head>
+<body>
+<p><a href="../index.html">Learning paths</a></p>
+<h1>Bitmask sets and Dynamic Programming over subsets</h1>
+<p><a href="README.md">Written lesson</a></p>
+
+<p>
+  This lesson combines two ideas: <strong>dynamic programming</strong>, which means solving small versions of a
+  problem once and reusing the answers, and <strong>bitmasks</strong>, which store a set of items in a single number.
+  Use them together when you need to pick or order a small group of things and trying every order is too slow.
+</p>
+
+<section>
+  <h2>What is dynamic programming (DP)?</h2>
+  <p>
+    Suppose you can climb 1 or 2 stairs at a time. How many ways are there to reach step 5?
+    Your last move came from step 4 or step 3, so <code>ways(5) = ways(4) + ways(3)</code>.
+    Instead of working out the same smaller answers repeatedly, start small and save each one:
+  </p>
+  <pre>const ways = [1, 1]; // step 0 and step 1
+for (let step = 2; step &lt;= 5; step++) {
+  ways[step] = ways[step - 1] + ways[step - 2];
+}
+// ways is now [1, 1, 2, 3, 5, 8]</pre>
+  <p>Four questions guide most DP solutions:</p>
+  <ul>
+    <li><strong>State:</strong> what does one saved answer mean? (<code>ways[step]</code>)</li>
+    <li><strong>Base cases:</strong> which answers do you already know? (steps 0 and 1)</li>
+    <li><strong>Transition:</strong> how is an answer built from smaller ones? (add the previous two)</li>
+    <li><strong>Result:</strong> where is the final answer? (<code>ways[5]</code>)</li>
+  </ul>
+</section>
+
+<section>
+  <h2>DP over subsets</h2>
+  <p>
+    Often the state is not a step number but a <strong>set of items</strong>, such as the tasks already taken.
+    If <code>best[set]</code> is the cheapest way to handle those items, then <code>{0, 2}</code> can be built from
+    <code>{0}</code> by adding 2, or from <code>{2}</code> by adding 0. Keep the cheaper one.
+    After that, the order no longer matters, so many orders collapse into one entry.
+  </p>
+  <p>
+    If the next choice also depends on the item used last, add it to the state: <code>best[set][last]</code>.
+  </p>
+</section>
+
+<section>
+  <h2>A set stored as an int</h2>
+  <p>
+    To write <code>best[set]</code> in code, the set has to be a number. An integer is a row of bits, so let
+    bit <code>i</code> be 1 when item <code>i</code> is in the set. Bits are numbered from the right, starting at 0.
+    Items 0, 1, 2, 3 are worth 1, 2, 4, 8, and a set is the sum of its members.
+  </p>
+  <ul>
+    <li><code>1 &lt;&lt; i</code> is a number with only bit <code>i</code> on.</li>
+    <li><code>set | (1 &lt;&lt; i)</code> adds item <code>i</code>.</li>
+    <li><code>set &amp; (1 &lt;&lt; i)</code> is non-zero when item <code>i</code> is in the set.</li>
+    <li><code>set &amp; ~(1 &lt;&lt; i)</code> removes item <code>i</code>.</li>
+    <li><code>(1 &lt;&lt; n) - 1</code> is the set of all <code>n</code> items.</li>
+  </ul>
+  <p>Try it: toggle items in and out. Each line below describes the same set.</p>
+  <div class="row" id="toggles"></div>
+  <pre id="set-view"></pre>
+</section>
+
+<section>
+  <h2>Exercises</h2>
+  <p>Fill in each TODO in JavaScript, then run the tests.</p>
+  <div id="exercises"></div>
+</section>
+
+<section>
+  <h2>Where this helped</h2>
+  <p><a href="../../2015/csharp/docs/day-09.md#----day-9-all-in-a-single-night----">2015 Day 9</a> (<a href="../../2015/csharp/docs/day-09.md#----part-two----">part two</a>)</p>
+</section>
+
+<script src="../assets/learning.js"></script>
+<script src="exercises.js"></script>
+<script>
+let set = 5;
+const items = [0, 1, 2, 3, 4];
+
+function renderSet() {
+  $("#toggles").replaceChildren(...items.map(item => {
+    const button = element("button", { textContent: `item ${item}`, ariaPressed: Boolean(set & (1 << item)) });
+    button.onclick = () => { set ^= 1 << item; renderSet(); $("#toggles").children[item].focus(); };
+    return button;
+  }));
+  const flags = items.map(item => Boolean(set & (1 << item)));
+  const members = items.filter(item => flags[item]);
+  const sum = members.map(item => 1 << item).join(" + ") || "0";
+  $("#set-view").textContent =
+    `bool[]  [${flags.join(", ")}]\nbits    ${set.toString(2).padStart(items.length, "0")}\nint     ${set}  (${sum})\nset     {${members}}`;
+}
+
+renderSet();
+renderExercises($("#exercises"), exercises);
+</script>
+</body>
+</html>
