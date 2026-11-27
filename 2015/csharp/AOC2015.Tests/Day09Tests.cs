@@ -1,3 +1,5 @@
+using AOC.Helpers;
+
 namespace AOC2015.Tests;
 
 /// <summary>
@@ -6,28 +8,70 @@ namespace AOC2015.Tests;
 /// </summary>
 public class Day09Tests : TestBase
 {
-    [Ignore("Not attempted yet")]
     protected override void SolvePart1_Sample()
     {
-        throw new System.NotImplementedException();
+        // Arrange
+        var distances = BuildDistances(get_sample(x => new TownPair(x)).ToList());
+
+        // Act
+        var shortest = Routing.BestRoute(distances, Math.Min);
+
+        // Assert
+        shortest.ShouldBe(605);
     }
 
-    [Ignore("Not attempted yet")]
     protected override void SolvePart1_Actual()
     {
-        throw new System.NotImplementedException();
+        // Arrange
+        var distances = BuildDistances(get_input(x => new TownPair(x)).ToList());
+
+        // Act
+        var shortest = Routing.BestRoute(distances, Math.Min);
+
+        // Assert
+        shortest.ShouldBe(141);
     }
 
-    [Ignore("Not attempted yet")]
     protected override void SolvePart2_Sample()
     {
-        throw new System.NotImplementedException();
+        // Arrange
+        var distances = BuildDistances(get_sample(x => new TownPair(x)).ToList());
+
+        // Act
+        var longest = Routing.BestRoute(distances, Math.Max);
+
+        // Assert
+        longest.ShouldBe(982);
     }
 
-    [Ignore("Not attempted yet")]
     protected override void SolvePart2_Actual()
     {
-        throw new System.NotImplementedException();
+        // Arrange
+        var distances = BuildDistances(get_input(x => new TownPair(x)).ToList());
+
+        // Act
+        var longest = Routing.BestRoute(distances, Math.Max);
+
+        // Assert
+        longest.ShouldBe(736);
+    }
+
+    private static int[,] BuildDistances(IReadOnlyList<TownPair> pairs)
+    {
+        var towns = pairs
+            .SelectMany(x => new[] { x.StartTown, x.DestTown })
+            .Distinct()
+            .Select((town, index) => (town, index))
+            .ToDictionary(x => x.town, x => x.index);
+        var distances = new int[towns.Count, towns.Count];
+        foreach (var pair in pairs)
+        {
+            var start = towns[pair.StartTown];
+            var dest = towns[pair.DestTown];
+            distances[start, dest] = distances[dest, start] = pair.Distance;
+        }
+
+        return distances;
     }
 
     private class TownPair
