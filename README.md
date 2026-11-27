@@ -63,3 +63,5 @@ Adding a year needs no CI changes.
 ## Adding a day
 
 From a year's language folder, run the scaffolding script: `cd 2026/csharp && ../../shared/csharp/new-day.sh 2` for C#, or `cd 2024/go && ./new-day.sh <day>` for Go. The C# script is shared by all years and takes the year from the folder name. It scaffolds the test file, empty sample and input files, and a docs stub, and links the day in that folder's README calendar.
+
+Part 2 of a puzzle description is only included when the C# script has your session: set `AOC_SESSION` to the value of the `session` cookie on adventofcode.com, or save it to `~/.config/aoc/session` (`chmod 600`). Never commit it. After solving part 1, run `new-day.sh --refresh <day>` to rewrite that day's doc.
