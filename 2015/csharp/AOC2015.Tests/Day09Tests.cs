@@ -1,4 +1,4 @@
-using System.Numerics;
+using AOC.Helpers;
 
 namespace AOC2015.Tests;
 
@@ -14,7 +14,7 @@ public class Day09Tests : TestBase
         var distances = BuildDistances(get_sample(x => new TownPair(x)).ToList());
 
         // Act
-        var shortest = BestRoute(distances, Math.Min);
+        var shortest = Routing.BestRoute(distances, Math.Min);
 
         // Assert
         shortest.ShouldBe(605);
@@ -26,7 +26,7 @@ public class Day09Tests : TestBase
         var distances = BuildDistances(get_input(x => new TownPair(x)).ToList());
 
         // Act
-        var shortest = BestRoute(distances, Math.Min);
+        var shortest = Routing.BestRoute(distances, Math.Min);
 
         // Assert
         shortest.ShouldBe(141);
@@ -38,7 +38,7 @@ public class Day09Tests : TestBase
         var distances = BuildDistances(get_sample(x => new TownPair(x)).ToList());
 
         // Act
-        var longest = BestRoute(distances, Math.Max);
+        var longest = Routing.BestRoute(distances, Math.Max);
 
         // Assert
         longest.ShouldBe(982);
@@ -50,7 +50,7 @@ public class Day09Tests : TestBase
         var distances = BuildDistances(get_input(x => new TownPair(x)).ToList());
 
         // Act
-        var longest = BestRoute(distances, Math.Max);
+        var longest = Routing.BestRoute(distances, Math.Max);
 
         // Assert
         longest.ShouldBe(736);
@@ -72,36 +72,6 @@ public class Day09Tests : TestBase
         }
 
         return distances;
-    }
-
-    // Held-Karp: routes[visited * n + last] is the best route over the visited bitmask ending at last
-    private static int BestRoute(int[,] distances, Func<int, int, int> best)
-    {
-        var n = distances.GetLength(0);
-        var all = (1 << n) - 1;
-        var routes = new int?[(1 << n) * n];
-        for (var town = 0; town < n; town++)
-        {
-            routes[(1 << town) * n + town] = 0;
-        }
-
-        for (var visited = 1; visited <= all; visited++)
-        {
-            for (var ends = visited; ends != 0; ends &= ends - 1)
-            {
-                var last = BitOperations.TrailingZeroCount(ends);
-                var route = routes[visited * n + last]!.Value;
-                for (var unvisited = all & ~visited; unvisited != 0; unvisited &= unvisited - 1)
-                {
-                    var next = BitOperations.TrailingZeroCount(unvisited);
-                    var index = (visited | 1 << next) * n + next;
-                    var candidate = route + distances[last, next];
-                    routes[index] = routes[index] is { } current ? best(current, candidate) : candidate;
-                }
-            }
-        }
-
-        return Enumerable.Range(0, n).Select(last => routes[all * n + last]!.Value).Aggregate(best);
     }
 
     private class TownPair
