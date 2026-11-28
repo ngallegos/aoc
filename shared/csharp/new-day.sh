@@ -113,7 +113,7 @@ init_readme() {
   local y=$((year))
   local first_weekday=$(( (y + y/4 - y/100 + y/400 + 5) % 7 ))
   {
-    printf "# Advent of Code %s C#\n\n### December %s\n" "$year" "$year"
+    printf "# Advent of Code %s C#\n\n### December %s\n\n" "$year" "$year"
     printf "| Sun |  Mon  | Tue | Wed | Thu | Fri | Sat |\n"
     printf "|:---:|:-----:|:---:|:---:|:---:|:---:|:---:|\n"
     local cell

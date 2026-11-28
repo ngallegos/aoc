@@ -1,6 +1,7 @@
 # Advent of Code 2026 C#
 
 ### December 2026
+
 | Sun | Mon | Tue | Wed | Thu | Fri | Sat |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |     |     | [1](docs/day-01.md) |  2  |  3  |  4  |  5  |

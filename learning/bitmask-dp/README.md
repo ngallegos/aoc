@@ -5,7 +5,7 @@ This lesson has two ideas that work well together:
 1. **Dynamic programming (DP):** solve small versions of a problem once, save the answers, and build bigger answers from them.
 2. **Bitmasks:** a compact way to write down "which items have I used?" as a single number.
 
-To practice, open [index.html](index.html) from your local clone. It has coding exercises you can run in the browser.
+To practice, open the [interactive page](https://ngallegos.github.io/aoc/learning/bitmask-dp/). It has coding exercises you can run in the browser.
 
 ## When to reach for it
 
