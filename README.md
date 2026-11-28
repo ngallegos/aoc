@@ -25,7 +25,7 @@ My attempts over the years at Advent of Code.
 
 ## Learning
 
-[Learning paths](learning/README.md) explain concepts picked up while solving puzzles, with interactive exercises.
+[Learning paths](https://ngallegos.github.io/aoc/learning/) explain concepts picked up while solving puzzles, with interactive exercises.
 
 ## Repository layout
 

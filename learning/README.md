@@ -9,10 +9,10 @@ Reusable concepts picked up while solving puzzles. Each lesson has a written `RE
 
 ## Interactive pages
 
-They are static files with no build step or network access. From the repository root:
+Read them online at [https://ngallegos.github.io/aoc/learning/](https://ngallegos.github.io/aoc/learning/).
+
+They are static files with no build step, so they also work from a local clone. From the repository root:
 
 ```sh
 open learning/index.html
 ```
-
-GitHub shows HTML as source, so open them from a local clone.
